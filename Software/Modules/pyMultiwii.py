@@ -1,19 +1,6 @@
 #!/usr/bin/env python
 
-"""multiwii.py: Handles Multiwii Serial Protocol."""
-
-__author__ = "Aldo Vargas"
-__copyright__ = "Copyright 2014 Altax.net"
-
-__license__ = "GPL"
-__version__ = "1.5"
-__maintainer__ = "Aldo Vargas"
-__email__ = "alduxvm@gmail.com"
-__status__ = "Development"
-
-
-import serial, time, struct
-
+# import serial, time, struct
 
 class MultiWii:
 
@@ -85,15 +72,15 @@ class MultiWii:
         try:
             self.ser.open()
             if self.PRINT:
-                print "Waking up board on "+self.ser.port+"..."
+                print("Waking up board on " + self.ser.port + "...")
             for i in range(1,wakeup):
                 if self.PRINT:
-                    print wakeup-i
+                    print(wakeup - i)
                     time.sleep(1)
                 else:
                     time.sleep(1)
-        except Exception, error:
-            print "\n\nError opening "+self.ser.port+" port.\n"+str(error)+"\n\n"
+        except ((Exception, error)):
+            print("\n\nError opening " + self.ser.port + " port.\n" + str(error) + "\n\n")
 
     """Function for sending a command to the board"""
     def sendCMD(self, data_length, code, data):
@@ -105,7 +92,7 @@ class MultiWii:
         try:
             b = None
             b = self.ser.write(struct.pack('<3c2B%dhB' % len(data), *total_data))
-        except Exception, error:
+        except ((Exception, error)):
             #print "\n\nError in sendCMD."
             #print "("+str(error)+")\n\n"
             pass
@@ -149,7 +136,7 @@ class MultiWii:
             self.attitude['elapsed']=round(elapsed,3)
             self.attitude['timestamp']="%0.2f" % (time.time(),) 
             return self.attitude
-        except Exception, error:
+        except (Exception, error):
             #print "\n\nError in sendCMDreceiveATT."
             #print "("+str(error)+")\n\n"
             pass
@@ -237,7 +224,7 @@ class MultiWii:
                 return self.motor
             else:
                 return "No return error!"
-        except Exception, error:
+        except (Exception, error):
             #print error
             pass
 
@@ -288,7 +275,7 @@ class MultiWii:
                     self.motor['m4']=float(temp[3])
                     self.motor['elapsed']="%0.3f" % (elapsed,)
                     self.motor['timestamp']="%0.2f" % (time.time(),)
-            except Exception, error:
+            except (Exception, error):
                 pass
 
     """Function to ask for 2 fixed cmds, attitude and rc channels, and receive them. Note: is a bit slower than others"""
@@ -335,5 +322,5 @@ class MultiWii:
                 return self.message
             else:
                 return "No return error!"
-        except Exception, error:
-            print error
+        except (Exception, error):
+            print(error)
