@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# import serial, time, struct
+import serial, time, struct
+from serial import Serial
 
 class MultiWii:
 
@@ -56,7 +57,7 @@ class MultiWii:
         self.elapsed = 0
         self.PRINT = 1
 
-        self.ser = serial.Serial()
+        self.ser = Serial()
         self.ser.port = serPort
         self.ser.baudrate = 115200
         self.ser.bytesize = serial.EIGHTBITS
@@ -79,7 +80,7 @@ class MultiWii:
                     time.sleep(1)
                 else:
                     time.sleep(1)
-        except ((Exception, error)):
+        except Exception as error:
             print("\n\nError opening " + self.ser.port + " port.\n" + str(error) + "\n\n")
 
     """Function for sending a command to the board"""
@@ -92,7 +93,7 @@ class MultiWii:
         try:
             b = None
             b = self.ser.write(struct.pack('<3c2B%dhB' % len(data), *total_data))
-        except ((Exception, error)):
+        except Exception as error:
             #print "\n\nError in sendCMD."
             #print "("+str(error)+")\n\n"
             pass
@@ -136,7 +137,7 @@ class MultiWii:
             self.attitude['elapsed']=round(elapsed,3)
             self.attitude['timestamp']="%0.2f" % (time.time(),) 
             return self.attitude
-        except (Exception, error):
+        except Exception as error:
             #print "\n\nError in sendCMDreceiveATT."
             #print "("+str(error)+")\n\n"
             pass
@@ -224,7 +225,7 @@ class MultiWii:
                 return self.motor
             else:
                 return "No return error!"
-        except (Exception, error):
+        except Exception as error:
             #print error
             pass
 
@@ -275,7 +276,7 @@ class MultiWii:
                     self.motor['m4']=float(temp[3])
                     self.motor['elapsed']="%0.3f" % (elapsed,)
                     self.motor['timestamp']="%0.2f" % (time.time(),)
-            except (Exception, error):
+            except Exception as error:
                 pass
 
     """Function to ask for 2 fixed cmds, attitude and rc channels, and receive them. Note: is a bit slower than others"""
@@ -322,5 +323,5 @@ class MultiWii:
                 return self.message
             else:
                 return "No return error!"
-        except (Exception, error):
+        except Exception as error:
             print(error)

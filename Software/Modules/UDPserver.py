@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import struct, time, socket
 from twisted.internet.protocol import DatagramProtocol
@@ -19,12 +19,12 @@ def timeout():
 
 class twistedUDP(DatagramProtocol):
 
-    def datagramReceived(self, data, (host, port)):
+    def datagramReceived(self, data, addr):
         global message, active
         active = True
         # In case of failure on receiving, check this:
         numOfValues = len(data) / 8
-        mess=struct.unpack('>' + 'd' * numOfValues, data)
+        mess = struct.unpack('>' + 'd' * numOfValues, data)
         message = [ round(element,6) for element in mess ]
         #print message
         #UDPmess.insert(0,time.time())
