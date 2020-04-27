@@ -25,9 +25,10 @@ import socket, struct, time
 # Main configuration
 #UDP_IP = "127.0.0.1" # Localhost (for testing)
 UDP_IP = "127.0.0.1" # Vehicle IP address
-UDP_PORT = 51001 # This port match the ones using on other scripts
+UDP_PORT = 51001 # This port matches the ones using on other scripts
 
 update_rate = 0.01 # 100 hz loop cycle
+
 # Create UDP socket
 sockt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -37,8 +38,8 @@ try:
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
 except Exception as error:
-    print("No joystick connected on the computer, " + str(error))
-
+    print("ERROR: No joystick connected on the computer, " + str(error))
+    exit()
 
 while True:
     current = time.time()
@@ -46,18 +47,22 @@ while True:
     
     # Joystick reading
     pygame.event.pump()
-    roll     = round(utils.mapping(joystick.get_axis(utils.axis['ROLL']),-1.0,1.0,1000,2000), 1)
-    pitch    = round(utils.mapping(joystick.get_axis(utils.axis['PITCH']),1.0,-1.0,1000,2000), 1)
-    yaw      = round(utils.mapping(joystick.get_axis(utils.axis['YAW']),-1.0,1.0,1000,2000), 1)
-    throttle = round(utils.mapping(joystick.get_axis(utils.axis['THROTTLE']),1.0,-1.0,1000,2000), 1)
 
-    # Be sure to always send the data as floats
-    # The extra zeros on the message are there in order for the other scripts to not complain about missing information
-    message = [roll, pitch, yaw, throttle, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    buf = struct.pack('>' + 'd' * len(message), *message)
-    sockt.sendto(buf, (UDP_IP, UDP_PORT))
+    roll     = round(joystick.get_axis(utils.axis['ROLL']), 3)
+    pitch    = round(joystick.get_axis(utils.axis['PITCH']), 3)
+    yaw      = round(joystick.get_axis(utils.axis['YAW']), 3)
+    throttle = round(joystick.get_axis(utils.axis['THROTTLE']), 3)
+
+    message = [roll, pitch, yaw, throttle]
     
     print(message)
+
+    # Assemble message
+    buf = struct.pack('>' + 'd' * len(message), *message)
+    
+    # Send message via UDP
+    sockt.sendto(buf, (UDP_IP, UDP_PORT))
+    
 
     # Make this loop work at update_rate
     while elapsed < update_rate:

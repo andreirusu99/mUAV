@@ -17,59 +17,73 @@ Acts as a bridge between the GCS and the air vehicle.
 import time, threading
 from Modules.pyMultiwii import MultiWii
 import Modules.UDPserver as udp
-from Modules.utils import axis, button, hat
+from Modules.utils import axis, button, hat, mapping
+import Router as router
 
-# Order: roll, pitch, yaw, throttle, aux1, aux2, aux3, aux4
-rcCMD = [1500,1500,1500,1000,1000,1000,1000,1000]
+# The PWM-converted joystick input
+joy_input = [1000, 1000, 1000, 1000]
 
-serial_port = "/dev/ttyUSB0"
-
-# MRUAV initialization
-#vehicle = MultiWii("/dev/tty.usbserial-A801WZA1")
-
-############
-#vehicle = MultiWii(serial_port)
-
-#Function to update commands and attitude to be called by a thread
-def sendCommands():
-    global vehicle, rcCMD
+# Function to update commands and attitude to be called by a thread
+def interceptCommands():
+    
     try:
         while True:
+            global joy_input
             if udp.active:
                 current = time.time()
                 elapsed = 0
-                
-                # Part for applying commands to the vehicle.
-                # Joystick manual commands
-                rcCMD[0] = udp.message[0] # Roll
-                rcCMD[1] = udp.message[1] # Pitch
-                rcCMD[2] = udp.message[2] # Yaw
-                rcCMD[3] = udp.message[3] # Throttle
 
-                ##############################
-                #vehicle.sendCMD(16, MultiWii.SET_RAW_RC,rcCMD)
+                roll     = int(mapping(udp.message[0],-1.0,1.0,1000,2000))
+                pitch    = int(mapping(udp.message[1],1.0,-1.0,1000,2000))
+                yaw      = int(mapping(udp.message[2],-1.0,1.0,1000,2000))
+                throttle = int(mapping(udp.message[3],1.0,-1.0,1000,2000))
 
-                print(udp.message) # Just to display some data, not really needed.
+                # Joystick manual input from Ground Station
+                joy_input = [roll, pitch, yaw, throttle]
+
+                print(joy_input) # Just to display some data, not really needed.
+
                 # 100hz loop
                 while elapsed < 0.01:
                     elapsed = time.time() - current
                 # End of the main loop
+
     except Exception as error:
-        print("Error on sendCommands thread: " + str(error))
-        sendCommands()
+        print("ERROR on interceptCommands thread: " + str(error))
+        interceptCommands()
+
+def forwardCommands():
+    try:
+        while True:
+            # Send the data to the Command Router
+            router.updateManualInput(joy_input)
+
+            # 100hz loop
+            while elapsed < 0.01:
+                elapsed = time.time() - current
+            # End of the main loop
+
+    except Exception as error:
+        print("ERROR on forwardCommands thread: " + str(error))
+        interceptCommands()
 
 if __name__ == "__main__":
     try:
-        vehicleThread = threading.Thread(target = sendCommands)
-        vehicleThread.daemon=True
-        vehicleThread.start()
+        # Start the intercepting thread
+        interceptorThread = threading.Thread(target = interceptCommands)
+        interceptorThread.daemon=True
+        interceptorThread.start()
+
+        # Start the forwarding thread
+        # forwarderThread = threading.Thread(target = forwardCommands)
+        # forwarderThread.daemon=True
+        # forwarderThread.start()
+
         udp.startTwisted()
 
     except Exception as error:
-        print("Error on main: " + str(error))
-        ###################
-        #vehicle.ser.close()
+        print("ERROR on main: " + str(error))
 
     except KeyboardInterrupt:
-        print("Keyboard Interrupt, exiting.")
+        print("EXITING...")
         exit()
