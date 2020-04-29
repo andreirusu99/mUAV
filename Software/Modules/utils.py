@@ -1,10 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from math import cos,sin,pi,radians,degrees,sqrt
+import sys
 
 axis = {'YAW' : 0, 'THROTTLE' : 1, 'ROLL' : 3, 'PITCH' : 4, 'LTRIG' : 2, 'RTRIG' : 5}
 button = {'A' : 0, 'B' : 1, 'X' : 2, 'Y' : 3, 'LS' : 4, 'RS' : 5, 'BACK' : 6, 'START' : 7, 'XBOX' : 8, 'LDOWN' : 9, 'RDOWN' : 10}
 hat = {'CENTER' : (0,0), 'LEFT' : (-1,0), 'RIGHT' : (1,0), 'UP' : (0,1), 'DOWN' : (0,-1)}
+
+safe_message = [0.0,0.0,0.0,-1.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,]
 
 g = 9.81 # m/s2 - gravity
 
@@ -179,3 +182,10 @@ def infinity_trajectory(a, b, w, step):
     y = round( a*sqrt(2)*cos(w*step) / (sin(w*step)*sin(w*step) + 1) ,2)
     x = round( b*sqrt(2)*cos(w*step)*sin(w*step) / (sin(w*step)*sin(w*step) + 1) ,2)
     return x,y
+
+def clear():
+    #cursor up one line
+    sys.stdout.write('\x1b[1A')
+
+    #delete last line
+    sys.stdout.write('\x1b[2K')
