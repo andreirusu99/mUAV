@@ -33,14 +33,13 @@ def sendControlCommands():
             current = time.time()
             elapsed = 0
 
+            # send the input to the Dispatcher
+            dispatcher.updateInput(manual_cmd)
 
-        # send the input to the Dispatcher
-        dispatcher.updateInput(manual_cmd)
-
-        # 100hz loop
-        while elapsed < update_rate:
-            elapsed = time.time() - current
-        # End of the main loop
+            # 100hz loop
+            while elapsed < update_rate:
+                elapsed = time.time() - current
+            # End of the main loop
 
     except Exception as error:
         print(TAG
