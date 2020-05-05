@@ -17,19 +17,36 @@ import time, threading, os
 from Modules.pyMultiwii import MultiWii
 import Modules.UDPserver as udp
 from Modules.utils import axis, button, hat, mapping, clear
-import Router as router
 
-TAG = "Interceptor"
+import Dispatcher as dispatch
+
+_TAG = "Interceptor"
 
 cycle_Hz = 100  # 100 hz loop cycle
 update_rate = 1 / cycle_Hz
 
-# The PWM-converted joystick input
-joy_input = [1500, 1500, 1500, 1000]
+def processInput(udp_message):
+    roll     = int(mapping(udp_message[0],-1.0,1.0,1000,2000))
+    pitch    = int(mapping(udp_message[1],1.0,-1.0,1000,2000))
+    yaw      = int(mapping(udp_message[2],-1.0,1.0,1000,2000))
+    throttle = int(mapping(udp_message[3],1.0,-1.0,1000,2000))
+    LT = int(mapping(udp_message[4],1.0,-1.0,1000,2000))
+    RT = int(mapping(udp_message[5],1.0,-1.0,1000,2000))
+
+    A = int(udp_message[6])
+    B = int(udp_message[7])
+    X = int(udp_message[8])
+    Y = int(udp_message[9])
+    LS = int(udp_message[10])
+    RS = int(udp_message[11])
+    hat_LR, hat_UD = int(udp_message[12]), int(udp_message[13])
+
+    return [roll, pitch, yaw, throttle, LT, RT, A, B, X, Y, LS, RS, hat_LR, hat_UD]
+
 
 # Function to update commands and attitude to be called by a thread
-def interceptCommands():
-    global joy_input
+def interceptAndForwardCommands():
+    global update_rate
     try:
         while True:
             
@@ -37,27 +54,33 @@ def interceptCommands():
                 current = time.time()
                 elapsed = 0
 
-                print(TAG, udp.message)
-                clear()
-
-                roll     = int(mapping(udp.message[0],-1.0,1.0,1000,2000))
-                pitch    = int(mapping(udp.message[1],1.0,-1.0,1000,2000))
-                yaw      = int(mapping(udp.message[2],-1.0,1.0,1000,2000))
-                throttle = int(mapping(udp.message[3],1.0,-1.0,1000,2000))
-                # LT = int(mapping(udp.message[4],1.0,-1.0,1000,2000))
-                # RT = int(mapping(udp.message[5],1.0,-1.0,1000,2000))
-
-                # A = int(udp.message[6])
-                # B = int(udp.message[7])
-                # X = int(udp.message[8])
-                # Y = int(udp.message[9])
-                # LS = int(udp.message[10])
-                # RS = int(udp.message[11])
-                # hat_LR, hat_UD = int(udp.message[12]), int(udp.message[13])
+                joystick = processInput(udp.message)
 
                 # Joystick manual input from Ground Station
-                joy_input = [roll, pitch, yaw, throttle]
+                control_axes = joystick[:4]
 
+                triggers = joystick[5:6]
+
+                buttons = joystick[7:10]
+
+                shoulders = joystick[11:12]
+
+                hat = joystick[13:14]
+
+                print(_TAG, " Mode: " + dispatch.mode)
+
+                # Switch between auto and manual modes
+                if dispatch.mode == 'manual':
+                    if A == 1:
+                        dispatch.mode = 'auto'
+                    else:
+                        # Send manual control to the Dispatcher
+                        dispatch.submitManualControl(control_axes)
+
+                elif dispatch.mode == 'auto':
+                    if B == 1:
+                        dispatch.mode = 'manual'
+                ###
 
                 # 100hz loop
                 while elapsed < update_rate:
@@ -65,56 +88,28 @@ def interceptCommands():
                 # End of the main loop
 
     except Exception as error:
-        print(TAG
-            + " ERROR on interceptCommands thread: " 
+        print(_TAG
+            + " ERROR on interceptAndForwardCommands thread: " 
             + str(error))
 
-        interceptCommands()
-
-def forwardCommands():
-    global joy_input
-    try:
-        while True:
-            if udp.active:
-                current = time.time()
-                elapsed = 0
-
-                # Send the data to the Command Router
-                router.updateManualInput(joy_input)
-
-                # 100hz loop
-                while elapsed < update_rate:
-                    elapsed = time.time() - current
-                # End of the main loop
-
-    except Exception as error:
-        print(TAG
-            + " ERROR on forwardCommands thread: " 
-            + str(error))
-
-        forwardCommands()
+        interceptAndForwardCommands()
 
 if __name__ == "__main__":
     try:
         # Start the intercepting thread
-        interceptorThread = threading.Thread(target = interceptCommands)
+        interceptorThread = threading.Thread(target = interceptAndForwardCommands)
         interceptorThread.daemon = True
         interceptorThread.start()
-
-        # Start the forwarding thread
-        forwarderThread = threading.Thread(target = forwardCommands)
-        forwarderThread.daemon = True
-        forwarderThread.start()
 
         udp.startTwisted()
 
     except Exception as error:
-        print(TAG
+        print(_TAG
             + " ERROR on main: " 
             + str(error))
         os._exit(1)
 
     except KeyboardInterrupt:
-        print(TAG
+        print(_TAG
             + " Exitting...")
         os._exit(1)

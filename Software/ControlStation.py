@@ -22,7 +22,7 @@ udp = imp.load_source('udp', udp_file)
 import pygame
 import socket, struct, time
 
-TAG = "Control Station"
+_TAG = "Control Station"
 
 # Main configuration
 #UDP_IP = "127.0.0.1" # Localhost (for testing)
@@ -42,7 +42,7 @@ try:
     joystick.init()
 
 except Exception as error:
-    print(TAG
+    print(_TAG
         + " ERROR: No joystick connected on the computer, " 
         + str(error))
     exit()
@@ -58,26 +58,26 @@ while True:
     pitch    = round(joystick.get_axis(utils.axis['PITCH']), 3)
     yaw      = round(joystick.get_axis(utils.axis['YAW']), 3)
     throttle = round(joystick.get_axis(utils.axis['THROTTLE']), 3)
-    # LT = round(joystick.get_axis(utils.axis['LTRIG']), 3)
-    # RT = round(joystick.get_axis(utils.axis['RTRIG']), 3)
+    LT = round(joystick.get_axis(utils.axis['LTRIG']), 3)
+    RT = round(joystick.get_axis(utils.axis['RTRIG']), 3)
 
-    # A = joystick.get_button(utils.button['A'])
-    # B = joystick.get_button(utils.button['B'])
-    # X = joystick.get_button(utils.button['X'])
-    # Y = joystick.get_button(utils.button['Y'])
-    # LS = joystick.get_button(utils.button['LS'])
-    # RS = joystick.get_button(utils.button['RS'])
-    # hat_LR, hat_UD = joystick.get_hat(0)
+    A = joystick.get_button(utils.button['A'])
+    B = joystick.get_button(utils.button['B'])
+    X = joystick.get_button(utils.button['X'])
+    Y = joystick.get_button(utils.button['Y'])
+    LS = joystick.get_button(utils.button['LS'])
+    RS = joystick.get_button(utils.button['RS'])
+    hat_LR, hat_UD = joystick.get_hat(0)
     
     message = [
     roll, pitch, yaw, throttle
-    # , LT, RT
-    # , A, B, X, Y, LS, RS
-    # , hat_LR, hat_UD
+    , LT, RT
+    , A, B, X, Y, LS, RS
+    , hat_LR, hat_UD
     ]
     
     # Print message to STDOUT
-    print(TAG, message)
+    print(_TAG, message)
     utils.clear()
     
     # Assemble message

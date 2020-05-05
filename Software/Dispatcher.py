@@ -5,36 +5,51 @@ Command Dispatcher
 
 Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 -> Obtains Attitude information and passes it along to the other components of the system.
--> Passes through commands from the Command Router to the FC in order to control the drone.
-
+-> Passes through commands from the Command Router to the FC in order to control the _drone.
+-> Implements logic for manually overriding the Pilot
 """
 import time, threading, os
 from Modules.pyMultiwii import MultiWii
 
-TAG = "Dispatcher"
+_TAG = "Dispatcher"
 
 cycle_Hz = 100  # 100 hz loop cycle
 update_rate = 1 / cycle_Hz
 
-drone_cmd = [1500, 1500, 1500, 1000]
+_manualCmd = [1500, 1500, 1500, 1000]
+_pilotCmd = [1500, 1500, 1500, 1000]
 
-#serial_port = "/dev/tty.usbserial-A801WZA1"
-serial_port = "/dev/ttyUSB0"
+# accessed externally
+mode = 'manual'
 
-drone = MultiWii(serial_port)
+#_serialPort = "/dev/tty.usbserial-A801WZA1"
+_serialPort = "/dev/ttyUSB0"
 
-# Receive input from the Router
-def updateInput(control_cmd):
-    drone_cmd = control_cmd
+_drone = MultiWii(_serialPort)
+
+# called by the Interceptor
+def submitManualControl(joy_input):
+    global _manualCmd 
+    _manualCmd = joy_input
+    print(_TAG + " Received: ", _manualCmd)
+
+# called by the Pilot
+def submitPilotControl(pilot_input):
+    global _pilotCmd
+    _pilotCmd = pilot_input
 
 def writeToFlightController():
-    global drone, drone_cmd
+    global _drone, _drone_cmd
     try:
         while True:
 
-            print(TAG, drone_cmd)
+            print(_TAG, _drone_cmd)
 
-            drone.sendCMD(16, MultiWii.SET_RAW_RC, drone_cmd)   
+            if mode == 'manual':
+                _drone.sendCMD(16, MultiWii.SET_RAW_RC, _manualCmd)   
+
+            elif mode == 'auto':
+                _drone.sendCMD(16, MultiWii.SET_RAW_RC, _pilotCmd)   
 
             # 100hz loop
             while elapsed < update_rate:
@@ -42,7 +57,7 @@ def writeToFlightController():
             # End of the main loop
 
     except Exception as error:
-        print(TAG
+        print(_TAG
             + " ERROR on writeToFlightController thread: " 
             + str(error))
 
@@ -52,18 +67,18 @@ def writeToFlightController():
 if __name__ == "__main__":
     try:
         # Start the forwarding thread
-        droneThread = threading.Thread(target = writeToFlightController)
-        droneThread.daemon = True
-        droneThread.start()
+        dispatcherThread = threading.Thread(target = writeToFlightController)
+        dispatcherThread.daemon = True
+        dispatcherThread.start()
 
     except Exception as error:
-        print(TAG
+        print(_TAG
             + " ERROR on main: " 
             + str(error))
-        drone.ser.close()
+        _drone.ser.close()
         os._exit(1)
 
     except KeyboardInterrupt:
-        print(TAG
+        print(_TAG
             + " Exitting...")
         os._exit(1)
