@@ -19,11 +19,15 @@ import Modules.UDPserver as udp
 from Modules.utils import axis, button, hat, mapping, clear
 
 import Dispatcher as dispatch
+import Pilot as pilot
 
 _TAG = "Interceptor"
 
 cycle_Hz = 100  # 100 hz loop cycle
 update_rate = 1 / cycle_Hz
+
+# telementry info to be relayed to the gorund station
+_telemetry = []
 
 def processInput(udp_message):
     roll     = int(mapping(udp_message[0],-1.0,1.0,1000,2000))
@@ -46,7 +50,6 @@ def processInput(udp_message):
 
 # Function to update commands and attitude to be called by a thread
 def interceptAndForwardCommands():
-    global update_rate
     try:
         while True:
             
@@ -66,8 +69,6 @@ def interceptAndForwardCommands():
                 shoulders = joystick[11:12]
 
                 hat = joystick[13:14]
-
-                print(_TAG, " Mode: " + dispatch.mode)
 
                 # Switch between auto and manual modes
                 if dispatch.mode == 'manual':
