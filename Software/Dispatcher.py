@@ -10,11 +10,14 @@ Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 """
 import time, threading, os
 from Modules.pyMultiwii import MultiWii
+from Modules.utils import clear
 
 _TAG = "Dispatcher"
 
 cycle_Hz = 100  # 100 hz loop cycle
 update_rate = 1 / cycle_Hz
+
+armed = False
 
 _manualCmd = [1500, 1500, 1500, 1000]
 _pilotCmd = [1500, 1500, 1500, 1000]
@@ -22,7 +25,7 @@ _pilotCmd = [1500, 1500, 1500, 1000]
 #_serialPort = "/dev/tty.usbserial-A801WZA1"
 _serialPort = "/dev/ttyUSB0"
 
-_drone = MultiWii(_serialPort)
+#_drone = MultiWii(_serialPort)
 
 # accessed externally
 mode = 'manual'
@@ -34,31 +37,63 @@ attitude = [0, 0, 0]
 def submitManualControl(joy_input):
     global _manualCmd 
     _manualCmd = joy_input
-    print(_TAG + " Received: ", _manualCmd)
 
 # called by the Pilot
 def submitPilotControl(pilot_input):
     global _pilotCmd
     _pilotCmd = pilot_input
 
+def armDrone():
+    global armed
+    if not armed:
+        _drone.getData(MultiWii.RC)
+
+        roll = _drone.rcChannels['roll']
+        pitch = _drone.rcChannels['pitch']
+        yaw = _drone.rcChannels['yaw']
+        throttle = _drone.rcChannels['throttle']
+
+        if [roll, pitch, yaw, throttle] == [1500, 1500, 1500, 1000]:
+            print(_TAG + ": Arming...")
+            _drone.arm()
+            armed = True
+
+def disarmDrone():
+    global armed
+    if armed:
+        _drone.getData(MultiWii.RC)
+
+        roll = _drone.rcChannels['roll']
+        pitch = _drone.rcChannels['pitch']
+        yaw = _drone.rcChannels['yaw']
+        throttle = _drone.rcChannels['throttle']
+
+        if [roll, pitch, yaw, throttle] == [1500, 1500, 1500, 1000]:
+            # safe to disarm
+            print(_TAG + ": Disarming...")
+            _drone.disarm()
+            armed = False
+
 def writeToFCgetAttitude():
-    global _drone, _drone_cmd, attitude
+    global attitude
     try:
         while True:
             current = time.time()
             elapsed = 0
 
-            print(_TAG, " Mode: " + dispatch.mode)
+            if armed:
+                # print(_TAG, ": Mode: " + mode, _manualCmd)
+                # clear()
 
-            # write command to FC
-            if mode == 'manual':
-                _drone.sendCMD(8, MultiWii.SET_RAW_RC, _manualCmd)   
+                # write command to FC if armed
+                if mode == 'manual':
+                    _drone.sendCMD(8, MultiWii.SET_RAW_RC, _manualCmd)   
 
-            elif mode == 'auto':
-                _drone.sendCMD(8, MultiWii.SET_RAW_RC, _pilotCmd)   
+                elif mode == 'auto':
+                    _drone.sendCMD(8, MultiWii.SET_RAW_RC, _pilotCmd)   
 
-            # update drone attitude
-            _drone.getData(MultiWii.ATTITUDE)
+                # update drone attitude
+                _drone.getData(MultiWii.ATTITUDE)
 
             attitude = [
                 _drone.attitude['angx'],
@@ -68,34 +103,17 @@ def writeToFCgetAttitude():
 
             print(_TAG + " Attitude: ", attitude)
 
-            # 100hz loop
             while elapsed < update_rate:
                 elapsed = time.time() - current
-            # End of the main loop
 
     except Exception as error:
         print(_TAG
-            + " ERROR on writeToFCgetAttitude thread: " 
+            + ": ERROR on writeToFCgetAttitude thread: " 
             + str(error))
 
         writeToFCgetAttitude()
 
-
-if __name__ == "__main__":
-    try:
-        # Start the dispatcher thread
-        dispatcherThread = threading.Thread(target = writeToFCgetAttitude)
-        dispatcherThread.daemon = True
-        dispatcherThread.start()
-
-    except Exception as error:
-        print(_TAG
-            + " ERROR on main: " 
-            + str(error))
-        _drone.ser.close()
-        os._exit(1)
-
-    except KeyboardInterrupt:
-        print(_TAG
-            + " Exitting...")
-        os._exit(1)
+# Start the dispatcher thread
+dispatcherThread = threading.Thread(target = writeToFCgetAttitude)
+dispatcherThread.daemon = True
+dispatcherThread.start()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import serial, time, struct
 from serial import Serial
@@ -160,7 +160,7 @@ class MultiWii:
             data = [1500,1500,2000,1000]
             self.sendCMD(8,MultiWii.SET_RAW_RC,data)
             time.sleep(0.05)
-            timer = timer + (time.time() - start)
+            timer += (time.time() - start)
             start =  time.time()
 
     def disarm(self):

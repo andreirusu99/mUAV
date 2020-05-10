@@ -25,8 +25,8 @@ import socket, struct, time
 _TAG = "Control Station"
 
 # Main configuration
-#UDP_IP = "127.0.0.1" # Localhost (for testing)
-UDP_IP = "127.0.0.1" # Vehicle IP address
+UDP_IP = "127.0.0.1" # Localhost (for testing)
+#UDP_IP = "192.168.10.1" # Vehicle IP address
 UDP_PORT = 51001 # This port matches the ones using on other scripts
 
 cycle_Hz = 100  # 100 hz loop cycle
