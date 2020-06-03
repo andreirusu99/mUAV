@@ -9,15 +9,11 @@ Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 -> Implements logic for manually overriding the Pilot
 """
 import time, threading, os
+from Global import *
 from Modules.pyMultiwii import MultiWii
 from Modules.utils import clear
 
 _TAG = "Dispatcher"
-
-cycle_Hz = 100  # 100 hz loop cycle
-update_rate = 1 / cycle_Hz
-
-armed = False
 
 _manualCmd = [1500, 1500, 1500, 1000]
 _pilotCmd = [1500, 1500, 1500, 1000]
@@ -25,10 +21,7 @@ _pilotCmd = [1500, 1500, 1500, 1000]
 #_serialPort = "/dev/tty.usbserial-A801WZA1"
 _serialPort = "/dev/ttyUSB0"
 
-#_drone = MultiWii(_serialPort)
-
-# accessed externally
-mode = 'manual'
+_drone = MultiWii(_serialPort)
 
 # roll, pitch, heading
 attitude = [0, 0, 0]

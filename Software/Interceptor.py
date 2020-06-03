@@ -14,19 +14,17 @@ Acts as a bridge between the GCS and the air vehicle.
 """
 
 import time, threading, os
+from Globals import *
 from Modules.pyMultiwii import MultiWii
 import Modules.UDPserver as udp
-from Modules.utils import axis, button, hat, mapping, clear
+from Modules.utils import mapping, clear
 
 import Dispatcher as dispatch
 import Pilot as pilot
 
 _TAG = "Interceptor"
 
-cycle_Hz = 100  # 100 hz loop cycle
-update_rate = 1 / cycle_Hz
-
-# telementry info to be relayed to the gorund station
+# telementry info to be relayed to the ground station
 _telemetry = []
 
 def processInput(udp_message):
@@ -82,28 +80,27 @@ def interceptAndForwardCommands():
 
                 hat = joystick[12:14]
 
-                #print(_TAG, dispatch.mode, triggers)
+                #print(_TAG, mode, triggers)
 
                 # Switch between auto and manual modes
                 if A == 1:
-                    dispatch.mode = 'auto'
+                    mode = 'auto'
                 elif B == 1:
-                    dispatch.mode = 'manual'
+                    mode = 'manual'
 
                 # arm or disarm the drone
                 if triggers[1] == 2000:
                     dispatch.armDrone()
-
-                if triggers[0] == 2000:
+                elif triggers[0] == 2000:
                     dispatch.disarmDrone()
                 
-                if dispatch.mode == 'manual' and dispatch.armed:
+                if mode == 'manual' and dispatch.armed:
                     # Send manual control to the Dispatcher
                     dispatch.submitManualControl(control_axes)
-                ###
+                
 
             else:
-                # Send safe command to the Dispatcher
+                # Send safe command to the Dispatcher if UDP not active
                 dispatch.submitManualControl([1500, 1500, 1500, 1000])
 
             while elapsed < update_rate:
