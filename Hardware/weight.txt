@@ -1,0 +1,10 @@
+Motors 125g
+Bottom Chassis 75g
+Top Chassis 60g
+Battery Case 30g
+Arms 40g
+Legs 50g
+Battery 380g
+Jetson Nano 140g
+Wires 100g
+Camera, Antennas, GPS, FC 100g
