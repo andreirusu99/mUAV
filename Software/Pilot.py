@@ -12,13 +12,10 @@ The brain of the flight control system.
 """
 
 import time, threading, os
-
+from Globals import *
 import Dispatcher as dispatch
 
 _TAG = "Pilot"
-
-cycle_Hz = 100  # 100 hz loop cycle
-update_rate = 1 / cycle_Hz
 
 # lat lng
 _gps = ()

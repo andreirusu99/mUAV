@@ -16,7 +16,7 @@ Acts as a bridge between the GCS and the air vehicle.
 import time, threading, os
 from Globals import *
 from Modules.pyMultiwii import MultiWii
-import Modules.UDPserver as udp
+from Modules import UDPserver as udp
 from Modules.utils import mapping, clear
 
 import Dispatcher as dispatch

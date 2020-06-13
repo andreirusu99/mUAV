@@ -11,3 +11,6 @@ safe_message = [0.0,0.0,0.0,-1.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 mode = 'manual'
 
 armed = False
+
+#serialPort = "/dev/tty.usbserial-A801WZA1"
+serialPort = "/dev/ttyUSB0"

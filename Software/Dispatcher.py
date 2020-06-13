@@ -5,11 +5,11 @@ Command Dispatcher
 
 Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 -> Obtains Attitude information and passes it along to the other components of the system.
--> Passes through commands from the Command Router to the FC in order to control the _drone.
--> Implements logic for manually overriding the Pilot
+-> Passes through commands to the FC in order to control the drone.
+
 """
 import time, threading, os
-from Global import *
+from Globals import *
 from Modules.pyMultiwii import MultiWii
 from Modules.utils import clear
 
@@ -18,10 +18,7 @@ _TAG = "Dispatcher"
 _manualCmd = [1500, 1500, 1500, 1000]
 _pilotCmd = [1500, 1500, 1500, 1000]
 
-#_serialPort = "/dev/tty.usbserial-A801WZA1"
-_serialPort = "/dev/ttyUSB0"
-
-_drone = MultiWii(_serialPort)
+_drone = MultiWii(serialPort)
 
 # roll, pitch, heading
 attitude = [0, 0, 0]
@@ -37,7 +34,6 @@ def submitPilotControl(pilot_input):
     _pilotCmd = pilot_input
 
 def armDrone():
-    global armed
     if not armed:
         _drone.getData(MultiWii.RC)
 
@@ -52,7 +48,6 @@ def armDrone():
             armed = True
 
 def disarmDrone():
-    global armed
     if armed:
         _drone.getData(MultiWii.RC)
 
