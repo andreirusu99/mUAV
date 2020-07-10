@@ -5,7 +5,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet import task
 
-UDPport = 51001
+UDPport = 51004
 message = [
 0.0,0.0,0.0,-1.0 ,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
 ]
@@ -17,7 +17,7 @@ def timeout():
     if not active:
         # There is no UDP data, so give message "safe" commands
         message = [
-        0.0,0.0,0.0,-1.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+        0.0,0.0,-1.0,0.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
         ]
 
     active = False

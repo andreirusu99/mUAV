@@ -8,98 +8,111 @@ Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 -> Passes through commands to the FC in order to control the drone.
 
 """
+from yamspy import MSPy
 import time, threading, os
-from Globals import *
-from Modules.pyMultiwii import MultiWii
+from Globals import armed, update_rate, mode, CMDS_ORDER, serialPort
 from Modules.utils import clear
 
 _TAG = "Dispatcher"
+            
+manualCMDS = {
+            'roll':     1500,
+            'pitch':    1500,
+            'throttle': 900,
+            'yaw':      1500,
+            'aux1':     1000,
+            'aux2':     1000
+            }
 
-_manualCmd = [1500, 1500, 1500, 1000]
-_pilotCmd = [1500, 1500, 1500, 1000]
-
-_drone = MultiWii(serialPort)
+pilotCMDS = {
+            'roll':     1500,
+            'pitch':    1500,
+            'throttle': 900,
+            'yaw':      1500,
+            'aux1':     1000,
+            'aux2':     1000
+            }
 
 # roll, pitch, heading
 attitude = [0, 0, 0]
 
 # called by the Interceptor
 def submitManualControl(joy_input):
-    global _manualCmd 
-    _manualCmd = joy_input
+    global manualCMDS
+
+    manualCMDS['roll'] = joy_input[0]
+    manualCMDS['pitch'] = joy_input[1]
+    manualCMDS['throttle'] = joy_input[2]
+    manualCMDS['yaw'] = joy_input[3]
+
+    #print(_TAG + ": Received: ", manualCMDS)
 
 # called by the Pilot
 def submitPilotControl(pilot_input):
-    global _pilotCmd
-    _pilotCmd = pilot_input
+    global pilotCMDS
+    pilotCMDS = pilot_input
 
 def armDrone():
+    global armed
     if not armed:
-        _drone.getData(MultiWii.RC)
-
-        roll = _drone.rcChannels['roll']
-        pitch = _drone.rcChannels['pitch']
-        yaw = _drone.rcChannels['yaw']
-        throttle = _drone.rcChannels['throttle']
-
-        if [roll, pitch, yaw, throttle] == [1500, 1500, 1500, 1000]:
-            print(_TAG + ": Arming...")
-            _drone.arm()
-            armed = True
+        print(_TAG + ": Arming...")
+        manualCMDS['aux1'] = 1800 # armed
+        armed = True
 
 def disarmDrone():
+    global armed
     if armed:
-        _drone.getData(MultiWii.RC)
-
-        roll = _drone.rcChannels['roll']
-        pitch = _drone.rcChannels['pitch']
-        yaw = _drone.rcChannels['yaw']
-        throttle = _drone.rcChannels['throttle']
-
-        if [roll, pitch, yaw, throttle] == [1500, 1500, 1500, 1000]:
-            # safe to disarm
-            print(_TAG + ": Disarming...")
-            _drone.disarm()
-            armed = False
+        print(_TAG + ": Disarming...")
+        manualCMDS['aux1'] = 1000 # disarmed
+        armed = False
 
 def writeToFCgetAttitude():
     global attitude
+
     try:
-        while True:
-            current = time.time()
-            elapsed = 0
 
-            if armed:
-                # print(_TAG, ": Mode: " + mode, _manualCmd)
-                # clear()
+        with MSPy(device = serialPort, loglevel = "WARNING", baudrate = 115200) as _drone:
+            print("Device opened on {}".format(serialPort))
 
-                # write command to FC if armed
-                if mode == 'manual':
-                    _drone.sendCMD(8, MultiWii.SET_RAW_RC, _manualCmd)   
+            while True:
+                current = time.time()
+                elapsed = 0
 
-                elif mode == 'auto':
-                    _drone.sendCMD(8, MultiWii.SET_RAW_RC, _pilotCmd)   
+                if armed:
+                    # print(_TAG, ": Mode: " + mode, manualCMDS)
+                    # clear()
 
-                # update drone attitude
-                _drone.getData(MultiWii.ATTITUDE)
+                    # write command to FC if armed
+                    if mode == 'manual':
+                        if _drone.send_RAW_RC([manualCMDS[i] for i in CMDS_ORDER]):
+                              dataHandler = _drone.receive_msg()
+                              _drone.process_recv_data(dataHandler)
 
-            attitude = [
-                _drone.attitude['angx'],
-                _drone.attitude['angy'],
-                _drone.attitude['heading']
-                ]
+                    elif mode == 'auto':
+                         if _drone.send_RAW_RC([pilotCMDS[i] for i in CMDS_ORDER]):
+                              dataHandler = _drone.receive_msg()
+                              _drone.process_recv_data(dataHandler) 
 
-            print(_TAG + " Attitude: ", attitude)
+                    # update drone attitude
+                    #_drone.getData(MultiWii.ATTITUDE)
 
-            while elapsed < update_rate:
-                elapsed = time.time() - current
+                # attitude = [
+                #     _drone.attitude['angx'],
+                #     _drone.attitude['angy'],
+                #     _drone.attitude['heading']
+                #     ]
+
+                #print(_TAG + " Attitude: ", attitude)
+
+                while elapsed < update_rate:
+                    elapsed = time.time() - current
 
     except Exception as error:
         print(_TAG
             + ": ERROR on writeToFCgetAttitude thread: " 
             + str(error))
-
         writeToFCgetAttitude()
+
 
 # Start the dispatcher thread
 dispatcherThread = threading.Thread(target = writeToFCgetAttitude)

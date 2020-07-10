@@ -8,9 +8,13 @@ update_rate = 1 / cycle_Hz
 
 safe_message = [0.0,0.0,0.0,-1.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
+CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
+
 mode = 'manual'
 
 armed = False
 
-#serialPort = "/dev/tty.usbserial-A801WZA1"
-serialPort = "/dev/ttyUSB0"
+serialPort = "/dev/ttyACM2"
+
+STICK_MIN = 1450
+STICK_MAX = 1550 
