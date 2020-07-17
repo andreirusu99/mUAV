@@ -14,107 +14,138 @@ Acts as a bridge between the GCS and the air vehicle.
 """
 
 import time, threading, os
-from Modules.pyMultiwii import MultiWii
-import Modules.UDPserver as udp
-from Modules.utils import axis, button, hat, mapping, clear
-import Router as router
+from Globals import *
+from Modules import UDPserver as udp
+from Modules.utils import mapping
 
-TAG = "Interceptor"
+import Dispatcher as dispatch
 
-cycle_Hz = 100  # 100 hz loop cycle
-update_rate = 1 / cycle_Hz
+_TAG = "Interceptor"
 
-# The PWM-converted joystick input
-joy_input = [1500, 1500, 1500, 1000]
+# telementry info to be relayed to the ground station
+_telemetry = []
 
-# Function to update commands and attitude to be called by a thread
-def interceptCommands():
-    global joy_input
+def processInput(udp_message):
+    # PWM conversion
+    roll     = int(mapping(udp_message[0], -1.0, 1.0, STICK_MIN, STICK_MAX))
+    pitch    = int(mapping(udp_message[1], 1.0, -1.0, STICK_MIN, STICK_MAX))
+    yaw      = int(mapping(udp_message[2], -1.0, 1.0, STICK_MIN, STICK_MAX))
+    throttle = int(mapping(udp_message[3],0, -1.0, 1000, THROTTLE_MAX))
+    LT = int(mapping(udp_message[4], -1.0, 1.0, 1000, 2000))
+    RT = int(mapping(udp_message[5], -1.0, 1.0, 1000, 2000))
+
+    A = int(udp_message[6])
+    B = int(udp_message[7])
+    X = int(udp_message[8])
+    Y = int(udp_message[9])
+    LS = int(udp_message[10])
+    RS = int(udp_message[11])
+    hat_LR, hat_UD = int(udp_message[12]), int(udp_message[13])
+
+    if throttle < 1000: throttle = 1000
+
+    # deadzone configuration
+    dead_zone_ratio = 0.1 # 10%
+    input_range = STICK_MAX - STICK_MIN
+    dead_zone = input_range * dead_zone_ratio
+
+    if abs(roll - 1500) < dead_zone: roll = 1500
+    if abs(pitch - 1500) < dead_zone: pitch = 1500
+    if abs(yaw - 1500) < dead_zone: yaw = 1500
+    if abs(throttle - 1000) < 50: throttle = 1000
+
+    roll += ROLL_TRIM
+    pitch += PITCH_TRIM
+    yaw += YAW_TRIM
+    
+    return [roll, pitch, throttle, yaw, LT, RT, A, B, X, Y, LS, RS, hat_LR, hat_UD]
+
+
+def interceptAndForwardCommands():
+    global mode, update_rate, CMDS_ORDER, CMDS, armed, PITCH_TRIM, ROLL_TRIM
     try:
+        arm_time = disarm_time = 0
+        ready1 = ready2 = False
+        printable = ""
+        last_active = 0
+
         while True:
-            
+            current = time.time()
+            elapsed = 0
+
             if udp.active:
-                current = time.time()
-                elapsed = 0
 
-                print(TAG, udp.message)
-                clear()
+                last_active = time.time()
 
-                roll     = int(mapping(udp.message[0],-1.0,1.0,1000,2000))
-                pitch    = int(mapping(udp.message[1],1.0,-1.0,1000,2000))
-                yaw      = int(mapping(udp.message[2],-1.0,1.0,1000,2000))
-                throttle = int(mapping(udp.message[3],1.0,-1.0,1000,2000))
-                # LT = int(mapping(udp.message[4],1.0,-1.0,1000,2000))
-                # RT = int(mapping(udp.message[5],1.0,-1.0,1000,2000))
-
-                # A = int(udp.message[6])
-                # B = int(udp.message[7])
-                # X = int(udp.message[8])
-                # Y = int(udp.message[9])
-                # LS = int(udp.message[10])
-                # RS = int(udp.message[11])
-                # hat_LR, hat_UD = int(udp.message[12]), int(udp.message[13])
+                joystick = processInput(udp.message)
 
                 # Joystick manual input from Ground Station
-                joy_input = [roll, pitch, yaw, throttle]
+                control_axes = joystick[:4]
 
+                triggers = joystick[4:6]
 
-                # 100hz loop
-                while elapsed < update_rate:
+                A = joystick[6]
+                B = joystick[7]
+                X = joystick[8]
+                Y = joystick[9]
+
+                shoulders = joystick[10:12]
+
+                hat = joystick[12:14]
+
+                # arm or disarm the drone
+                if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
+                    print(time.ctime(), _TAG, "ARMING...")
+                    armed = True
+                    arm_time = time.time()
+                    dispatch.armDrone()
+                                                       # at least 1 second passed from the arming     
+                elif triggers[1] > 1800 and armed and time.time() - arm_time >= 1:
+                    print(time.ctime(), _TAG, "DISARMING...")
+                    armed = False
+                    disarm_time = time.time()
+                    dispatch.disarmDrone()
+
+                # send control commands to the dispatch
+                dispatch.updateCommands(control_axes)
+                dispatch.writeToBoard()
+
+                print(time.ctime(), dispatch.getInfo())
+
+            else: # udp not active
+                print(time.ctime(), _TAG, "UDP timeout")
+                # connection lost to Ground Station
+                if time.time() - last_active > TIMEOUT_TH:
+                    dispatch.disarmDrone()
+
+            while elapsed < update_rate:
                     elapsed = time.time() - current
-                # End of the main loop
 
     except Exception as error:
-        print(TAG
-            + " ERROR on interceptCommands thread: " 
-            + str(error))
+        print(time.ctime(), _TAG,
+            "ERROR on Interceptor thread: ", 
+            str(error))
+        interceptAndForwardCommands()
 
-        interceptCommands()
-
-def forwardCommands():
-    global joy_input
-    try:
-        while True:
-            if udp.active:
-                current = time.time()
-                elapsed = 0
-
-                # Send the data to the Command Router
-                router.updateManualInput(joy_input)
-
-                # 100hz loop
-                while elapsed < update_rate:
-                    elapsed = time.time() - current
-                # End of the main loop
-
-    except Exception as error:
-        print(TAG
-            + " ERROR on forwardCommands thread: " 
-            + str(error))
-
-        forwardCommands()
 
 if __name__ == "__main__":
+
     try:
+        print(time.ctime(), _TAG, "Started")
         # Start the intercepting thread
-        interceptorThread = threading.Thread(target = interceptCommands)
+        interceptorThread = threading.Thread(target = interceptAndForwardCommands)
         interceptorThread.daemon = True
         interceptorThread.start()
-
-        # Start the forwarding thread
-        forwarderThread = threading.Thread(target = forwardCommands)
-        forwarderThread.daemon = True
-        forwarderThread.start()
 
         udp.startTwisted()
 
     except Exception as error:
-        print(TAG
-            + " ERROR on main: " 
-            + str(error))
+        print(time.ctime(), _TAG,
+            "ERROR on main: ",
+            str(error))
         os._exit(1)
 
     except KeyboardInterrupt:
-        print(TAG
-            + " Exitting...")
+        print(time.ctime(), _TAG,
+            "Exitting...")
         os._exit(1)
