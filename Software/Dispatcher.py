@@ -56,6 +56,7 @@ def getInfo():
             amperage = drone.ANALOG['amperage']
             power = voltage * amperage
             percent = (voltage - 9.9) / 2.73 * 100
+            percent = min(max(percent, 0), 100)
             info += "{:.2f}V = {:.1f}% {:.1f}W".format(voltage, percent, power)
             ready1 = True
 

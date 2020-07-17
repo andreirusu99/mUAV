@@ -20,9 +20,6 @@ from Modules.utils import mapping
 
 import Dispatcher as dispatch
 
-# import Dispatcher as dispatch
-# import Pilot as pilot
-
 _TAG = "Interceptor"
 
 # telementry info to be relayed to the ground station
@@ -143,14 +140,12 @@ if __name__ == "__main__":
         udp.startTwisted()
 
     except Exception as error:
-        drone.conn.close()
         print(time.ctime(), _TAG,
             "ERROR on main: ",
             str(error))
         os._exit(1)
 
     except KeyboardInterrupt:
-        drone.conn.close()
         print(time.ctime(), _TAG,
             "Exitting...")
         os._exit(1)

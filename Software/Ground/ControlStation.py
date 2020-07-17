@@ -31,7 +31,7 @@ hat = {'CENTER' : (0,0), 'LEFT' : (-1,0), 'RIGHT' : (1,0), 'UP' : (0,1), 'DOWN' 
 # Main configuration
 UDP_IP = "127.0.0.1" # Localhost (for testing)
 #UDP_IP = "192.168.10.1" # Vehicle IP address
-UDP_PORT = 51004 # This port matches the ones using on other scripts
+UDP_PORT = 51444 # This port matches the ones using on other scripts
 
 # Create UDP socket
 sockt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -79,9 +79,9 @@ while True:
     , A, B, X, Y, LS, RS
     , hat_LR, hat_UD
     ]
-    
+
     # Print message to STDOUT
-    print(_TAG, message)
+    print(_TAG, message, UDP_IP, UDP_PORT)
     utils.clear()
     
     # Assemble message
