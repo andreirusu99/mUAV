@@ -29,8 +29,8 @@ button = {'A' : 0, 'B' : 1, 'X' : 2, 'Y' : 3, 'LS' : 4, 'RS' : 5, 'BACK' : 6, 'S
 hat = {'CENTER' : (0,0), 'LEFT' : (-1,0), 'RIGHT' : (1,0), 'UP' : (0,1), 'DOWN' : (0,-1)}
 
 # Main configuration
-UDP_IP = "127.0.0.1" # Localhost (for testing)
-#UDP_IP = "192.168.10.1" # Vehicle IP address
+#UDP_IP = "127.0.0.1" # Localhost (for testing)
+UDP_IP = "10.42.0.1" # Vehicle IP address
 UDP_PORT = 51444 # This port matches the ones using on other scripts
 
 # Create UDP socket

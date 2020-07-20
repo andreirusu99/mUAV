@@ -10,7 +10,8 @@ safe_message = [0.0,0.0,-1.0,0.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 
-mode = 'manual'
+modes = {'manual':0, "altitude_hold":1}
+mode = 0
 
 armed = False
 
@@ -21,6 +22,6 @@ TIMEOUT_TH = 1
 STICK_MIN = 1200
 STICK_MAX = 1800
 THROTTLE_MAX = 1700
-ROLL_TRIM = -15
-PITCH_TRIM = 10
+ROLL_TRIM = 4
+PITCH_TRIM = 1
 YAW_TRIM = 0

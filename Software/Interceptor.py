@@ -27,6 +27,8 @@ _telemetry = []
 
 def processInput(udp_message):
     # PWM conversion
+    yaw_low = STICK_MIN + 100
+    yaw_high = STICK_MAX - 100
     roll     = int(mapping(udp_message[0], -1.0, 1.0, STICK_MIN, STICK_MAX))
     pitch    = int(mapping(udp_message[1], 1.0, -1.0, STICK_MIN, STICK_MAX))
     yaw      = int(mapping(udp_message[2], -1.0, 1.0, STICK_MIN, STICK_MAX))
@@ -51,7 +53,7 @@ def processInput(udp_message):
 
     if abs(roll - 1500) < dead_zone: roll = 1500
     if abs(pitch - 1500) < dead_zone: pitch = 1500
-    if abs(yaw - 1500) < dead_zone: yaw = 1500
+    if abs(yaw - 1500) < dead_zone * 1.5: yaw = 1500
     if abs(throttle - 1000) < 50: throttle = 1000
 
     roll += ROLL_TRIM
@@ -62,7 +64,7 @@ def processInput(udp_message):
 
 
 def interceptAndForwardCommands():
-    global mode, update_rate, CMDS_ORDER, CMDS, armed, PITCH_TRIM, ROLL_TRIM
+    global mode, update_rate, armed
     try:
         arm_time = disarm_time = 0
         ready1 = ready2 = False
@@ -110,13 +112,14 @@ def interceptAndForwardCommands():
                 dispatch.updateCommands(control_axes)
                 dispatch.writeToBoard()
 
-                print(time.ctime(), dispatch.getInfo())
 
             else: # udp not active
                 print(time.ctime(), _TAG, "UDP timeout")
                 # connection lost to Ground Station
                 if time.time() - last_active > TIMEOUT_TH:
                     dispatch.disarmDrone()
+
+            print(time.ctime(), dispatch.getInfo())
 
             while elapsed < update_rate:
                     elapsed = time.time() - current
