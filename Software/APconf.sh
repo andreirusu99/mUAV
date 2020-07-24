@@ -4,7 +4,7 @@
 sudo hostapd -B /etc/hostapd/hostapd.conf
 
 # with a fixed ip address
-sudo ifconfig wlan0 192.168.10.1
+sudo ifconfig wlan0 192.168.100.40
 
 # and a dhcp server
 sudo service isc-dhcp-server restart

@@ -1,0 +1,2 @@
+drone
+-DCATKIN_DEVEL_PREFIX=/home/andrei/Desktop/mUAV/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/andrei/Desktop/mUAV/catkin_ws/install -G Unix Makefiles
