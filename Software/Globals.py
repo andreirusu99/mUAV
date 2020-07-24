@@ -10,8 +10,12 @@ safe_message = [0.0,0.0,-1.0,0.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 
+<<<<<<< HEAD
 modes = {'manual':0, 'altitude_hold':1}
 nameOf = {0 : 'manual', 1 : 'altitude_hold'}
+=======
+modes = {'manual':0, "altitude_hold":1}
+>>>>>>> 77f3d471aa74d2e5b4149c59aeac432ba7f94a4f
 mode = 0
 
 armed = False
@@ -34,7 +38,11 @@ VARIANCE_TH = 2000
 
 STICK_MIN = 1200
 STICK_MAX = 1800
+<<<<<<< HEAD
 THROTTLE_MAX = 1550
+=======
+THROTTLE_MAX = 1700
+>>>>>>> 77f3d471aa74d2e5b4149c59aeac432ba7f94a4f
 ROLL_TRIM = 4
 PITCH_TRIM = 1
 YAW_TRIM = 0

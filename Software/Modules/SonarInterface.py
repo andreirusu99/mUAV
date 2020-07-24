@@ -12,6 +12,7 @@ import Jetson.GPIO as GPIO
 import time
  
 #set GPIO Pins
+<<<<<<< HEAD
 TRIG = 27
 ECHO = 17
 
@@ -49,11 +50,48 @@ def reading():
 
     pulse_duration = pulse_end - pulse_start
     distance = pulse_duration * 17150
+=======
+GPIO_TRIGGER = 27
+GPIO_ECHO = 17
+ 
+#set GPIO direction (IN / OUT)
+GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
+GPIO.setup(GPIO_ECHO, GPIO.IN)
+
+def distance():
+    # set Trigger to HIGH
+    # print("TRIG: HIGH")
+    GPIO.output(GPIO_TRIGGER, True)
+ 
+    # set Trigger after 0.01ms to LOW
+    time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+    # print("TRIG: LOW")
+ 
+    StartTime = time.time()
+    StopTime = time.time()
+ 
+    # save StartTime
+    while GPIO.input(GPIO_ECHO) == 0:
+        StartTime = time.time()
+        #print("ECHO: LOW")
+ 
+    # save time of arrival
+    while GPIO.input(GPIO_ECHO) == 1:
+        StopTime = time.time()
+ 
+    # time difference between start and arrival
+    TimeElapsed = StopTime - StartTime
+    # multiply with the sonic speed (34300 cm/s)
+    # and divide by 2, because there and back
+    distance = TimeElapsed * 17150
+>>>>>>> 77f3d471aa74d2e5b4149c59aeac432ba7f94a4f
  
     return distance
  
 def getDistance():
     try:
+<<<<<<< HEAD
         #GPIO Mode (BOARD / BCM)
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
@@ -64,4 +102,15 @@ def getDistance():
         return reading()
 
     finally:
+=======
+        while True:
+            dist = distance()
+            if dist > 0.1:
+                print("Measured Distance = {:.1f}cm".format(dist))
+            time.sleep(0.01)
+ 
+        # Reset by pressing CTRL + C
+    except KeyboardInterrupt:
+        print("Measurement stopped by User")
+>>>>>>> 77f3d471aa74d2e5b4149c59aeac432ba7f94a4f
         GPIO.cleanup()
