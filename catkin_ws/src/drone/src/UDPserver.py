@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import rospy
 import struct, time, socket
@@ -17,9 +17,7 @@ def timeout():
     global active, message
     if not active:
         # There is no UDP data, so give message "safe" commands
-        message = [
-        0.0,0.0,-1.0,0.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-        ]
+        message = [0.0,0.0,0.0,0.0,-1.0,-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
     active = False
 

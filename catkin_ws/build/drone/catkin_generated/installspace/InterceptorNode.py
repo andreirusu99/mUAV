@@ -1,78 +1,138 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
-""" 
-Command Interceptor (Air)
-
-Acts as a bridge between the GCS and the air vehicle.
-
--> Reads the data coming from the GCS over UDP
--> Maps Joystick axis values to PWM values
--> Filters and applies other transformations to the values (dead-zone etc.)
--> Constructs commands from the received data (button presses etc.)
--> Passes the new information forward to the Command Router (RC control + commands)
-
-"""
 import rospy
 import time, threading, os
+
 import UDPserver as udp
+from utils import mapping
 
 from std_msgs.msg import String
+from drone.msg import ControlAxes
 
-_TAG = "Interceptor"
 
+def processInput(udp_message):
 
-def mainThread():
-    _TAG = "Main Thread"
+    STICK_MIN = rospy.get_param("/stick/limits/min")
+    STICK_MAX = rospy.get_param("/stick/limits/max")
+    THROTTLE_MAX = rospy.get_param("/stick/limits/throttle_max")
+
+    ROLL_TRIM = rospy.get_param("/stick/trims/roll")
+    PITCH_TRIM = rospy.get_param("/stick/trims/pitch")
+    YAW_TRIM = rospy.get_param("/stick/trims/yaw")
+
+    # PWM conversion
+    yaw_low = STICK_MIN + 100
+    yaw_high = STICK_MAX - 100
+    roll     = int(mapping(udp_message[0], -1.0, 1.0, STICK_MIN, STICK_MAX))
+    pitch    = int(mapping(udp_message[1], 1.0, -1.0, STICK_MIN, STICK_MAX))
+    yaw      = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
+    throttle = int(mapping(udp_message[3], 0, -1.0, 1000, THROTTLE_MAX))
+    LT = int(mapping(udp_message[4], -1.0, 1.0, 1000, 2000))
+    RT = int(mapping(udp_message[5], -1.0, 1.0, 1000, 2000))
+
+    A = int(udp_message[6])
+    B = int(udp_message[7])
+    X = int(udp_message[8])
+    Y = int(udp_message[9])
+    LS = int(udp_message[10])
+    RS = int(udp_message[11])
+    hat_LR, hat_UD = int(udp_message[12]), int(udp_message[13])
+
+    if throttle < 1000: throttle = 1000
+
+    # deadzone configuration
+    dead_zone_ratio = 0.1 # 10%
+    input_range = STICK_MAX - STICK_MIN
+    dead_zone = input_range * dead_zone_ratio
+
+    if abs(roll - 1500) < dead_zone: roll = 1500
+    if abs(pitch - 1500) < dead_zone: pitch = 1500
+    if abs(yaw - 1500) < dead_zone * 1.5: yaw = 1500
+    if abs(throttle - 1000) < 50: throttle = 1000
+
+    roll += ROLL_TRIM
+    pitch += PITCH_TRIM
+    yaw += YAW_TRIM
     
-    # rospy.loginfo(time.ctime(), _TAG, "Started")
+    return [roll, pitch, throttle, yaw, LT, RT, A, B, X, Y, LS, RS, hat_LR, hat_UD]
+
+
+def UDPthread():
+    _TAG = "UDP Thread"
+    
     try:
 
         udp.startTwisted()
-
-        while True:
-
-            current = time.time()
-            elapsed = 0
-
-            # if udp.active:
-
-            #     last_active = time.time()
-
-            #     rospy.loginfo(udp.message)
-            #     print(udp.message)
-
-                
-            # else: # udp not active
-            #     rospy.loginfo(time.ctime(), _TAG, "UDP timeout")
-            #     # connection lost to Ground Station
-
-            while elapsed < 0.01:
-                    elapsed = time.time() - current
     
     except Exception as error:
-        os._exit(1)
+        rospy.logerr("{}: {}".format(_TAG, error))
+        UDPthread()
 
+
+def main():
+
+    rospy.init_node('InterceptorNode')
+
+    pub = rospy.Publisher('Control', ControlAxes, queue_size=2)
+    
+    arm_time = disarm_time = 0
+
+    rate = rospy.Rate(rospy.get_param("/run/rate"))
+    while not rospy.is_shutdown():
+        
+        if udp.active:
+            rospy.set_param("/udp/last_active", time.time())
+
+            joystick = processInput(udp.message)
+
+            joy_sticks = joystick[:4]
+
+            triggers = joystick[4:6]
+
+            A = joystick[6]
+            B = joystick[7]
+            X = joystick[8]
+            Y = joystick[9]
+
+            shoulders = joystick[10:12]
+
+            hat = joystick[12:14]
+
+            armed = rospy.get_param("/run/armed")
+
+            if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
+                rospy.loginfo("{}: ARMING...".format(rospy.get_caller_id()))
+                rospy.set_param("/run/armed", True)
+                arm_time = time.time()
+
+            # at least 1 second passed from the arming     
+            elif triggers[1] > 1800 and armed and time.time() - arm_time >= 1:
+                rospy.loginfo("{}: DISARMING...".format(rospy.get_caller_id()))
+                rospy.set_param("/run/armed", False)
+                disarm_time = time.time()
+
+            if armed:
+                pub.publish(ControlAxes(joy_sticks))
+
+        else:
+            rospy.logwarn("UDP inactive!")
+            last_active = rospy.get_param("/udp/last_active")
+            timeout_th = rospy.get_param("udp/timeout_threshold")
+
+            if last_active - time.time() > timeout_th:
+                # disarm if signal to GCS lost
+                rospy.set_param("/state/armed", False)
+
+        rate.sleep()
 
 if __name__ == "__main__":
 
     try:
-        thread_main = threading.Thread(target = mainThread)
-        thread_main.daemon = True
-        thread_main.start()
+        thread_udp = threading.Thread(target = UDPthread)
+        thread_udp.daemon = True
+        thread_udp.start()
 
-        pub = rospy.Publisher('smth', String, queue_size=2)
-        rospy.init_node('InterceptorNode')
-        rate = rospy.Rate(10)
-
-        while not rospy.is_shutdown():
-            pub.publish(str(udp.message))
-            rospy.loginfo("OK")
-            rate.sleep()
+        main()
         
-
-    except Exception as error:
-        rospy.loginfo("ERROR on main")
-        os._exit(1)
-
-    except KeyboardInterrupt:
-        os._exit(1)
+    except rospy.ROSInterruptException as error:
+        pass

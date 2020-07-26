@@ -3,6 +3,6 @@ prefix=/home/andrei/Desktop/mUAV/catkin_ws/devel
 Name: drone
 Description: Description of drone
 Version: 0.0.0
-Cflags: 
+Cflags: -I/home/andrei/Desktop/mUAV/catkin_ws/devel/include
 Libs: -L${prefix}/lib 
-Requires: 
+Requires: rospy std_msgs message_runtime

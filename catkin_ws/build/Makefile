@@ -285,43 +285,56 @@ gtest/fast:
 .PHONY : gtest/fast
 
 #=============================================================================
-# Target rules for targets named std_msgs_generate_messages_eus
+# Target rules for targets named drone_generate_messages_py
 
 # Build rule for target.
-std_msgs_generate_messages_eus: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_eus
-.PHONY : std_msgs_generate_messages_eus
+drone_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages_py
+.PHONY : drone_generate_messages_py
 
 # fast build rule for target.
-std_msgs_generate_messages_eus/fast:
-	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_eus.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_eus.dir/build
-.PHONY : std_msgs_generate_messages_eus/fast
+drone_generate_messages_py/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_py.dir/build.make drone/CMakeFiles/drone_generate_messages_py.dir/build
+.PHONY : drone_generate_messages_py/fast
 
 #=============================================================================
-# Target rules for targets named std_msgs_generate_messages_cpp
+# Target rules for targets named drone_gennodejs
 
 # Build rule for target.
-std_msgs_generate_messages_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_cpp
-.PHONY : std_msgs_generate_messages_cpp
+drone_gennodejs: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_gennodejs
+.PHONY : drone_gennodejs
 
 # fast build rule for target.
-std_msgs_generate_messages_cpp/fast:
-	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
-.PHONY : std_msgs_generate_messages_cpp/fast
+drone_gennodejs/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/build
+.PHONY : drone_gennodejs/fast
 
 #=============================================================================
-# Target rules for targets named std_msgs_generate_messages_lisp
+# Target rules for targets named drone_generate_messages
 
 # Build rule for target.
-std_msgs_generate_messages_lisp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_lisp
-.PHONY : std_msgs_generate_messages_lisp
+drone_generate_messages: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages
+.PHONY : drone_generate_messages
 
 # fast build rule for target.
-std_msgs_generate_messages_lisp/fast:
-	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-.PHONY : std_msgs_generate_messages_lisp/fast
+drone_generate_messages/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages.dir/build.make drone/CMakeFiles/drone_generate_messages.dir/build
+.PHONY : drone_generate_messages/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_py
+
+# Build rule for target.
+std_msgs_generate_messages_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_py
+.PHONY : std_msgs_generate_messages_py
+
+# fast build rule for target.
+std_msgs_generate_messages_py/fast:
+	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_py.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_py.dir/build
+.PHONY : std_msgs_generate_messages_py/fast
 
 #=============================================================================
 # Target rules for targets named std_msgs_generate_messages_nodejs
@@ -337,17 +350,186 @@ std_msgs_generate_messages_nodejs/fast:
 .PHONY : std_msgs_generate_messages_nodejs/fast
 
 #=============================================================================
-# Target rules for targets named std_msgs_generate_messages_py
+# Target rules for targets named std_msgs_generate_messages_cpp
 
 # Build rule for target.
-std_msgs_generate_messages_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_py
-.PHONY : std_msgs_generate_messages_py
+std_msgs_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_cpp
+.PHONY : std_msgs_generate_messages_cpp
 
 # fast build rule for target.
-std_msgs_generate_messages_py/fast:
-	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_py.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_py.dir/build
-.PHONY : std_msgs_generate_messages_py/fast
+std_msgs_generate_messages_cpp/fast:
+	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
+.PHONY : std_msgs_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named drone_generate_messages_nodejs
+
+# Build rule for target.
+drone_generate_messages_nodejs: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages_nodejs
+.PHONY : drone_generate_messages_nodejs
+
+# fast build rule for target.
+drone_generate_messages_nodejs/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_nodejs.dir/build.make drone/CMakeFiles/drone_generate_messages_nodejs.dir/build
+.PHONY : drone_generate_messages_nodejs/fast
+
+#=============================================================================
+# Target rules for targets named _drone_generate_messages_check_deps_ControlAxes
+
+# Build rule for target.
+_drone_generate_messages_check_deps_ControlAxes: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _drone_generate_messages_check_deps_ControlAxes
+.PHONY : _drone_generate_messages_check_deps_ControlAxes
+
+# fast build rule for target.
+_drone_generate_messages_check_deps_ControlAxes/fast:
+	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/build
+.PHONY : _drone_generate_messages_check_deps_ControlAxes/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_eus
+
+# Build rule for target.
+std_msgs_generate_messages_eus: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_eus
+.PHONY : std_msgs_generate_messages_eus
+
+# fast build rule for target.
+std_msgs_generate_messages_eus/fast:
+	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_eus.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_eus.dir/build
+.PHONY : std_msgs_generate_messages_eus/fast
+
+#=============================================================================
+# Target rules for targets named drone_generate_messages_eus
+
+# Build rule for target.
+drone_generate_messages_eus: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages_eus
+.PHONY : drone_generate_messages_eus
+
+# fast build rule for target.
+drone_generate_messages_eus/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_eus.dir/build.make drone/CMakeFiles/drone_generate_messages_eus.dir/build
+.PHONY : drone_generate_messages_eus/fast
+
+#=============================================================================
+# Target rules for targets named std_msgs_generate_messages_lisp
+
+# Build rule for target.
+std_msgs_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 std_msgs_generate_messages_lisp
+.PHONY : std_msgs_generate_messages_lisp
+
+# fast build rule for target.
+std_msgs_generate_messages_lisp/fast:
+	$(MAKE) -f drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+.PHONY : std_msgs_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named _drone_generate_messages_check_deps_Attitude
+
+# Build rule for target.
+_drone_generate_messages_check_deps_Attitude: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _drone_generate_messages_check_deps_Attitude
+.PHONY : _drone_generate_messages_check_deps_Attitude
+
+# fast build rule for target.
+_drone_generate_messages_check_deps_Attitude/fast:
+	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/build
+.PHONY : _drone_generate_messages_check_deps_Attitude/fast
+
+#=============================================================================
+# Target rules for targets named drone_genpy
+
+# Build rule for target.
+drone_genpy: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_genpy
+.PHONY : drone_genpy
+
+# fast build rule for target.
+drone_genpy/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/build
+.PHONY : drone_genpy/fast
+
+#=============================================================================
+# Target rules for targets named _drone_generate_messages_check_deps_Power
+
+# Build rule for target.
+_drone_generate_messages_check_deps_Power: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _drone_generate_messages_check_deps_Power
+.PHONY : _drone_generate_messages_check_deps_Power
+
+# fast build rule for target.
+_drone_generate_messages_check_deps_Power/fast:
+	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build
+.PHONY : _drone_generate_messages_check_deps_Power/fast
+
+#=============================================================================
+# Target rules for targets named drone_geneus
+
+# Build rule for target.
+drone_geneus: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_geneus
+.PHONY : drone_geneus
+
+# fast build rule for target.
+drone_geneus/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_geneus.dir/build.make drone/CMakeFiles/drone_geneus.dir/build
+.PHONY : drone_geneus/fast
+
+#=============================================================================
+# Target rules for targets named drone_generate_messages_cpp
+
+# Build rule for target.
+drone_generate_messages_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages_cpp
+.PHONY : drone_generate_messages_cpp
+
+# fast build rule for target.
+drone_generate_messages_cpp/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_cpp.dir/build.make drone/CMakeFiles/drone_generate_messages_cpp.dir/build
+.PHONY : drone_generate_messages_cpp/fast
+
+#=============================================================================
+# Target rules for targets named drone_generate_messages_lisp
+
+# Build rule for target.
+drone_generate_messages_lisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_generate_messages_lisp
+.PHONY : drone_generate_messages_lisp
+
+# fast build rule for target.
+drone_generate_messages_lisp/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_lisp.dir/build.make drone/CMakeFiles/drone_generate_messages_lisp.dir/build
+.PHONY : drone_generate_messages_lisp/fast
+
+#=============================================================================
+# Target rules for targets named drone_gencpp
+
+# Build rule for target.
+drone_gencpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_gencpp
+.PHONY : drone_gencpp
+
+# fast build rule for target.
+drone_gencpp/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_gencpp.dir/build.make drone/CMakeFiles/drone_gencpp.dir/build
+.PHONY : drone_gencpp/fast
+
+#=============================================================================
+# Target rules for targets named drone_genlisp
+
+# Build rule for target.
+drone_genlisp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 drone_genlisp
+.PHONY : drone_genlisp
+
+# fast build rule for target.
+drone_genlisp/fast:
+	$(MAKE) -f drone/CMakeFiles/drone_genlisp.dir/build.make drone/CMakeFiles/drone_genlisp.dir/build
+.PHONY : drone_genlisp/fast
 
 # Help Target
 help:
@@ -371,11 +553,25 @@ help:
 	@echo "... gmock"
 	@echo "... gtest_main"
 	@echo "... gtest"
-	@echo "... std_msgs_generate_messages_eus"
-	@echo "... std_msgs_generate_messages_cpp"
-	@echo "... std_msgs_generate_messages_lisp"
-	@echo "... std_msgs_generate_messages_nodejs"
+	@echo "... drone_generate_messages_py"
+	@echo "... drone_gennodejs"
+	@echo "... drone_generate_messages"
 	@echo "... std_msgs_generate_messages_py"
+	@echo "... std_msgs_generate_messages_nodejs"
+	@echo "... std_msgs_generate_messages_cpp"
+	@echo "... drone_generate_messages_nodejs"
+	@echo "... _drone_generate_messages_check_deps_ControlAxes"
+	@echo "... std_msgs_generate_messages_eus"
+	@echo "... drone_generate_messages_eus"
+	@echo "... std_msgs_generate_messages_lisp"
+	@echo "... _drone_generate_messages_check_deps_Attitude"
+	@echo "... drone_genpy"
+	@echo "... _drone_generate_messages_check_deps_Power"
+	@echo "... drone_geneus"
+	@echo "... drone_generate_messages_cpp"
+	@echo "... drone_generate_messages_lisp"
+	@echo "... drone_gencpp"
+	@echo "... drone_genlisp"
 .PHONY : help
 
 
