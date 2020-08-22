@@ -1,0 +1,25 @@
+<launch>
+
+	<param name="/physical/uav_mass" type="double" value="1.2" />
+	<param name="/physical/hover_throttle" type="int" value="1350" />
+
+	<param name="/stick/trims/roll" type ="int" value="4" />
+	<param name="/stick/trims/pitch" type ="int" value="1" />
+	<param name="/stick/trims/yaw" type ="int" value="0" />
+
+	<param name="/stick/limits/min" type ="int" value="1200" />
+	<param name="/stick/limits/max" type ="int" value="1800" />
+	<param name="/stick/limits/throttle_max" type ="int" value="1700" />
+
+	<param name="/run/armed" type="bool" value="False" />
+	<param name="/run/rate" type="int" value="5" />
+
+	<param name="/udp/last_active" type="double" value="0.0" />
+	<param name="/udp/timeout_threshold" type="double" value="1.0" />
+
+	<param name="/board/serial_port" type="string" value="ttyACM0" />
+
+	<node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/> 
+	<node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
+
+</launch>

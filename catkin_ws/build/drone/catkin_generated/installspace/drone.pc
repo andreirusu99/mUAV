@@ -1,0 +1,8 @@
+prefix=/home/andrei/Desktop/mUAV/catkin_ws/install
+
+Name: drone
+Description: Description of drone
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: rospy std_msgs message_runtime

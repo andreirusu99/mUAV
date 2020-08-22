@@ -5,65 +5,80 @@ Command Dispatcher
 
 Communicates directly with the Flight Controller via MultiWii Serial Protocol.
 -> Obtains Attitude information and passes it along to the other components of the system.
--> Passes through commands from the Command Router to the FC in order to control the drone.
+-> Passes through commands to the FC in order to control the drone.
 
 """
+from yamspy import MSPy
+from Globals import *
 import time, threading, os
-from Modules.pyMultiwii import MultiWii
 
-TAG = "Dispatcher"
+_TAG = "Dispatcher"
 
-cycle_Hz = 100  # 100 hz loop cycle
-update_rate = 1 / cycle_Hz
+CMDS = {
+        'roll':     1500,
+        'pitch':    1500,
+        'throttle': 1000,
+        'yaw':      1500,
+        'aux1':     1000,
+        'aux2':     1000
+        }
 
-drone_cmd = [1500, 1500, 1500, 1000]
+FCinfo = ['MSP_ANALOG', 'MSP_ATTITUDE']
 
-#serial_port = "/dev/tty.usbserial-A801WZA1"
-serial_port = "/dev/ttyUSB0"
+print(time.ctime(),_TAG, "Started")
 
-drone = MultiWii(serial_port)
+drone = MSPy(device = serialPort, loglevel = "INFO", baudrate = 115200)
 
-# Receive input from the Router
-def updateInput(control_cmd):
-    drone_cmd = control_cmd
+drone.is_ser_open = not drone.connect(trials = drone.ser_trials)
 
-def writeToFlightController():
-    global drone, drone_cmd
-    try:
-        while True:
-
-            print(TAG, drone_cmd)
-
-            drone.sendCMD(16, MultiWii.SET_RAW_RC, drone_cmd)   
-
-            # 100hz loop
-            while elapsed < update_rate:
-                elapsed = time.time() - current
-            # End of the main loop
-
-    except Exception as error:
-        print(TAG
-            + " ERROR on writeToFlightController thread: " 
-            + str(error))
-
-        writeToFlightController()
+if drone.is_ser_open :
+    print(time.ctime(), _TAG, "Connected to FC on {}".format(serialPort))
+else :
+    print(time.ctime(), _TAG, "Error opening serial port.")
+    os._exit(1)
 
 
-if __name__ == "__main__":
-    try:
-        # Start the forwarding thread
-        droneThread = threading.Thread(target = writeToFlightController)
-        droneThread.daemon = True
-        droneThread.start()
+def updateCommands(sticks):
+    CMDS['roll'] = sticks[0]
+    CMDS['pitch'] = sticks[1]
+    CMDS['throttle'] = sticks[2]
+    CMDS['yaw'] = sticks[3]
 
-    except Exception as error:
-        print(TAG
-            + " ERROR on main: " 
-            + str(error))
-        drone.ser.close()
-        os._exit(1)
+def getInfo():
+    info = ""
+    # get info from FC
+    attitude = [0.0] * 3
+    for next_msg in FCinfo:
 
-    except KeyboardInterrupt:
-        print(TAG
-            + " Exitting...")
-        os._exit(1)
+        if drone.send_RAW_msg(MSPy.MSPCodes[next_msg], data=[]):
+            dataHandler = drone.receive_msg()
+            drone.process_recv_data(dataHandler)
+
+        if next_msg == "MSP_ANALOG":
+            voltage = drone.ANALOG['voltage']
+            amperage = drone.ANALOG['amperage']
+            power = voltage * amperage
+            percent = (voltage - 9.9) / 2.73 * 100
+            percent = min(max(percent, 0), 100)
+            info += "{:.2f}V = {:.1f}% {:.1f}W".format(voltage, percent, power)
+
+        if next_msg == "MSP_ATTITUDE":
+            x = drone.SENSOR_DATA['kinematics'][0]
+            y = drone.SENSOR_DATA['kinematics'][1]
+            z = drone.SENSOR_DATA['kinematics'][2]
+            attitude = {'roll': x, 'pitch': y, 'yaw': z}
+            info += " R: {:.1f} P: {:.1f} Y: {:.1f}".format(x, y, z)
+
+    return info, attitude
+
+def armDrone():
+    CMDS['aux1'] = 2000
+    
+def disarmDrone():
+    CMDS['aux1'] = 1000
+
+def writeToBoard():
+    # send the command to the board
+    if(drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
+        dataHandler = drone.receive_msg()
+        drone.process_recv_data(dataHandler)
