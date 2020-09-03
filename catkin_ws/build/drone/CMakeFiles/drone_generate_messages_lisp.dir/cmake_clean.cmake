@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/drone_generate_messages_lisp"
-  "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Power.lisp"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/ControlAxes.lisp"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Attitude.lisp"
 )

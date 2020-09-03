@@ -41,7 +41,6 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/drone/msg" TYPE FILE FILES
     "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg"
     "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg"
-    "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg"
     )
 endif()
 
@@ -101,10 +100,14 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/UDPserver.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/SonarNode.py")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/utils.py")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/GPSNode.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/UDPserver.py")
 endif()
 

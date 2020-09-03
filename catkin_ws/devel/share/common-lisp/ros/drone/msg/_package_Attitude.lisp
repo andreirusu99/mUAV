@@ -5,4 +5,8 @@
           PITCH
           YAW-VAL
           YAW
+          PERCENTAGE-VAL
+          PERCENTAGE
+          POWER-VAL
+          POWER
 ))

@@ -2,11 +2,13 @@
 "use strict";
 
 let ControlAxes = require('./ControlAxes.js');
-let Power = require('./Power.js');
+let abc = require('./abc.js');
+let Smth = require('./Smth.js');
 let Attitude = require('./Attitude.js');
 
 module.exports = {
   ControlAxes: ControlAxes,
-  Power: Power,
+  abc: abc,
+  Smth: Smth,
   Attitude: Attitude,
 };

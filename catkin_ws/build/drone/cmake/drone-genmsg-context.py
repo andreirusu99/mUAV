@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg;/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg;/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg"
+messages_str = "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg;/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg"
 services_str = ""
 pkg_name = "drone"
 dependencies_str = "std_msgs"

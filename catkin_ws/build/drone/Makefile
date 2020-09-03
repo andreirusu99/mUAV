@@ -168,6 +168,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+drone/CMakeFiles/drone_genpy.dir/rule:
+	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_genpy.dir/rule
+.PHONY : drone/CMakeFiles/drone_genpy.dir/rule
+
+# Convenience name for target.
+drone_genpy: drone/CMakeFiles/drone_genpy.dir/rule
+
+.PHONY : drone_genpy
+
+# fast build rule for target.
+drone_genpy/fast:
+	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/build
+.PHONY : drone_genpy/fast
+
+# Convenience name for target.
 drone/CMakeFiles/drone_generate_messages_py.dir/rule:
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_py.dir/rule
 .PHONY : drone/CMakeFiles/drone_generate_messages_py.dir/rule
@@ -181,21 +196,6 @@ drone_generate_messages_py: drone/CMakeFiles/drone_generate_messages_py.dir/rule
 drone_generate_messages_py/fast:
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_generate_messages_py.dir/build.make drone/CMakeFiles/drone_generate_messages_py.dir/build
 .PHONY : drone_generate_messages_py/fast
-
-# Convenience name for target.
-drone/CMakeFiles/drone_gennodejs.dir/rule:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_gennodejs.dir/rule
-.PHONY : drone/CMakeFiles/drone_gennodejs.dir/rule
-
-# Convenience name for target.
-drone_gennodejs: drone/CMakeFiles/drone_gennodejs.dir/rule
-
-.PHONY : drone_gennodejs
-
-# fast build rule for target.
-drone_gennodejs/fast:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/build
-.PHONY : drone_gennodejs/fast
 
 # Convenience name for target.
 drone/CMakeFiles/drone_generate_messages.dir/rule:
@@ -348,36 +348,6 @@ _drone_generate_messages_check_deps_Attitude/fast:
 .PHONY : _drone_generate_messages_check_deps_Attitude/fast
 
 # Convenience name for target.
-drone/CMakeFiles/drone_genpy.dir/rule:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_genpy.dir/rule
-.PHONY : drone/CMakeFiles/drone_genpy.dir/rule
-
-# Convenience name for target.
-drone_genpy: drone/CMakeFiles/drone_genpy.dir/rule
-
-.PHONY : drone_genpy
-
-# fast build rule for target.
-drone_genpy/fast:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/build
-.PHONY : drone_genpy/fast
-
-# Convenience name for target.
-drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule
-.PHONY : drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule
-
-# Convenience name for target.
-_drone_generate_messages_check_deps_Power: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule
-
-.PHONY : _drone_generate_messages_check_deps_Power
-
-# fast build rule for target.
-_drone_generate_messages_check_deps_Power/fast:
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build
-.PHONY : _drone_generate_messages_check_deps_Power/fast
-
-# Convenience name for target.
 drone/CMakeFiles/drone_geneus.dir/rule:
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_geneus.dir/rule
 .PHONY : drone/CMakeFiles/drone_geneus.dir/rule
@@ -452,6 +422,21 @@ drone_genlisp/fast:
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_genlisp.dir/build.make drone/CMakeFiles/drone_genlisp.dir/build
 .PHONY : drone_genlisp/fast
 
+# Convenience name for target.
+drone/CMakeFiles/drone_gennodejs.dir/rule:
+	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_gennodejs.dir/rule
+.PHONY : drone/CMakeFiles/drone_gennodejs.dir/rule
+
+# Convenience name for target.
+drone_gennodejs: drone/CMakeFiles/drone_gennodejs.dir/rule
+
+.PHONY : drone_gennodejs
+
+# fast build rule for target.
+drone_gennodejs/fast:
+	cd /home/andrei/Desktop/mUAV/catkin_ws/build && $(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/build
+.PHONY : drone_gennodejs/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -464,8 +449,8 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
+	@echo "... drone_genpy"
 	@echo "... drone_generate_messages_py"
-	@echo "... drone_gennodejs"
 	@echo "... install"
 	@echo "... drone_generate_messages"
 	@echo "... std_msgs_generate_messages_py"
@@ -477,13 +462,12 @@ help:
 	@echo "... drone_generate_messages_eus"
 	@echo "... std_msgs_generate_messages_lisp"
 	@echo "... _drone_generate_messages_check_deps_Attitude"
-	@echo "... drone_genpy"
-	@echo "... _drone_generate_messages_check_deps_Power"
 	@echo "... drone_geneus"
 	@echo "... drone_generate_messages_cpp"
 	@echo "... drone_generate_messages_lisp"
 	@echo "... drone_gencpp"
 	@echo "... drone_genlisp"
+	@echo "... drone_gennodejs"
 .PHONY : help
 
 

@@ -264,7 +264,7 @@ gtest/googlemock/preinstall: gtest/googlemock/gtest/preinstall
 gtest/googlemock/CMakeFiles/gmock_main.dir/all:
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock_main.dir/build.make gtest/googlemock/CMakeFiles/gmock_main.dir/depend
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock_main.dir/build.make gtest/googlemock/CMakeFiles/gmock_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=21,22,23,24 "Built target gmock_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=16,17,18,19 "Built target gmock_main"
 .PHONY : gtest/googlemock/CMakeFiles/gmock_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -296,7 +296,7 @@ clean: gtest/googlemock/CMakeFiles/gmock_main.dir/clean
 gtest/googlemock/CMakeFiles/gmock.dir/all:
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock.dir/build.make gtest/googlemock/CMakeFiles/gmock.dir/depend
 	$(MAKE) -f gtest/googlemock/CMakeFiles/gmock.dir/build.make gtest/googlemock/CMakeFiles/gmock.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=18,19,20 "Built target gmock"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=13,14,15 "Built target gmock"
 .PHONY : gtest/googlemock/CMakeFiles/gmock.dir/all
 
 # Build rule for subdir invocation for target.
@@ -347,7 +347,7 @@ gtest/googlemock/gtest/preinstall:
 gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/all: gtest/googlemock/gtest/CMakeFiles/gtest.dir/all
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=27,28 "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=22,23 "Built target gtest_main"
 .PHONY : gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -379,7 +379,7 @@ clean: gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/clean
 gtest/googlemock/gtest/CMakeFiles/gtest.dir/all:
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/depend
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=25,26 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=20,21 "Built target gtest"
 .PHONY : gtest/googlemock/gtest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
@@ -413,8 +413,8 @@ drone/all: drone/CMakeFiles/drone_generate_messages.dir/all
 .PHONY : drone/all
 
 # Convenience name for "clean" pass in the directory.
+drone/clean: drone/CMakeFiles/drone_genpy.dir/clean
 drone/clean: drone/CMakeFiles/drone_generate_messages_py.dir/clean
-drone/clean: drone/CMakeFiles/drone_gennodejs.dir/clean
 drone/clean: drone/CMakeFiles/drone_generate_messages.dir/clean
 drone/clean: drone/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 drone/clean: drone/CMakeFiles/std_msgs_generate_messages_nodejs.dir/clean
@@ -425,13 +425,12 @@ drone/clean: drone/CMakeFiles/std_msgs_generate_messages_eus.dir/clean
 drone/clean: drone/CMakeFiles/drone_generate_messages_eus.dir/clean
 drone/clean: drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/clean
 drone/clean: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/clean
-drone/clean: drone/CMakeFiles/drone_genpy.dir/clean
-drone/clean: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/clean
 drone/clean: drone/CMakeFiles/drone_geneus.dir/clean
 drone/clean: drone/CMakeFiles/drone_generate_messages_cpp.dir/clean
 drone/clean: drone/CMakeFiles/drone_generate_messages_lisp.dir/clean
 drone/clean: drone/CMakeFiles/drone_gencpp.dir/clean
 drone/clean: drone/CMakeFiles/drone_genlisp.dir/clean
+drone/clean: drone/CMakeFiles/drone_gennodejs.dir/clean
 
 .PHONY : drone/clean
 
@@ -441,21 +440,52 @@ drone/preinstall:
 .PHONY : drone/preinstall
 
 #=============================================================================
+# Target rules for target drone/CMakeFiles/drone_genpy.dir
+
+# All Build rule for target.
+drone/CMakeFiles/drone_genpy.dir/all: drone/CMakeFiles/drone_generate_messages_py.dir/all
+	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/depend
+	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num= "Built target drone_genpy"
+.PHONY : drone/CMakeFiles/drone_genpy.dir/all
+
+# Build rule for subdir invocation for target.
+drone/CMakeFiles/drone_genpy.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_genpy.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
+.PHONY : drone/CMakeFiles/drone_genpy.dir/rule
+
+# Convenience name for target.
+drone_genpy: drone/CMakeFiles/drone_genpy.dir/rule
+
+.PHONY : drone_genpy
+
+# clean rule for target.
+drone/CMakeFiles/drone_genpy.dir/clean:
+	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/clean
+.PHONY : drone/CMakeFiles/drone_genpy.dir/clean
+
+# clean rule for target.
+clean: drone/CMakeFiles/drone_genpy.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target drone/CMakeFiles/drone_generate_messages_py.dir
 
 # All Build rule for target.
 drone/CMakeFiles/drone_generate_messages_py.dir/all: drone/CMakeFiles/std_msgs_generate_messages_py.dir/all
 drone/CMakeFiles/drone_generate_messages_py.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/all
 drone/CMakeFiles/drone_generate_messages_py.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/all
-drone/CMakeFiles/drone_generate_messages_py.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_py.dir/build.make drone/CMakeFiles/drone_generate_messages_py.dir/depend
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_py.dir/build.make drone/CMakeFiles/drone_generate_messages_py.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=14,15,16,17 "Built target drone_generate_messages_py"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=10,11,12 "Built target drone_generate_messages_py"
 .PHONY : drone/CMakeFiles/drone_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages_py.dir/rule
@@ -472,38 +502,6 @@ drone/CMakeFiles/drone_generate_messages_py.dir/clean:
 
 # clean rule for target.
 clean: drone/CMakeFiles/drone_generate_messages_py.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target drone/CMakeFiles/drone_gennodejs.dir
-
-# All Build rule for target.
-drone/CMakeFiles/drone_gennodejs.dir/all: drone/CMakeFiles/drone_generate_messages_nodejs.dir/all
-	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/depend
-	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num= "Built target drone_gennodejs"
-.PHONY : drone/CMakeFiles/drone_gennodejs.dir/all
-
-# Build rule for subdir invocation for target.
-drone/CMakeFiles/drone_gennodejs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
-	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_gennodejs.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
-.PHONY : drone/CMakeFiles/drone_gennodejs.dir/rule
-
-# Convenience name for target.
-drone_gennodejs: drone/CMakeFiles/drone_gennodejs.dir/rule
-
-.PHONY : drone_gennodejs
-
-# clean rule for target.
-drone/CMakeFiles/drone_gennodejs.dir/clean:
-	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/clean
-.PHONY : drone/CMakeFiles/drone_gennodejs.dir/clean
-
-# clean rule for target.
-clean: drone/CMakeFiles/drone_gennodejs.dir/clean
 
 .PHONY : clean
 
@@ -528,7 +526,7 @@ all: drone/CMakeFiles/drone_generate_messages.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 17
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 12
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages.dir/rule
@@ -651,15 +649,14 @@ clean: drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/clean
 drone/CMakeFiles/drone_generate_messages_nodejs.dir/all: drone/CMakeFiles/std_msgs_generate_messages_nodejs.dir/all
 drone/CMakeFiles/drone_generate_messages_nodejs.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/all
 drone/CMakeFiles/drone_generate_messages_nodejs.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/all
-drone/CMakeFiles/drone_generate_messages_nodejs.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_nodejs.dir/build.make drone/CMakeFiles/drone_generate_messages_nodejs.dir/depend
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_nodejs.dir/build.make drone/CMakeFiles/drone_generate_messages_nodejs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=11,12,13 "Built target drone_generate_messages_nodejs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=8,9 "Built target drone_generate_messages_nodejs"
 .PHONY : drone/CMakeFiles/drone_generate_messages_nodejs.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages_nodejs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_nodejs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages_nodejs.dir/rule
@@ -750,15 +747,14 @@ clean: drone/CMakeFiles/std_msgs_generate_messages_eus.dir/clean
 drone/CMakeFiles/drone_generate_messages_eus.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/all
 drone/CMakeFiles/drone_generate_messages_eus.dir/all: drone/CMakeFiles/std_msgs_generate_messages_eus.dir/all
 drone/CMakeFiles/drone_generate_messages_eus.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/all
-drone/CMakeFiles/drone_generate_messages_eus.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_eus.dir/build.make drone/CMakeFiles/drone_generate_messages_eus.dir/depend
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_eus.dir/build.make drone/CMakeFiles/drone_generate_messages_eus.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=4,5,6,7 "Built target drone_generate_messages_eus"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=3,4,5 "Built target drone_generate_messages_eus"
 .PHONY : drone/CMakeFiles/drone_generate_messages_eus.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages_eus.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_eus.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages_eus.dir/rule
@@ -843,70 +839,6 @@ clean: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target drone/CMakeFiles/drone_genpy.dir
-
-# All Build rule for target.
-drone/CMakeFiles/drone_genpy.dir/all: drone/CMakeFiles/drone_generate_messages_py.dir/all
-	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/depend
-	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num= "Built target drone_genpy"
-.PHONY : drone/CMakeFiles/drone_genpy.dir/all
-
-# Build rule for subdir invocation for target.
-drone/CMakeFiles/drone_genpy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 4
-	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_genpy.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
-.PHONY : drone/CMakeFiles/drone_genpy.dir/rule
-
-# Convenience name for target.
-drone_genpy: drone/CMakeFiles/drone_genpy.dir/rule
-
-.PHONY : drone_genpy
-
-# clean rule for target.
-drone/CMakeFiles/drone_genpy.dir/clean:
-	$(MAKE) -f drone/CMakeFiles/drone_genpy.dir/build.make drone/CMakeFiles/drone_genpy.dir/clean
-.PHONY : drone/CMakeFiles/drone_genpy.dir/clean
-
-# clean rule for target.
-clean: drone/CMakeFiles/drone_genpy.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir
-
-# All Build rule for target.
-drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all:
-	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/depend
-	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num= "Built target _drone_generate_messages_check_deps_Power"
-.PHONY : drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
-
-# Build rule for subdir invocation for target.
-drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
-	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
-.PHONY : drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule
-
-# Convenience name for target.
-_drone_generate_messages_check_deps_Power: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/rule
-
-.PHONY : _drone_generate_messages_check_deps_Power
-
-# clean rule for target.
-drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/clean:
-	$(MAKE) -f drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/build.make drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/clean
-.PHONY : drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/clean
-
-# clean rule for target.
-clean: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target drone/CMakeFiles/drone_geneus.dir
 
 # All Build rule for target.
@@ -918,7 +850,7 @@ drone/CMakeFiles/drone_geneus.dir/all: drone/CMakeFiles/drone_generate_messages_
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_geneus.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_geneus.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_geneus.dir/rule
@@ -945,15 +877,14 @@ clean: drone/CMakeFiles/drone_geneus.dir/clean
 drone/CMakeFiles/drone_generate_messages_cpp.dir/all: drone/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
 drone/CMakeFiles/drone_generate_messages_cpp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/all
 drone/CMakeFiles/drone_generate_messages_cpp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/all
-drone/CMakeFiles/drone_generate_messages_cpp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_cpp.dir/build.make drone/CMakeFiles/drone_generate_messages_cpp.dir/depend
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_cpp.dir/build.make drone/CMakeFiles/drone_generate_messages_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=1,2,3 "Built target drone_generate_messages_cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=1,2 "Built target drone_generate_messages_cpp"
 .PHONY : drone/CMakeFiles/drone_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages_cpp.dir/rule
@@ -980,15 +911,14 @@ clean: drone/CMakeFiles/drone_generate_messages_cpp.dir/clean
 drone/CMakeFiles/drone_generate_messages_lisp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_ControlAxes.dir/all
 drone/CMakeFiles/drone_generate_messages_lisp.dir/all: drone/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
 drone/CMakeFiles/drone_generate_messages_lisp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir/all
-drone/CMakeFiles/drone_generate_messages_lisp.dir/all: drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir/all
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_lisp.dir/build.make drone/CMakeFiles/drone_generate_messages_lisp.dir/depend
 	$(MAKE) -f drone/CMakeFiles/drone_generate_messages_lisp.dir/build.make drone/CMakeFiles/drone_generate_messages_lisp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=8,9,10 "Built target drone_generate_messages_lisp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=6,7 "Built target drone_generate_messages_lisp"
 .PHONY : drone/CMakeFiles/drone_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_generate_messages_lisp.dir/rule
@@ -1020,7 +950,7 @@ drone/CMakeFiles/drone_gencpp.dir/all: drone/CMakeFiles/drone_generate_messages_
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_gencpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_gencpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_gencpp.dir/rule
@@ -1052,7 +982,7 @@ drone/CMakeFiles/drone_genlisp.dir/all: drone/CMakeFiles/drone_generate_messages
 
 # Build rule for subdir invocation for target.
 drone/CMakeFiles/drone_genlisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_genlisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
 .PHONY : drone/CMakeFiles/drone_genlisp.dir/rule
@@ -1069,6 +999,38 @@ drone/CMakeFiles/drone_genlisp.dir/clean:
 
 # clean rule for target.
 clean: drone/CMakeFiles/drone_genlisp.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target drone/CMakeFiles/drone_gennodejs.dir
+
+# All Build rule for target.
+drone/CMakeFiles/drone_gennodejs.dir/all: drone/CMakeFiles/drone_generate_messages_nodejs.dir/all
+	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/depend
+	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num= "Built target drone_gennodejs"
+.PHONY : drone/CMakeFiles/drone_gennodejs.dir/all
+
+# Build rule for subdir invocation for target.
+drone/CMakeFiles/drone_gennodejs.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 drone/CMakeFiles/drone_gennodejs.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles 0
+.PHONY : drone/CMakeFiles/drone_gennodejs.dir/rule
+
+# Convenience name for target.
+drone_gennodejs: drone/CMakeFiles/drone_gennodejs.dir/rule
+
+.PHONY : drone_gennodejs
+
+# clean rule for target.
+drone/CMakeFiles/drone_gennodejs.dir/clean:
+	$(MAKE) -f drone/CMakeFiles/drone_gennodejs.dir/build.make drone/CMakeFiles/drone_gennodejs.dir/clean
+.PHONY : drone/CMakeFiles/drone_gennodejs.dir/clean
+
+# clean rule for target.
+clean: drone/CMakeFiles/drone_gennodejs.dir/clean
 
 .PHONY : clean
 

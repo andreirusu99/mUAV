@@ -21,6 +21,8 @@ class Attitude {
       this.roll = null;
       this.pitch = null;
       this.yaw = null;
+      this.percentage = null;
+      this.power = null;
     }
     else {
       if (initObj.hasOwnProperty('roll')) {
@@ -41,6 +43,18 @@ class Attitude {
       else {
         this.yaw = 0.0;
       }
+      if (initObj.hasOwnProperty('percentage')) {
+        this.percentage = initObj.percentage
+      }
+      else {
+        this.percentage = 0.0;
+      }
+      if (initObj.hasOwnProperty('power')) {
+        this.power = initObj.power
+      }
+      else {
+        this.power = 0.0;
+      }
     }
   }
 
@@ -52,6 +66,10 @@ class Attitude {
     bufferOffset = _serializer.float32(obj.pitch, buffer, bufferOffset);
     // Serialize message field [yaw]
     bufferOffset = _serializer.float32(obj.yaw, buffer, bufferOffset);
+    // Serialize message field [percentage]
+    bufferOffset = _serializer.float32(obj.percentage, buffer, bufferOffset);
+    // Serialize message field [power]
+    bufferOffset = _serializer.float32(obj.power, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -65,11 +83,15 @@ class Attitude {
     data.pitch = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [yaw]
     data.yaw = _deserializer.float32(buffer, bufferOffset);
+    // Deserialize message field [percentage]
+    data.percentage = _deserializer.float32(buffer, bufferOffset);
+    // Deserialize message field [power]
+    data.power = _deserializer.float32(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 12;
+    return 20;
   }
 
   static datatype() {
@@ -79,16 +101,20 @@ class Attitude {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'c66f4de7f99199dd8e863fffbef112ad';
+    return '0005902fcc22e14afe13d5920bf5b708';
   }
 
   static messageDefinition() {
     // Returns full string definition for message
     return `
-    # represents rotation on the 3 axes
+    # rotation on the 3 axes
     float32 roll
     float32 pitch
     float32 yaw
+    
+    # information about battery and power consumption
+    float32 percentage
+    float32 power
     `;
   }
 
@@ -117,6 +143,20 @@ class Attitude {
     }
     else {
       resolved.yaw = 0.0
+    }
+
+    if (msg.percentage !== undefined) {
+      resolved.percentage = msg.percentage;
+    }
+    else {
+      resolved.percentage = 0.0
+    }
+
+    if (msg.power !== undefined) {
+      resolved.power = msg.power;
+    }
+    else {
+      resolved.power = 0.0
     }
 
     return resolved;

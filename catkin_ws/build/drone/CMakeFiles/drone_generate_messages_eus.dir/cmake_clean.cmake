@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/drone_generate_messages_eus"
-  "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/roseus/ros/drone/msg/Power.l"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/roseus/ros/drone/msg/ControlAxes.l"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/roseus/ros/drone/msg/Attitude.l"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/roseus/ros/drone/manifest.l"

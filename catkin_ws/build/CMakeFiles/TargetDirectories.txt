@@ -41,8 +41,8 @@
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/rebuild_cache.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/edit_cache.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/test.dir
+/home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_genpy.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_generate_messages_py.dir
-/home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_gennodejs.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/install.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_generate_messages.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/std_msgs_generate_messages_py.dir
@@ -54,10 +54,9 @@
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_generate_messages_eus.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/std_msgs_generate_messages_lisp.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/_drone_generate_messages_check_deps_Attitude.dir
-/home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_genpy.dir
-/home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/_drone_generate_messages_check_deps_Power.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_geneus.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_generate_messages_cpp.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_generate_messages_lisp.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_gencpp.dir
 /home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_genlisp.dir
+/home/andrei/Desktop/mUAV/catkin_ws/build/drone/CMakeFiles/drone_gennodejs.dir

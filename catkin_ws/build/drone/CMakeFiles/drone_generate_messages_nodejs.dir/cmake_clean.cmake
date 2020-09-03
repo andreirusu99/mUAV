@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/drone_generate_messages_nodejs"
-  "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/gennodejs/ros/drone/msg/Power.js"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/gennodejs/ros/drone/msg/ControlAxes.js"
   "/home/andrei/Desktop/mUAV/catkin_ws/devel/share/gennodejs/ros/drone/msg/Attitude.js"
 )

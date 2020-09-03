@@ -53,36 +53,28 @@ CMAKE_BINARY_DIR = /home/andrei/Desktop/mUAV/catkin_ws/build
 # Include the progress variables for this target.
 include drone/CMakeFiles/drone_generate_messages_py.dir/progress.make
 
-drone/CMakeFiles/drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Power.py
 drone/CMakeFiles/drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_ControlAxes.py
 drone/CMakeFiles/drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Attitude.py
 drone/CMakeFiles/drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py
 
 
-/home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Power.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
-/home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Power.py: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG drone/Power"
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg
-
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_ControlAxes.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_ControlAxes.py: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python from MSG drone/ControlAxes"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG drone/ControlAxes"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg
 
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Attitude.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Attitude.py: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python from MSG drone/Attitude"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python from MSG drone/Attitude"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg
 
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py: /opt/ros/melodic/lib/genpy/genmsg_py.py
-/home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Power.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_ControlAxes.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Attitude.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating Python msg __init__.py for drone"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python msg __init__.py for drone"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg --initpy
 
 drone_generate_messages_py: drone/CMakeFiles/drone_generate_messages_py
-drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Power.py
 drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_ControlAxes.py
 drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/_Attitude.py
 drone_generate_messages_py: /home/andrei/Desktop/mUAV/catkin_ws/devel/lib/python2.7/dist-packages/drone/msg/__init__.py

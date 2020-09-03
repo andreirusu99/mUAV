@@ -26,12 +26,16 @@ struct Attitude_
   Attitude_()
     : roll(0.0)
     , pitch(0.0)
-    , yaw(0.0)  {
+    , yaw(0.0)
+    , percentage(0.0)
+    , power(0.0)  {
     }
   Attitude_(const ContainerAllocator& _alloc)
     : roll(0.0)
     , pitch(0.0)
-    , yaw(0.0)  {
+    , yaw(0.0)
+    , percentage(0.0)
+    , power(0.0)  {
   (void)_alloc;
     }
 
@@ -45,6 +49,12 @@ struct Attitude_
 
    typedef float _yaw_type;
   _yaw_type yaw;
+
+   typedef float _percentage_type;
+  _percentage_type percentage;
+
+   typedef float _power_type;
+  _power_type power;
 
 
 
@@ -77,7 +87,9 @@ bool operator==(const ::drone::Attitude_<ContainerAllocator1> & lhs, const ::dro
 {
   return lhs.roll == rhs.roll &&
     lhs.pitch == rhs.pitch &&
-    lhs.yaw == rhs.yaw;
+    lhs.yaw == rhs.yaw &&
+    lhs.percentage == rhs.percentage &&
+    lhs.power == rhs.power;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -134,12 +146,12 @@ struct MD5Sum< ::drone::Attitude_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "c66f4de7f99199dd8e863fffbef112ad";
+    return "0005902fcc22e14afe13d5920bf5b708";
   }
 
   static const char* value(const ::drone::Attitude_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xc66f4de7f99199ddULL;
-  static const uint64_t static_value2 = 0x8e863fffbef112adULL;
+  static const uint64_t static_value1 = 0x0005902fcc22e14aULL;
+  static const uint64_t static_value2 = 0xfe13d5920bf5b708ULL;
 };
 
 template<class ContainerAllocator>
@@ -158,10 +170,14 @@ struct Definition< ::drone::Attitude_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "# represents rotation on the 3 axes\n"
+    return "# rotation on the 3 axes\n"
 "float32 roll\n"
 "float32 pitch\n"
 "float32 yaw\n"
+"\n"
+"# information about battery and power consumption\n"
+"float32 percentage\n"
+"float32 power\n"
 ;
   }
 
@@ -183,6 +199,8 @@ namespace serialization
       stream.next(m.roll);
       stream.next(m.pitch);
       stream.next(m.yaw);
+      stream.next(m.percentage);
+      stream.next(m.power);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -207,6 +225,10 @@ struct Printer< ::drone::Attitude_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.pitch);
     s << indent << "yaw: ";
     Printer<float>::stream(s, indent + "  ", v.yaw);
+    s << indent << "percentage: ";
+    Printer<float>::stream(s, indent + "  ", v.percentage);
+    s << indent << "power: ";
+    Printer<float>::stream(s, indent + "  ", v.power);
   }
 };
 

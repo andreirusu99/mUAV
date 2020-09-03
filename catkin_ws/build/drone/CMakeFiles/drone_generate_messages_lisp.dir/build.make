@@ -53,28 +53,21 @@ CMAKE_BINARY_DIR = /home/andrei/Desktop/mUAV/catkin_ws/build
 # Include the progress variables for this target.
 include drone/CMakeFiles/drone_generate_messages_lisp.dir/progress.make
 
-drone/CMakeFiles/drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Power.lisp
 drone/CMakeFiles/drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/ControlAxes.lisp
 drone/CMakeFiles/drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Attitude.lisp
 
 
-/home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Power.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
-/home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Power.lisp: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Lisp code from drone/Power.msg"
-	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg
-
 /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/ControlAxes.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/ControlAxes.lisp: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Lisp code from drone/ControlAxes.msg"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Lisp code from drone/ControlAxes.msg"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg
 
 /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Attitude.lisp: /opt/ros/melodic/lib/genlisp/gen_lisp.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Attitude.lisp: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Lisp code from drone/Attitude.msg"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Lisp code from drone/Attitude.msg"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/build/drone && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg
 
 drone_generate_messages_lisp: drone/CMakeFiles/drone_generate_messages_lisp
-drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Power.lisp
 drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/ControlAxes.lisp
 drone_generate_messages_lisp: /home/andrei/Desktop/mUAV/catkin_ws/devel/share/common-lisp/ros/drone/msg/Attitude.lisp
 drone_generate_messages_lisp: drone/CMakeFiles/drone_generate_messages_lisp.dir/build.make

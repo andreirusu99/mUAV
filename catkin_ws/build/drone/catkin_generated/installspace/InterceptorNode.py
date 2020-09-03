@@ -4,10 +4,12 @@ import rospy
 import time, threading, os
 
 import UDPserver as udp
-from utils import mapping
 
-from std_msgs.msg import String
-from drone.msg import ControlAxes
+from drone.msg import ControlAxes as ControlAxesMsg
+
+
+def mapping(value,iMin,iMax,oMin,oMax):
+    return ((value - iMin) * (oMax - oMin) / (iMax - iMin) + oMin)
 
 
 def processInput(udp_message):
@@ -73,13 +75,15 @@ def main():
 
     rospy.init_node('InterceptorNode')
 
-    pub = rospy.Publisher('Control', ControlAxes, queue_size=2)
+    pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
     
-    arm_time = disarm_time = 0
+    arm_time = disarm_time = 0.0
+    last_camera = 0.0
 
-    rate = rospy.Rate(rospy.get_param("/run/rate"))
     while not rospy.is_shutdown():
         
+        armed = rospy.get_param("/run/armed")
+
         if udp.active:
             rospy.set_param("/udp/last_active", time.time())
 
@@ -98,32 +102,47 @@ def main():
 
             hat = joystick[12:14]
 
-            armed = rospy.get_param("/run/armed")
-
+            # manual arming (debounced)
             if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
                 rospy.loginfo("{}: ARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", True)
                 arm_time = time.time()
 
-            # at least 1 second passed from the arming     
-            elif triggers[1] > 1800 and armed and time.time() - arm_time >= 1:
+            # manual disarming (debounced)
+            elif triggers[1] > 1800 and joy_sticks[2] == 1000 and armed and time.time() - arm_time >= 1:
                 rospy.loginfo("{}: DISARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", False)
                 disarm_time = time.time()
+            
+            # set the camera angle parameter manually (debounced)
+            camera_angle = rospy.get_param("/physical/camera_angle")
+            if hat[1] != 0 and time.time() - last_camera > 0.2:
+                camera_angle += hat[1] * 30
+                camera_angle = min(max(camera_angle, 0), 90)
+                rospy.set_param("/physical/camera_angle", camera_angle)
+                rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angle))
+                last_camera = time.time()
 
+            # publish the control axes if craft is armed
             if armed:
-                pub.publish(ControlAxes(joy_sticks))
+                pub.publish(ControlAxesMsg(joy_sticks))
 
         else:
-            rospy.logwarn("UDP inactive!")
+            rospy.logwarn("{}: UDP inactive!".format(rospy.get_caller_id()))
             last_active = rospy.get_param("/udp/last_active")
-            timeout_th = rospy.get_param("udp/timeout_threshold")
+            timeout_th = rospy.get_param("/udp/timeout_threshold")
 
-            if last_active - time.time() > timeout_th:
-                # disarm if signal to GCS lost
-                rospy.set_param("/state/armed", False)
+            # signal lost while armed (flying)
+            if armed and time.time() - last_active >= timeout_th:
+                rospy.set_param("/run/armed", False)
+                rospy.logerr("{}: UDP timeout: DISARM for safety".format(rospy.get_caller_id()))
+                
+                # suspend until connection regained
+                while not udp.active:
+                    pass
+                rospy.loginfo("{}: UDP connection regained!".format(rospy.get_caller_id()))
 
-        rate.sleep()
+
 
 if __name__ == "__main__":
 

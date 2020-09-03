@@ -51,7 +51,6 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    ControlAxes.msg
    Attitude.msg
-   Power.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -163,8 +162,9 @@ include_directories(
  catkin_install_python(PROGRAMS
    src/InterceptorNode.py
    src/DispatcherNode.py
+   src/SonarNode.py
+   src/GPSNode.py
    src/UDPserver.py
-   src/utils.py 
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

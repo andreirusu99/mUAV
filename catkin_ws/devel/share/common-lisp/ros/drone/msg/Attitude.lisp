@@ -21,6 +21,16 @@
     :reader yaw
     :initarg :yaw
     :type cl:float
+    :initform 0.0)
+   (percentage
+    :reader percentage
+    :initarg :percentage
+    :type cl:float
+    :initform 0.0)
+   (power
+    :reader power
+    :initarg :power
+    :type cl:float
     :initform 0.0))
 )
 
@@ -46,6 +56,16 @@
 (cl:defmethod yaw-val ((m <Attitude>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader drone-msg:yaw-val is deprecated.  Use drone-msg:yaw instead.")
   (yaw m))
+
+(cl:ensure-generic-function 'percentage-val :lambda-list '(m))
+(cl:defmethod percentage-val ((m <Attitude>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader drone-msg:percentage-val is deprecated.  Use drone-msg:percentage instead.")
+  (percentage m))
+
+(cl:ensure-generic-function 'power-val :lambda-list '(m))
+(cl:defmethod power-val ((m <Attitude>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader drone-msg:power-val is deprecated.  Use drone-msg:power instead.")
+  (power m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <Attitude>) ostream)
   "Serializes a message object of type '<Attitude>"
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'roll))))
@@ -59,6 +79,16 @@
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'yaw))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'percentage))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
+  (cl:let ((bits (roslisp-utils:encode-single-float-bits (cl:slot-value msg 'power))))
     (cl:write-byte (cl:ldb (cl:byte 8 0) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
@@ -84,6 +114,18 @@
       (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'yaw) (roslisp-utils:decode-single-float-bits bits)))
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'percentage) (roslisp-utils:decode-single-float-bits bits)))
+    (cl:let ((bits 0))
+      (cl:setf (cl:ldb (cl:byte 8 0) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 8) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
+      (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
+    (cl:setf (cl:slot-value msg 'power) (roslisp-utils:decode-single-float-bits bits)))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<Attitude>)))
@@ -94,18 +136,20 @@
   "drone/Attitude")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<Attitude>)))
   "Returns md5sum for a message object of type '<Attitude>"
-  "c66f4de7f99199dd8e863fffbef112ad")
+  "0005902fcc22e14afe13d5920bf5b708")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'Attitude)))
   "Returns md5sum for a message object of type 'Attitude"
-  "c66f4de7f99199dd8e863fffbef112ad")
+  "0005902fcc22e14afe13d5920bf5b708")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<Attitude>)))
   "Returns full string definition for message of type '<Attitude>"
-  (cl:format cl:nil "# represents rotation on the 3 axes~%float32 roll~%float32 pitch~%float32 yaw~%~%"))
+  (cl:format cl:nil "# rotation on the 3 axes~%float32 roll~%float32 pitch~%float32 yaw~%~%# information about battery and power consumption~%float32 percentage~%float32 power~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'Attitude)))
   "Returns full string definition for message of type 'Attitude"
-  (cl:format cl:nil "# represents rotation on the 3 axes~%float32 roll~%float32 pitch~%float32 yaw~%~%"))
+  (cl:format cl:nil "# rotation on the 3 axes~%float32 roll~%float32 pitch~%float32 yaw~%~%# information about battery and power consumption~%float32 percentage~%float32 power~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <Attitude>))
   (cl:+ 0
+     4
+     4
      4
      4
      4
@@ -116,4 +160,6 @@
     (cl:cons ':roll (roll msg))
     (cl:cons ':pitch (pitch msg))
     (cl:cons ':yaw (yaw msg))
+    (cl:cons ':percentage (percentage msg))
+    (cl:cons ':power (power msg))
 ))

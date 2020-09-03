@@ -53,31 +53,23 @@ CMAKE_BINARY_DIR = /home/andrei/Desktop/mUAV/catkin_ws/build
 # Include the progress variables for this target.
 include drone/CMakeFiles/drone_generate_messages_cpp.dir/progress.make
 
-drone/CMakeFiles/drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Power.h
 drone/CMakeFiles/drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/ControlAxes.h
 drone/CMakeFiles/drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Attitude.h
 
 
-/home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Power.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
-/home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Power.h: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg
-/home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Power.h: /opt/ros/melodic/share/gencpp/msg.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from drone/Power.msg"
-	cd /home/andrei/Desktop/mUAV/catkin_ws/src/drone && /home/andrei/Desktop/mUAV/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Power.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone -e /opt/ros/melodic/share/gencpp/cmake/..
-
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/ControlAxes.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/ControlAxes.h: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/ControlAxes.h: /opt/ros/melodic/share/gencpp/msg.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from drone/ControlAxes.msg"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C++ code from drone/ControlAxes.msg"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/src/drone && /home/andrei/Desktop/mUAV/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/ControlAxes.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone -e /opt/ros/melodic/share/gencpp/cmake/..
 
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Attitude.h: /opt/ros/melodic/lib/gencpp/gen_cpp.py
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Attitude.h: /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg
 /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Attitude.h: /opt/ros/melodic/share/gencpp/msg.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating C++ code from drone/Attitude.msg"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/andrei/Desktop/mUAV/catkin_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating C++ code from drone/Attitude.msg"
 	cd /home/andrei/Desktop/mUAV/catkin_ws/src/drone && /home/andrei/Desktop/mUAV/catkin_ws/build/catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg/Attitude.msg -Idrone:/home/andrei/Desktop/mUAV/catkin_ws/src/drone/msg -Istd_msgs:/opt/ros/melodic/share/std_msgs/cmake/../msg -p drone -o /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone -e /opt/ros/melodic/share/gencpp/cmake/..
 
 drone_generate_messages_cpp: drone/CMakeFiles/drone_generate_messages_cpp
-drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Power.h
 drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/ControlAxes.h
 drone_generate_messages_cpp: /home/andrei/Desktop/mUAV/catkin_ws/devel/include/drone/Attitude.h
 drone_generate_messages_cpp: drone/CMakeFiles/drone_generate_messages_cpp.dir/build.make

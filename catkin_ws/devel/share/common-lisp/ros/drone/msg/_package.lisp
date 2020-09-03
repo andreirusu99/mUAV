@@ -5,7 +5,9 @@
    "ATTITUDE"
    "<CONTROLAXES>"
    "CONTROLAXES"
-   "<POWER>"
-   "POWER"
+   "<SMTH>"
+   "SMTH"
+   "<ABC>"
+   "ABC"
   ))
 
