@@ -105,8 +105,8 @@ def main(ser):
             rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h".format(
                 rospy.get_caller_id(),
                 gps_time, 
-                float(latitude), 
-                float(longitude), 
+                float(latitude),
+                float(longitude),
                 float(gps_altitude),
                 float(ground_speed)))        
 

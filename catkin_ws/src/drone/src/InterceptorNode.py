@@ -25,12 +25,12 @@ def processInput(udp_message):
     # PWM conversion
     yaw_low = STICK_MIN + 100
     yaw_high = STICK_MAX - 100
-    roll     = int(mapping(udp_message[0], -1.0, 1.0, STICK_MIN, STICK_MAX))
-    pitch    = int(mapping(udp_message[1], 1.0, -1.0, STICK_MIN, STICK_MAX))
-    yaw      = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
-    throttle = int(mapping(udp_message[3], 0, -1.0, 1000, THROTTLE_MAX))
-    LT = int(mapping(udp_message[4], 0.0, 1.0, 1000, 2000))
-    RT = int(mapping(udp_message[4], -1.0, 0.0, 2000, 1000))
+    pitch     = int(mapping(udp_message[0], 1.0, -1.0, STICK_MIN, STICK_MAX))
+    roll      = int(mapping(udp_message[1], -1.0, 1.0, STICK_MIN, STICK_MAX))
+    yaw       = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
+    throttle  = int(mapping(udp_message[3], 0, -1.0, 1000, THROTTLE_MAX))
+    LT        = int(mapping(udp_message[4], 0.0, 1.0, 1000, 2000))
+    RT        = int(mapping(udp_message[4], -1.0, 0.0, 2000, 1000))
 
     A = int(udp_message[5])
     B = int(udp_message[6])
