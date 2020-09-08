@@ -62,7 +62,7 @@ def main():
     GPIO.setup(ECHO, GPIO.IN)
 
     it = 0
-    ring = 15
+    ring = 10
     distances = [0.0] * ring
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
@@ -71,9 +71,9 @@ def main():
         distances[it] = reading()
         median = np.median(distances)
         mean = np.mean(distances)
-        distance = (mean + median) / 2
+        distance = np.round((mean + median) / 2, decimals=0)
 
-        rospy.loginfo("{}: {:.1f}cm".format(rospy.get_caller_id(), distance))
+        rospy.loginfo("{}: {}cm".format(rospy.get_caller_id(), distance))
         pub.publish(SonarMsg(distance))
         rate.sleep()
 

@@ -25,20 +25,20 @@ def processInput(udp_message):
     # PWM conversion
     yaw_low = STICK_MIN + 100
     yaw_high = STICK_MAX - 100
-    roll     = int(mapping(udp_message[0], -1.0, 1.0, STICK_MIN, STICK_MAX))
-    pitch    = int(mapping(udp_message[1], 1.0, -1.0, STICK_MIN, STICK_MAX))
-    yaw      = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
-    throttle = int(mapping(udp_message[3], 0, -1.0, 1000, THROTTLE_MAX))
-    LT = int(mapping(udp_message[4], -1.0, 1.0, 1000, 2000))
-    RT = int(mapping(udp_message[5], -1.0, 1.0, 1000, 2000))
+    pitch     = int(mapping(udp_message[0], 1.0, -1.0, STICK_MIN, STICK_MAX))
+    roll      = int(mapping(udp_message[1], -1.0, 1.0, STICK_MIN, STICK_MAX))
+    yaw       = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
+    throttle  = int(mapping(udp_message[3], 0, -1.0, 1000, THROTTLE_MAX))
+    LT        = int(mapping(udp_message[4], 0.0, 1.0, 1000, 2000))
+    RT        = int(mapping(udp_message[4], -1.0, 0.0, 2000, 1000))
 
-    A = int(udp_message[6])
-    B = int(udp_message[7])
-    X = int(udp_message[8])
-    Y = int(udp_message[9])
-    LS = int(udp_message[10])
-    RS = int(udp_message[11])
-    hat_LR, hat_UD = int(udp_message[12]), int(udp_message[13])
+    A = int(udp_message[5])
+    B = int(udp_message[6])
+    X = int(udp_message[7])
+    Y = int(udp_message[8])
+    LS = int(udp_message[9])
+    RS = int(udp_message[10])
+    hat_LR, hat_UD = int(udp_message[11]), int(udp_message[12])
 
     if throttle < 1000: throttle = 1000
 
@@ -104,13 +104,13 @@ def main():
 
             # manual arming (debounced)
             if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
-                rospy.loginfo("{}: ARMING...".format(rospy.get_caller_id()))
+                rospy.logwarn("{}: ARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", True)
                 arm_time = time.time()
 
             # manual disarming (debounced)
             elif triggers[1] > 1800 and joy_sticks[2] == 1000 and armed and time.time() - arm_time >= 1:
-                rospy.loginfo("{}: DISARMING...".format(rospy.get_caller_id()))
+                rospy.logwarn("{}: DISARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", False)
                 disarm_time = time.time()
             
@@ -140,7 +140,7 @@ def main():
                 # suspend until connection regained
                 while not udp.active:
                     pass
-                rospy.loginfo("{}: UDP connection regained!".format(rospy.get_caller_id()))
+                rospy.logwarn("{}: UDP connection regained!".format(rospy.get_caller_id()))
 
 
 

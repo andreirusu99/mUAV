@@ -43,7 +43,7 @@ def getFCinfo(drone):
     return power, percentage, roll, pitch, yaw         
 
 
-def callback(data, drone):
+def rpyt_callback(data, drone):
 
     CMDS['roll'] = data.data[0]
     CMDS['pitch'] = data.data[1]
@@ -56,7 +56,7 @@ def main(drone):
     rospy.init_node('Dispatcher')
     
     # subscribe to get control axes from Interceptor
-    rospy.Subscriber('Control', ControlAxesMsg, callback, drone)
+    rospy.Subscriber('Control', ControlAxesMsg, rpyt_callback, drone)
 
     # publish Attitude and Power info
     attitude_pub = rospy.Publisher('CraftAttitude', AttitudeMsg, queue_size = 1)

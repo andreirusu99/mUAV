@@ -4,3 +4,8 @@ from ._ControlAxes import *
 from ._JoyControlAxes import *
 from ._Joystick import *
 from ._Power import *
+from ._Smth import *
+from ._Sonar import *
+from ._SonarAltitude import *
+from ._SonarN import *
+from ._abc import *
