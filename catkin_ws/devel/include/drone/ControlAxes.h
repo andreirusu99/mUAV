@@ -24,19 +24,19 @@ struct ControlAxes_
   typedef ControlAxes_<ContainerAllocator> Type;
 
   ControlAxes_()
-    : data()  {
-      data.assign(0);
+    : axis()  {
+      axis.assign(0);
   }
   ControlAxes_(const ContainerAllocator& _alloc)
-    : data()  {
+    : axis()  {
   (void)_alloc;
-      data.assign(0);
+      axis.assign(0);
   }
 
 
 
-   typedef boost::array<uint16_t, 4>  _data_type;
-  _data_type data;
+   typedef boost::array<uint16_t, 4>  _axis_type;
+  _axis_type axis;
 
 
 
@@ -67,7 +67,7 @@ return s;
 template<typename ContainerAllocator1, typename ContainerAllocator2>
 bool operator==(const ::drone::ControlAxes_<ContainerAllocator1> & lhs, const ::drone::ControlAxes_<ContainerAllocator2> & rhs)
 {
-  return lhs.data == rhs.data;
+  return lhs.axis == rhs.axis;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -124,12 +124,12 @@ struct MD5Sum< ::drone::ControlAxes_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "073fbf0245def3a5b07ad0a112777420";
+    return "4c8bf3d9704c3cb6fc3e2299ec7776bb";
   }
 
   static const char* value(const ::drone::ControlAxes_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x073fbf0245def3a5ULL;
-  static const uint64_t static_value2 = 0xb07ad0a112777420ULL;
+  static const uint64_t static_value1 = 0x4c8bf3d9704c3cb6ULL;
+  static const uint64_t static_value2 = 0xfc3e2299ec7776bbULL;
 };
 
 template<class ContainerAllocator>
@@ -150,7 +150,7 @@ struct Definition< ::drone::ControlAxes_<ContainerAllocator> >
   {
     return "# represents the channels that the FC accepts\n"
 "# [Roll, Pitch, Throttle, Yaw]\n"
-"uint16[4] data\n"
+"uint16[4] axis\n"
 ;
   }
 
@@ -169,7 +169,7 @@ namespace serialization
   {
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
-      stream.next(m.data);
+      stream.next(m.axis);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -188,11 +188,11 @@ struct Printer< ::drone::ControlAxes_<ContainerAllocator> >
 {
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::drone::ControlAxes_<ContainerAllocator>& v)
   {
-    s << indent << "data[]" << std::endl;
-    for (size_t i = 0; i < v.data.size(); ++i)
+    s << indent << "axis[]" << std::endl;
+    for (size_t i = 0; i < v.axis.size(); ++i)
     {
-      s << indent << "  data[" << i << "]: ";
-      Printer<uint16_t>::stream(s, indent + "  ", v.data[i]);
+      s << indent << "  axis[" << i << "]: ";
+      Printer<uint16_t>::stream(s, indent + "  ", v.axis[i]);
     }
   }
 };

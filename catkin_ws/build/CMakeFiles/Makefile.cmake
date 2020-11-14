@@ -25,6 +25,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/DispatcherNode.py"
   "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/GPSNode.py"
   "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/InterceptorNode.py"
+  "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/PilotNode.py"
   "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/SonarNode.py"
   "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/src/UDPserver.py"
   "/opt/ros/melodic/share/catkin/cmake/../package.xml"

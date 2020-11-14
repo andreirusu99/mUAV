@@ -1,4 +1,4 @@
 (cl:in-package drone-msg)
-(cl:export '(DATA-VAL
-          DATA
+(cl:export '(AXIS-VAL
+          AXIS
 ))

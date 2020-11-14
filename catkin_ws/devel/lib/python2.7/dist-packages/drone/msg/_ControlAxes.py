@@ -8,14 +8,14 @@ import struct
 
 
 class ControlAxes(genpy.Message):
-  _md5sum = "073fbf0245def3a5b07ad0a112777420"
+  _md5sum = "4c8bf3d9704c3cb6fc3e2299ec7776bb"
   _type = "drone/ControlAxes"
   _has_header = False  # flag to mark the presence of a Header object
   _full_text = """# represents the channels that the FC accepts
 # [Roll, Pitch, Throttle, Yaw]
-uint16[4] data
+uint16[4] axis
 """
-  __slots__ = ['data']
+  __slots__ = ['axis']
   _slot_types = ['uint16[4]']
 
   def __init__(self, *args, **kwds):
@@ -26,7 +26,7 @@ uint16[4] data
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       data
+       axis
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -35,10 +35,10 @@ uint16[4] data
     if args or kwds:
       super(ControlAxes, self).__init__(*args, **kwds)
       # message fields cannot be None, assign default values for those that are
-      if self.data is None:
-        self.data = [0] * 4
+      if self.axis is None:
+        self.axis = [0] * 4
     else:
-      self.data = [0] * 4
+      self.axis = [0] * 4
 
   def _get_types(self):
     """
@@ -52,7 +52,7 @@ uint16[4] data
     :param buff: buffer, ``StringIO``
     """
     try:
-      buff.write(_get_struct_4H().pack(*self.data))
+      buff.write(_get_struct_4H().pack(*self.axis))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -66,7 +66,7 @@ uint16[4] data
       end = 0
       start = end
       end += 8
-      self.data = _get_struct_4H().unpack(str[start:end])
+      self.axis = _get_struct_4H().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill
@@ -79,7 +79,7 @@ uint16[4] data
     :param numpy: numpy python module
     """
     try:
-      buff.write(self.data.tostring())
+      buff.write(self.axis.tostring())
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -94,7 +94,7 @@ uint16[4] data
       end = 0
       start = end
       end += 8
-      self.data = numpy.frombuffer(str[start:end], dtype=numpy.uint16, count=4)
+      self.axis = numpy.frombuffer(str[start:end], dtype=numpy.uint16, count=4)
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e)  # most likely buffer underfill

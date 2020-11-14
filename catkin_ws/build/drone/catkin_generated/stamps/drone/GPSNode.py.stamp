@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 import rospy
 
-import time, threading, os
+import time
+import threading
+import os
 import serial
 from geometry_msgs.msg import Pose2D as GPSMsg
 
 fix_quality = 0
-gps_time = "" # UTC
-latitude = 0.0 # N
-longitude = 0.0 # E
-gps_altitude = 0.0 # m
-ground_speed = 0.0 # km/h
+gps_time = ""  # UTC
+latitude = 0.0  # N
+longitude = 0.0  # E
+gps_altitude = 0.0  # m
+ground_speed = 0.0  # km/h
+
 
 def readString(ser):
     while True:
@@ -22,12 +25,15 @@ def readString(ser):
 
 def getTime(string, format, returnFormat):
     global gps_time
-    gps_time = time.strftime(returnFormat, time.strptime(string, format))  # Convert date and time to a nice printable format
+    # Convert date and time to a nice printable format
+    gps_time = time.strftime(returnFormat, time.strptime(string, format))
 
 
 def getLatLng(latString, lngString):
-    latString = latString[:2].lstrip('0') + "." + "%.7s" % str(float(latString[2:]) * 1.0 / 60.0).lstrip("0.")
-    lngString = lngString[:3].lstrip('0') + "." + "%.7s" % str(float(lngString[3:]) * 1.0 / 60.0).lstrip("0.")
+    latString = latString[:2].lstrip(
+        '0') + "." + "%.7s" % str(float(latString[2:]) * 1.0 / 60.0).lstrip("0.")
+    lngString = lngString[:3].lstrip(
+        '0') + "." + "%.7s" % str(float(lngString[3:]) * 1.0 / 60.0).lstrip("0.")
     return latString, lngString
 
 
@@ -61,6 +67,7 @@ def processVTG(lines):
     global ground_speed
     ground_speed = lines[7]
 
+
 def checksum(line):
     checkString = line.partition("*")
     checksum = 0
@@ -79,6 +86,7 @@ def checksum(line):
         rospy.logerr(rospy.get_caller_id(), "Checksum error!")
         return False
 
+
 def main(ser):
 
     rospy.init_node('GPSNode')
@@ -92,29 +100,29 @@ def main(ser):
         if checksum(line):
             if lines[0] == "GPRMC":
                 processRMC(lines)
-                
+
             elif lines[0] == "GPGGA":
                 processGGA(lines)
-                
+
             elif lines[0] == "GPGLL":
                 processGLL(lines)
-                
+
             elif lines[0] == "GPVTG":
                 processVTG(lines)
-                
+
             rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h".format(
                 rospy.get_caller_id(),
-                gps_time, 
+                gps_time,
                 float(latitude),
                 float(longitude),
                 float(gps_altitude),
-                float(ground_speed)))        
+                float(ground_speed)))
 
 
 if __name__ == '__main__':
 
     try:
-        
+
         serial_port = '/dev/' + rospy.get_param("/serial/gps_vk")
         ser = serial.Serial(serial_port, 9600, timeout=1)
 

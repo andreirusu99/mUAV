@@ -14,56 +14,56 @@
 
 (defclass drone::ControlAxes
   :super ros::object
-  :slots (_data ))
+  :slots (_axis ))
 
 (defmethod drone::ControlAxes
   (:init
    (&key
-    ((:data __data) (make-array 4 :initial-element 0 :element-type :integer))
+    ((:axis __axis) (make-array 4 :initial-element 0 :element-type :integer))
     )
    (send-super :init)
-   (setq _data __data)
+   (setq _axis __axis)
    self)
-  (:data
-   (&optional __data)
-   (if __data (setq _data __data)) _data)
+  (:axis
+   (&optional __axis)
+   (if __axis (setq _axis __axis)) _axis)
   (:serialization-length
    ()
    (+
-    ;; uint16[4] _data
+    ;; uint16[4] _axis
     (* 2    4)
     ))
   (:serialize
    (&optional strm)
    (let ((s (if strm strm
               (make-string-output-stream (send self :serialization-length)))))
-     ;; uint16[4] _data
+     ;; uint16[4] _axis
      (dotimes (i 4)
-       (write-word (elt _data i) s)
+       (write-word (elt _axis i) s)
        )
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
    (buf &optional (ptr- 0))
-   ;; uint16[4] _data
-   (dotimes (i (length _data))
-     (setf (elt _data i) (sys::peek buf ptr- :short)) (incf ptr- 2)
+   ;; uint16[4] _axis
+   (dotimes (i (length _axis))
+     (setf (elt _axis i) (sys::peek buf ptr- :short)) (incf ptr- 2)
      )
    ;;
    self)
   )
 
-(setf (get drone::ControlAxes :md5sum-) "073fbf0245def3a5b07ad0a112777420")
+(setf (get drone::ControlAxes :md5sum-) "4c8bf3d9704c3cb6fc3e2299ec7776bb")
 (setf (get drone::ControlAxes :datatype-) "drone/ControlAxes")
 (setf (get drone::ControlAxes :definition-)
       "# represents the channels that the FC accepts
 # [Roll, Pitch, Throttle, Yaw]
-uint16[4] data
+uint16[4] axis
 
 ")
 
 
 
-(provide :drone/ControlAxes "073fbf0245def3a5b07ad0a112777420")
+(provide :drone/ControlAxes "4c8bf3d9704c3cb6fc3e2299ec7776bb")
 
 

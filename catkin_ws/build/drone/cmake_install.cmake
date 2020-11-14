@@ -111,3 +111,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/UDPserver.py")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/drone" TYPE PROGRAM FILES "/home/andrei/Desktop/mUAV/catkin_ws/build/drone/catkin_generated/installspace/PilotNode.py")
+endif()
+

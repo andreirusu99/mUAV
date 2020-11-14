@@ -18,26 +18,26 @@ class ControlAxes {
   constructor(initObj={}) {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
-      this.data = null;
+      this.axis = null;
     }
     else {
-      if (initObj.hasOwnProperty('data')) {
-        this.data = initObj.data
+      if (initObj.hasOwnProperty('axis')) {
+        this.axis = initObj.axis
       }
       else {
-        this.data = new Array(4).fill(0);
+        this.axis = new Array(4).fill(0);
       }
     }
   }
 
   static serialize(obj, buffer, bufferOffset) {
     // Serializes a message object of type ControlAxes
-    // Check that the constant length array field [data] has the right length
-    if (obj.data.length !== 4) {
-      throw new Error('Unable to serialize array field data - length must be 4')
+    // Check that the constant length array field [axis] has the right length
+    if (obj.axis.length !== 4) {
+      throw new Error('Unable to serialize array field axis - length must be 4')
     }
-    // Serialize message field [data]
-    bufferOffset = _arraySerializer.uint16(obj.data, buffer, bufferOffset, 4);
+    // Serialize message field [axis]
+    bufferOffset = _arraySerializer.uint16(obj.axis, buffer, bufferOffset, 4);
     return bufferOffset;
   }
 
@@ -45,8 +45,8 @@ class ControlAxes {
     //deserializes a message object of type ControlAxes
     let len;
     let data = new ControlAxes(null);
-    // Deserialize message field [data]
-    data.data = _arrayDeserializer.uint16(buffer, bufferOffset, 4)
+    // Deserialize message field [axis]
+    data.axis = _arrayDeserializer.uint16(buffer, bufferOffset, 4)
     return data;
   }
 
@@ -61,7 +61,7 @@ class ControlAxes {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '073fbf0245def3a5b07ad0a112777420';
+    return '4c8bf3d9704c3cb6fc3e2299ec7776bb';
   }
 
   static messageDefinition() {
@@ -69,7 +69,7 @@ class ControlAxes {
     return `
     # represents the channels that the FC accepts
     # [Roll, Pitch, Throttle, Yaw]
-    uint16[4] data
+    uint16[4] axis
     
     `;
   }
@@ -80,11 +80,11 @@ class ControlAxes {
       msg = {};
     }
     const resolved = new ControlAxes(null);
-    if (msg.data !== undefined) {
-      resolved.data = msg.data;
+    if (msg.axis !== undefined) {
+      resolved.axis = msg.axis;
     }
     else {
-      resolved.data = new Array(4).fill(0)
+      resolved.axis = new Array(4).fill(0)
     }
 
     return resolved;
