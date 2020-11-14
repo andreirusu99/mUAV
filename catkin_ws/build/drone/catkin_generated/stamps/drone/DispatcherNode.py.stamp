@@ -21,6 +21,19 @@ CMDS = {
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 
+INFO_PERIOD = 0.5
+
+STICK_MIN = 1200
+STICK_MAX = 1800
+THROTTLE_MAX = 1500
+
+ROLL_TRIM = 15
+PITCH_TRIM = -17
+YAW_TRIM = 0
+
+def clamp(n, low, high):
+    return max(min(high, n), low)
+
 
 def getFCinfo(drone):
     power = percentage = 0.0
@@ -46,12 +59,34 @@ def getFCinfo(drone):
     return power, percentage, roll, pitch, yaw
 
 
-def rpyt_callback(data):
+def control_callback(data):
+    global CMDS
+    CMDS['roll'] = clamp(data.axis[0], STICK_MIN, STICK_MAX) + ROLL_TRIM
+    CMDS['pitch'] = clamp(data.axis[1], STICK_MIN, STICK_MAX) + PITCH_TRIM
+    CMDS['throttle'] = clamp(data.axis[2], 1000, THROTTLE_MAX)
+    CMDS['yaw'] = clamp(data.axis[3], STICK_MIN, STICK_MAX) + YAW_TRIM
 
-    CMDS['roll'] = data.data[0]
-    CMDS['pitch'] = data.data[1]
-    CMDS['throttle'] = data.data[2]
-    CMDS['yaw'] = data.data[3]
+    applyDeadZone()
+
+
+def applyDeadZone():
+    global CMDS
+    # deadzone configuration
+    dead_zone_ratio = 0.1
+    input_range = 1000.0
+    dead_zone = input_range * dead_zone_ratio
+    roll, pitch, throttle, yaw = CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']
+
+    if abs(roll - 1500) < dead_zone:
+        roll = 1500
+    if abs(pitch - 1500) < dead_zone:
+        pitch = 1500
+    if abs(yaw - 1500) < dead_zone * 1.5:
+        yaw = 1500
+    if abs(throttle - 1000) < 50:
+        throttle = 1000
+
+    CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw'] = roll, pitch, throttle, yaw
 
 
 def main(drone):
@@ -59,7 +94,7 @@ def main(drone):
     rospy.init_node('Dispatcher')
 
     # subscribe to get control axes from Interceptor
-    rospy.Subscriber('Control', ControlAxesMsg, rpyt_callback)
+    rospy.Subscriber('Control', ControlAxesMsg, control_callback)
 
     # publish Attitude and Power info
     attitude_pub = rospy.Publisher('CraftAttitude', AttitudeMsg, queue_size=1)
@@ -73,6 +108,7 @@ def main(drone):
             rospy.get_caller_id()))
         os._exit(1)
 
+    last_info = time.time()
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
@@ -81,7 +117,7 @@ def main(drone):
         CMDS['aux1'] = 2000 if armed else 1000
 
         # setting the camera angle
-        CMDS['aux2'] = 1000 + (11.111 * rospy.get_param("/physical/camera_angle"))
+        CMDS['aux2'] = round(1000 + (11.111 * rospy.get_param("/physical/camera_angle")))
 
         # send the channels to the board
         if(drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
@@ -93,8 +129,18 @@ def main(drone):
 
         attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power))
 
-        rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
-            rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
+        rospy.set_param("/physical/roll", roll)
+        rospy.set_param("/physical/pitch", pitch)
+        rospy.set_param("/physical/yaw", yaw)
+
+        rospy.set_param("/run/power", round(power))
+        rospy.set_param("/run/battery", round(percentage))
+
+
+        # if time.time() - last_info > INFO_PERIOD:
+        #     rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
+        #         rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
+        #     last_info = time.time()
 
 
 if __name__ == '__main__':
