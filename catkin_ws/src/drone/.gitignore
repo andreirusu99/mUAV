@@ -309,7 +309,7 @@ pyvenv.cfg
 pip-selfcheck.json
 
 ### VisualStudioCode ###
-.vscode/*
+.vscode/
 !.vscode/tasks.json
 !.vscode/launch.json
 *.code-workspace
