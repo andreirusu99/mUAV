@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-import rospy
 import struct
-import time
-import socket
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from twisted.internet import task
 
 PORT = 51444
 message = [
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 ]
 
 active = False
@@ -21,13 +18,14 @@ def timeout():
     if not active:
         # There is no UDP data, so give "safe" commands
         message = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ]
+                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 
 
 class twistedUDP(DatagramProtocol):
 
     def datagramReceived(self, data, addr):
+        # print("FROM {}".format(addr))
         global message, active
         active = True
 

@@ -5,7 +5,7 @@ import time
 import threading
 import os
 
-import UDPserver as udp
+import UDP_Listener as udp
 
 from drone.msg import ControlAxes as ControlAxesMsg
 
@@ -58,7 +58,7 @@ def main():
     pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
 
     arm_time = disarm_time = engage_time = disengage_time = 0.0
-    last_camera = 0.0
+    last_camera = last_print = 0.0
 
     while not rospy.is_shutdown():
 
@@ -93,8 +93,16 @@ def main():
                 camera_angle += hat[1] * 30
                 camera_angle = min(max(camera_angle, 0), 90)
                 rospy.set_param("/physical/camera_angle", camera_angle)
-                # rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angle))
+                rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angle))
                 last_camera = time.time()
+
+            # shoulder yaw
+            if shoulders[0] == 1:
+                joy_sticks[3] = 1300
+            elif shoulders[1] == 1:
+                joy_sticks[3] = 1800
+            else:
+                joy_sticks[3] = 1500
 
             # publish the control axes if craft is armed
             if armed:
@@ -104,7 +112,9 @@ def main():
             last_active = rospy.get_param("/udp/last_active")
             timeout_th = rospy.get_param("/udp/timeout_threshold")
 
-            # rospy.logwarn("{}: UDP inactive!".format(rospy.get_caller_id()))
+            if time.time() - last_print > 1:
+                rospy.logwarn("{}: UDP inactive!".format(rospy.get_caller_id()))
+                last_print = time.time()
 
             # signal lost while armed (flying)
             if armed and time.time() - last_active >= timeout_th:
