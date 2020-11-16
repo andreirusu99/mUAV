@@ -11,8 +11,6 @@ import struct
 import time
 import threading
 
-import UDP_Listener as udp
-
 import pygame
 
 _TAG = "Control Station"
