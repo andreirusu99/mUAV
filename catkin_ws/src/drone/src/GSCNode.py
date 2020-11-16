@@ -7,6 +7,7 @@
 import rospy
 import socket
 import struct
+import time
 
 UDP_IP = "192.168.137.1"  # WiFi Ground Station IP address
 # UDP_IP = "192.168.100.50"  # LAN Ground Station IP address
@@ -22,7 +23,7 @@ def main():
 
     rate = rospy.Rate(1) # Hz
     while not rospy.is_shutdown():
-        message = [1]
+        message = [round(time.time())]
 
         # Assemble message
         buf = struct.pack('>' + 'd' * len(message), *message)

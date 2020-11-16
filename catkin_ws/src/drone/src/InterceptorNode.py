@@ -22,7 +22,7 @@ def processInput(udp_message):
     roll = int(mapping(udp_message[0], -1.0, 1.0, 1000, 2000))
     pitch = int(mapping(udp_message[1], 1.0, -1.0, 1000, 2000))
     yaw = int(mapping(udp_message[2], -1.0, 1.0, yaw_low, yaw_high))
-    throttle = int(mapping(udp_message[3], 0.0, -1.0, 1000, 2000))
+    throttle = int(mapping(udp_message[3], 1.0, -1.0, 1000, 2000))
     LT = int(mapping(udp_message[4], 0.0, 1.0, 1000, 2000))
     RT = int(mapping(udp_message[4], -1.0, 1.0, 1000, 2000))
 
@@ -48,7 +48,7 @@ def UDPthread():
 
     except Exception as error:
         rospy.logerr("{}: {}".format(_TAG, error))
-        UDPthread()
+        # UDPthread()
 
 
 def main():

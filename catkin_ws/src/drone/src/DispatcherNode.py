@@ -21,11 +21,11 @@ CMDS = {
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 
-INFO_PERIOD = 0.5
+INFO_PERIOD = 1
 
 STICK_MIN = 1200
 STICK_MAX = 1800
-THROTTLE_MAX = 1500
+THROTTLE_MAX = 1700
 
 ROLL_TRIM = 15
 PITCH_TRIM = -17
@@ -113,19 +113,22 @@ def main(drone):
 
         armed = rospy.get_param("/run/armed")
 
+        # get board info
+        power, percentage, roll, pitch, yaw = getFCinfo(drone)
+
         # arming and disarming
         CMDS['aux1'] = 2000 if armed else 1000
 
+        # compensate camera angle pitch
+        camera_angle = clamp(rospy.get_param("/physical/camera_angle") + pitch, 0, 90)
+
         # setting the camera angle
-        CMDS['aux2'] = round(1000 + (11.111 * rospy.get_param("/physical/camera_angle")))
+        CMDS['aux2'] = round(1000 + (11.111 * camera_angle))
 
         # send the channels to the board
         if(drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
             dataHandler = drone.receive_msg()
             drone.process_recv_data(dataHandler)
-
-        # get board info
-        power, percentage, roll, pitch, yaw = getFCinfo(drone)
 
         attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power))
 
@@ -137,10 +140,10 @@ def main(drone):
         rospy.set_param("/run/battery", round(percentage))
 
 
-        # if time.time() - last_info > INFO_PERIOD:
-        #     rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
-        #         rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
-        #     last_info = time.time()
+        if time.time() - last_info > INFO_PERIOD:
+            rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
+                rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
+            last_info = time.time()
 
 
 if __name__ == '__main__':

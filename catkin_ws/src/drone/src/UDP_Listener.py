@@ -7,7 +7,7 @@ from twisted.internet import task
 
 PORT = 51444
 message = [
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 ]
 
 active = False
@@ -17,7 +17,7 @@ def timeout():
     active = False
     if not active:
         # There is no UDP data, so give "safe" commands
-        message = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        message = [0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 
