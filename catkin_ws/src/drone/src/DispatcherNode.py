@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-import rospy
-from drone.msg import ControlAxes as ControlAxesMsg
-from drone.msg import Attitude as AttitudeMsg
-
-from yamspy import MSPy
-import time
-import threading
 import os
+import time
+
+import rospy
+from drone.msg import Attitude as AttitudeMsg
+from drone.msg import ControlAxes as ControlAxesMsg
+from yamspy import MSPy
 
 FCinfo = ['MSP_ANALOG', 'MSP_ATTITUDE']
 
 CMDS = {
-    'roll':     1500,
-    'pitch':    1500,
+    'roll': 1500,
+    'pitch': 1500,
     'throttle': 1000,
-    'yaw':      1500,
-    'aux1':     1000,  # arming
-    'aux2':     1000  # camera servo
+    'yaw': 1500,
+    'aux1': 1000,  # arming
+    'aux2': 1000  # camera servo
 }
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
@@ -30,6 +29,7 @@ THROTTLE_MAX = 1700
 ROLL_TRIM = 15
 PITCH_TRIM = -17
 YAW_TRIM = 0
+
 
 def clamp(n, low, high):
     return max(min(high, n), low)
@@ -90,7 +90,6 @@ def applyDeadZone():
 
 
 def main(drone):
-
     rospy.init_node('Dispatcher')
 
     # subscribe to get control axes from Interceptor
@@ -126,7 +125,7 @@ def main(drone):
         CMDS['aux2'] = round(1000 + (11.111 * camera_angle))
 
         # send the channels to the board
-        if(drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
+        if (drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
             dataHandler = drone.receive_msg()
             drone.process_recv_data(dataHandler)
 
@@ -138,7 +137,6 @@ def main(drone):
 
         rospy.set_param("/run/power", round(power))
         rospy.set_param("/run/battery", round(percentage))
-
 
         if time.time() - last_info > INFO_PERIOD:
             rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(

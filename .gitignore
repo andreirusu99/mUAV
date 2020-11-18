@@ -23,6 +23,7 @@ catkin_ws/build/
 ### VisualStudioCode ###
 catkin_ws/src/drone/src/__pycache__/
 catkin_ws/src/drone/.vscode/
+catkin_ws/src/drone/.idea/
 catkin_ws/src/drone/!.vscode/tasks.json
 catkin_ws/src/drone/!.vscode/launch.json
 catkin_ws/src/drone/*.code-workspace

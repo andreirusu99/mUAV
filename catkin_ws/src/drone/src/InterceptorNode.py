@@ -1,21 +1,21 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-import rospy
-import time
 import threading
-import os
+import time
+
+import cv2
+import numpy as np
+import rospy
+from drone.msg import ControlAxes as ControlAxesMsg
 
 import UDP_Listener as udp
 
-from drone.msg import ControlAxes as ControlAxesMsg
-
 
 def mapping(value, iMin, iMax, oMin, oMax):
-    return ((value - iMin) * (oMax - oMin) / (iMax - iMin) + oMin)
+    return (value - iMin) * (oMax - oMin) / (iMax - iMin) + oMin
 
 
 def processInput(udp_message):
-
     # PWM conversion
     yaw_low = 1100
     yaw_high = 1900
@@ -48,17 +48,22 @@ def UDPthread():
 
     except Exception as error:
         rospy.logerr("{}: {}".format(_TAG, error))
-        # UDPthread()
 
 
 def main():
-
     rospy.init_node('InterceptorNode')
 
     pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
 
     arm_time = disarm_time = engage_time = disengage_time = 0.0
     last_camera = last_print = 0.0
+
+    height = 480
+    width = 640
+    blank_image = np.zeros((height, width, 3), np.uint8)
+    blank_image[:, 0:width // 2] = (255, 0, 0)  # (B, G, R)
+    blank_image[:, width // 2:width] = (0, 255, 0)
+    cv2.imwrite("Blank_img.jpg", blank_image)
 
     while not rospy.is_shutdown():
 
@@ -73,7 +78,8 @@ def main():
 
             triggers = joystick[4:6]
 
-            A, B, X, Y, shoulders, hat = joystick[6], joystick[7], joystick[8], joystick[9], joystick[10:12], joystick[12:14]
+            A, B, X, Y, shoulders, hat = joystick[6], joystick[7], joystick[8], joystick[9], joystick[10:12], joystick[
+                                                                                                              12:14]
 
             # manual arming (debounced)
             if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
