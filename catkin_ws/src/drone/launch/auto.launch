@@ -1,46 +1,22 @@
-<<<<<<< HEAD
 <launch>
 
-	<param name="/physical/uav_mass" type="double" value="1.2" />
-	<param name="/physical/hover_throttle" type="int" value="1350" />
+    <param name="/physical/camera_angle" type="double" value="90.0"/>
 
-	<param name="/stick/trims/roll" type ="int" value="4" />
-	<param name="/stick/trims/pitch" type ="int" value="1" />
-	<param name="/stick/trims/yaw" type ="int" value="0" />
+    <param name="/run/armed" type="bool" value="False"/>
 
-	<param name="/stick/limits/min" type ="int" value="1200" />
-	<param name="/stick/limits/max" type ="int" value="1800" />
-	<param name="/stick/limits/throttle_max" type ="int" value="1700" />
+    <param name="/udp/last_active" type="double" value="0.0"/>
+    <param name="/udp/timeout_threshold" type="double" value="2.0"/>
 
-	<param name="/run/armed" type="bool" value="False" />
-	<param name="/run/rate" type="int" value="5" />
+    <param name="/serial/flight_controller" type="string" value="ttyACM0"/>
+    <param name="/serial/gps_vk" type="string" value="ttyACM1"/>
 
-	<param name="/udp/last_active" type="double" value="0.0" />
-	<param name="/udp/timeout_threshold" type="double" value="1.0" />
-
-	<param name="/board/serial_port" type="string" value="ttyACM0" />
-
-	<node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/> 
-	<node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9090"/>
+    </include>
+    <node name="FlaskServer" pkg="drone" type="FlaskServerNode.py" output="screen"/>
+    <node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/>
+    <node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
+    <!--    <node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>-->
+    <!--    <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/>-->
 
 </launch>
-=======
-<launch>
-
-	<param name="/physical/camera_angle" type="double" value="90.0" />
-
-	<param name="/run/armed" type="bool" value="False" />
-
-	<param name="/udp/last_active" type="double" value="0.0" />
-	<param name="/udp/timeout_threshold" type="double" value="2.0" />
-
-	<param name="/serial/flight_controller" type="string" value="ttyACM0" />
-	<param name="/serial/gps_vk" type="string" value="ttyACM1" />
-
-	<node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/>
-	<node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
-	<node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>
-	<!-- <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/> -->
-
-</launch>
->>>>>>> 1bd9aa140a2cfff867a7dd6752a2e0ff265ed22a

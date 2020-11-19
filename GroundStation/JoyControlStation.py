@@ -20,9 +20,9 @@ button = {'A': 0, 'B': 1, 'X': 2, 'Y': 3, 'LS': 4, 'RS': 5, 'BACK': 6, 'START': 
 hat = {'CENTER': (0, 0), 'LEFT': (-1, 0), 'RIGHT': (1, 0), 'UP': (0, 1), 'DOWN': (0, -1)}
 
 # Main configuration
-UDP_IP = "192.168.137.113"  # Wifi Vehicle IP address
+UDP_IP = "192.168.137.113"  # WiFi Vehicle IP address
 # UDP_IP = "192.168.100.58"  # LAN Vehicle IP address
-UDP_PORT = 51444  # This port matches the ones using on other scripts
+UDP_PORT = 51444
 
 # Create UDP socket
 sockt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

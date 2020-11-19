@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-import rospy
 
 import time
-import threading
-import os
+
+import rospy
 import serial
 from geometry_msgs.msg import Pose2D as GPSMsg
 
@@ -88,7 +87,6 @@ def checksum(line):
 
 
 def main(ser):
-
     rospy.init_node('GPSNode')
     gps_pub = rospy.Publisher('Location', GPSMsg, queue_size=1)
 
