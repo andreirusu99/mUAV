@@ -1,0 +1,304 @@
+/*http://colorpalettes.net/color-palette-3958/*/
+
+:local(.body) {
+    margin-left: 50px;
+}
+
+:local(.dropdown) {
+    display: inline-block;
+    width: 200px;
+    padding: 15px 30px 10px;
+    margin-right: 10px;
+    float: right;
+}
+
+:local(.pagetitle) {
+    display: inline-block;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    color: #80807E;
+}
+
+:local(.generalcontainer) {
+    width: 1400px;
+    margin: auto;
+
+}
+
+:local(.divBtn) {
+    text-align: center;
+
+
+    margin: auto;
+
+}
+
+
+:local(.home) {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+:local(.chartdisplay) {
+    margin-top: 10px;
+    display: inline-block;
+    width: 50%;
+    float: left;
+}
+
+:local(.back) {
+    background-color: #c6c6c6;
+}
+
+:local(.titleSubtitleContainer) {
+    display: inline-flex;
+}
+
+:local(.errorTitle) {
+    font-weight: 400;
+    font-size: 18px;
+    color: #8e2807;
+    letter-spacing: 1px;
+}
+
+:local(.errorText) {
+    font-weight: 400;
+    font-size: 16px;
+    color: #8e2807;
+    letter-spacing: 1px;
+}
+
+:local(.subtitle) {
+    font-weight: 600;
+    color: #537C8E;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 1em;
+    width: 30%;
+}
+
+:local(.cardLabelContainer) {
+    display: table-cell;
+    background-color: cornflowerblue;
+    text-align: center;
+    height: 2.5em;
+}
+
+:local(.cardLabel) {
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 1px;
+    vertical-align: middle;
+    margin-top: 0.5em;
+}
+
+:local(.cardSubtitle) {
+    font-weight: 600;
+    color: #537C8E;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 1em;
+    width: 90%;
+}
+
+:local(.charttitle) {
+    font-weight: 600;
+    font-size: 16px;
+    color: #537C8E;
+    letter-spacing: 1px;
+    position: relative;
+
+    text-align: left;
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+:local(.paragraph){
+    padding: 15px 30px;
+    margin: 15px 0;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 30px;
+    color: #537C8E;
+    letter-spacing: 1px;
+    width: 600px;
+}
+
+:local(.title) {
+    padding: 15px 30px 0px;
+    display: inline-block;
+    font-weight: 600;
+    color: #537C8E;
+    margin: 15px 0;
+    letter-spacing: 1px;
+    text-indent: 20px;
+    text-transform: uppercase;
+    line-height: 30px;
+    border-bottom: 3px solid;
+    -webkit-border-image: -webkit-linear-gradient(
+            left,
+            rgba(255, 255, 255, 1) 1%,
+            rgba(46, 189, 189, 1) 50%,
+            rgba(83, 124, 142, 1) 100%
+    ) 0 0 100% 0/0 0 3px 0 stretch;
+    -moz-border-image: -moz-linear-gradient(
+            left,
+            rgba(255, 255, 255, 1) 1%,
+            rgba(46, 189, 189, 1) 50%,
+            rgba(83, 124, 142, 1) 100%
+    ) 0 0 100% 0/0 0 3px 0 stretch;
+    -o-border-image: -o-linear-gradient(
+            left,
+            rgba(255, 255, 255, 1) 1%,
+            rgba(46, 189, 189, 1) 50%,
+            rgba(83, 124, 142, 1) 100%
+    ) 0 0 100% 0/0 0 3px 0 stretch;
+    border-image: linear-gradient(
+            to left,
+            rgba(255, 255, 255, 1) 1%,
+            rgba(46, 189, 189, 1) 50%,
+            rgba(83, 124, 142, 1) 100%
+    ) 0 0 100% 0/0 0 3px 0 stretch;
+}
+
+:local(.search) {
+    background: no-repeat scroll left / 20% auto rgba(0, 0, 0, 0);
+    display: inline-block;
+    color: #fef8ed;
+    position: relative;
+    vertical-align: middle;
+    text-indent: 24px;
+}
+
+:local(.next) {
+    background:  no-repeat scroll left / 30% auto rgba(0, 0, 0, 0);
+    display: inline-block;
+    color: #fef8ed;
+    position: relative;
+    vertical-align: middle;
+    text-indent: 24px;
+}
+:local(.leftUpCorner) {
+    position: relative;
+    width: 800px;
+    height: 300px;
+}
+:local(.leftDownCorner) {
+    position: relative;
+    width: 800px;
+    height: 300px;
+    margin-top: 0px;
+}
+:local(.chartTitle) {
+    text-align: center;
+    font-family: sans-serif;
+}
+:local(.chartLabel) {
+    font-family: sans-serif
+}
+
+:local(.rightAllignelement) {
+    float: right;
+    margin-right: 5%;
+}
+:local(.leftAllignelement) {
+    float: left;
+    margin-left: 5%;
+}
+:local(.rowDisplay) {
+    display:flex;
+    flex-direction:row;
+    margin-left: 5%;
+    margin-top: 2%;
+}
+
+:local(.referencePricesGraphDisplay) {
+    position: relative;
+    width: 800px;
+    height: 95%;
+    margin-top: 0px;
+}
+
+:local(.middleAllign) {
+    horiz-align: center;
+}
+:local(.container) {
+    margin-left: 0;
+    margin-bottom: 30px;
+    margin-top: 1%;
+}
+
+:local(.parentOf2Tables) {
+    display: flex;
+}
+
+:local(.leftCorner ) {
+    position: relative;
+    margin: auto;
+    float: left;
+    width: 45%;
+    height: auto;
+}
+
+:local( .rightCorner ) {
+    position: relative;
+    float: right;
+    margin: auto;
+    width: 45%;
+    height: auto;
+}
+
+:local(.columnDisplayDayAhead) {
+    display:flex;
+    flex-direction:column;
+    position: relative;
+    margin-left: 5%;
+    margin-top: 2%;
+}
+
+:local(.monitoredDataTable) {
+    width: 95%;
+    height: 95%;
+    margin-top: 2%;
+    margin-left: 2%;
+}
+
+:local(.placeOrderButton) {
+    width: 15%;
+    height: 70px;
+    margin-bottom: 2%;
+}
+
+:local(.tablesInRow) {
+    width:800px;
+    height: 350px;
+    position: relative;
+
+}
+
+:local(.rowStyle) {
+    height: 800px;
+}
+
+:local(.marginForColumn) {
+    margin: 2%;
+}
+
+:local(.cardMargin) {
+    margin-top: 4%;
+}
+:local(.rightPositionedTable) {
+    margin-right: 40px;
+    width: 800px;
+}
+:local(.tableColors) {
+    background: #DCDCDC;
+    border-color: #A9A9A9
+}

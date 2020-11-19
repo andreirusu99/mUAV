@@ -23,3 +23,7 @@ catkin_ws/src/drone/.idea/
 catkin_ws/src/drone/!.vscode/tasks.json
 catkin_ws/src/drone/!.vscode/launch.json
 catkin_ws/src/drone/*.code-workspace
+
+### WebStorm ###
+ros_client/node_modules
+ros_client/.idea
