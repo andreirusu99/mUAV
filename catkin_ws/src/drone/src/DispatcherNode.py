@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import os
 import time
 
 import rospy
 from drone.msg import Attitude as AttitudeMsg
 from drone.msg import ControlAxes as ControlAxesMsg
+from std_msgs.msg import Bool
 from yamspy import MSPy
 
 FCinfo = ['MSP_ANALOG', 'MSP_ATTITUDE']
@@ -47,14 +47,14 @@ def getFCinfo(drone):
         if next_msg == "MSP_ANALOG":
             voltage = drone.ANALOG['voltage']
             amperage = drone.ANALOG['amperage']
-            power = voltage * amperage
+            power = round(voltage * amperage)
             percentage = (voltage - 9.9) / 2.73 * 100
-            percentage = min(max(percentage, 0), 100)
+            percentage = round(clamp(percentage, 0, 100))
 
         if next_msg == "MSP_ATTITUDE":
-            roll = drone.SENSOR_DATA['kinematics'][0]
-            pitch = drone.SENSOR_DATA['kinematics'][1]
-            yaw = drone.SENSOR_DATA['kinematics'][2]
+            roll = round(drone.SENSOR_DATA['kinematics'][0], 2)
+            pitch = round(drone.SENSOR_DATA['kinematics'][1], 2)
+            yaw = round(drone.SENSOR_DATA['kinematics'][2], 2)
 
     return power, percentage, roll, pitch, yaw
 
@@ -97,6 +97,7 @@ def main(drone):
 
     # publish Attitude and Power info
     attitude_pub = rospy.Publisher('CraftAttitude', AttitudeMsg, queue_size=1)
+    arm_pub = rospy.Publisher('Armed', Bool, queue_size=1)
 
     drone.is_ser_open = not drone.connect(trials=drone.ser_trials)
     if drone.is_ser_open:
@@ -105,12 +106,13 @@ def main(drone):
     else:
         rospy.logerr("{}: Error opening serial port.".format(
             rospy.get_caller_id()))
-        os._exit(1)
 
     last_info = time.time()
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
+        cam_deg = rospy.get_param("/physical/camera_angle")
+        arm_pub.publish(Bool(armed))
 
         # get board info
         power, percentage, roll, pitch, yaw = getFCinfo(drone)
@@ -119,24 +121,17 @@ def main(drone):
         CMDS['aux1'] = 2000 if armed else 1000
 
         # compensate camera angle pitch
-        camera_angle = clamp(rospy.get_param("/physical/camera_angle") + pitch, 0, 90)
+        camera_angle = clamp(cam_deg + pitch, 0, 90)
 
         # setting the camera angle
         CMDS['aux2'] = round(1000 + (11.111 * camera_angle))
 
         # send the channels to the board
-        if (drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER])):
+        if drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER]):
             dataHandler = drone.receive_msg()
             drone.process_recv_data(dataHandler)
 
-        attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power))
-
-        rospy.set_param("/physical/roll", roll)
-        rospy.set_param("/physical/pitch", pitch)
-        rospy.set_param("/physical/yaw", yaw)
-
-        rospy.set_param("/run/power", round(power))
-        rospy.set_param("/run/battery", round(percentage))
+        attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_deg))
 
         if time.time() - last_info > INFO_PERIOD:
             rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(

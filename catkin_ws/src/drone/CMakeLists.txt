@@ -165,7 +165,6 @@ include_directories(
    src/SonarNode.py
    src/GPSNode.py
    src/UDP_Listener.py
-   src/PilotNode.py
    src/FlaskServerNode.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )

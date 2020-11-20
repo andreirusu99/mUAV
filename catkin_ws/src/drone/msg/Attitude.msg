@@ -4,5 +4,8 @@ float32 pitch
 float32 yaw
 
 # information about battery and power consumption
-float32 percentage
-float32 power
+uint8 percentage
+uint8 power
+
+# camera angle
+uint8 camera_angle
