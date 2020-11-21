@@ -3,8 +3,6 @@
 import threading
 import time
 
-import cv2
-import numpy as np
 import rospy
 from drone.msg import ControlAxes as ControlAxesMsg
 
@@ -55,22 +53,16 @@ def main():
 
     pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
 
-    arm_time = disarm_time = engage_time = disengage_time = 0.0
+    arm_time = disarm_time = 0.0
     last_camera = last_print = 0.0
-
-    height = 480
-    width = 640
-    blank_image = np.zeros((height, width, 3), np.uint8)
-    blank_image[:, 0:width // 2] = (255, 0, 0)  # (B, G, R)
-    blank_image[:, width // 2:width] = (0, 255, 0)
-    cv2.imwrite("Blank_img.jpg", blank_image)
+    last_active = 0.0
 
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
 
         if udp.active:
-            rospy.set_param("/udp/last_active", time.time())
+            last_active = time.time()
 
             joystick = processInput(udp.message)
 
@@ -82,7 +74,7 @@ def main():
                                                                                                               12:14]
 
             # manual arming (debounced)
-            if triggers[1] > 1800 and not armed and time.time() - disarm_time >= 1:
+            if triggers[1] > 1800 and joy_sticks[2] <= 1100 and not armed and time.time() - disarm_time >= 1:
                 rospy.logwarn("{}: ARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", True)
                 arm_time = time.time()
@@ -115,11 +107,10 @@ def main():
                 pub.publish(ControlAxesMsg(joy_sticks))
 
         else:  # UDP inactive
-            last_active = rospy.get_param("/udp/last_active")
             timeout_th = rospy.get_param("/udp/timeout_threshold")
 
             if time.time() - last_print > 1:
-                rospy.logwarn("{}: UDP inactive!".format(rospy.get_caller_id()))
+                rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
                 last_print = time.time()
 
             # signal lost while armed (flying)

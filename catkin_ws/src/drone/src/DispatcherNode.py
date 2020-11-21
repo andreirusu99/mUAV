@@ -133,10 +133,10 @@ def main(drone):
 
         attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_deg))
 
-        if time.time() - last_info > INFO_PERIOD:
-            rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
-                rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
-            last_info = time.time()
+        # if time.time() - last_info > INFO_PERIOD:
+        #     rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(
+        #         rospy.get_caller_id(), percentage, power, roll, pitch, yaw, CMDS['throttle']))
+        #     last_info = time.time()
 
 
 if __name__ == '__main__':
