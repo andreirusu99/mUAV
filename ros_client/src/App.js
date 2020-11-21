@@ -1,29 +1,29 @@
 import './App.css';
 import React from "react";
-import LiveContainer from "../src/page/live/container/LiveContainer"
+import DashboardContainer from "./page/dashboard/container/DashboardContainer"
 import styles from "../src/common/style/main_style.css"
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 
 class App extends React.Component {
 
 
-  render() {
+    render() {
 
-    return (
-        <div className={styles.back}>
-          <Router>
-            <div>
+        return (
+            <div className={styles.back}>
+                <Router>
+                    <div>
 
-              <Switch>
+                        <Switch>
 
-                <Route exact path='/live' render={() => <LiveContainer/>}/>
+                            <Route exact path='/dashboard' render={() => <DashboardContainer/>}/>
 
-              </Switch>
+                        </Switch>
+                    </div>
+                </Router>
             </div>
-          </Router>
-        </div>
-    )
-  };
+        )
+    };
 }
 
 export default App

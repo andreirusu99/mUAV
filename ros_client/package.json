@@ -10,7 +10,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
     "reactstrap": "^8.7.1",
-    "roslib": "git://github.com/RobotWebTools/roslibjs.git#develop"
+    "roslib": "git://github.com/RobotWebTools/roslibjs.git#develop",
+    "@material-ui/core": "^4.11.0"
   },
   "scripts": {
     "start": "react-scripts start",
