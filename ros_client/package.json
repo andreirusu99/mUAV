@@ -13,7 +13,9 @@
     "roslib": "git://github.com/RobotWebTools/roslibjs.git#develop",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "fontsource-roboto": "^3.0.3"
+    "fontsource-roboto": "^3.0.3",
+    "google-map-react": "^2.1.9",
+    "react-remove-scroll": "^2.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

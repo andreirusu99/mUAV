@@ -28,10 +28,10 @@ const NavigationBar = () => (
                     <Col sm={{size: '1', offset: '2'}}>
 
                         <Button
+                            style={{color: '#30b2ff'}}
+                            variant={"text"}
                             startIcon={<DashboardSharpIcon/>}
-                            size={"small"}
-                            variant={"contained"}
-                            color={"primary"}>
+                            size={"large"}>
                             {"Dashboard"}
                         </Button>
                     </Col>

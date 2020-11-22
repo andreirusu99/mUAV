@@ -120,7 +120,7 @@
     margin-bottom: 20px;
 }
 
-:local(.paragraph){
+:local(.paragraph) {
     padding: 15px 30px;
     margin: 15px 0;
     font-weight: 400;
@@ -178,28 +178,32 @@
 }
 
 :local(.next) {
-    background:  no-repeat scroll left / 30% auto rgba(0, 0, 0, 0);
+    background: no-repeat scroll left / 30% auto rgba(0, 0, 0, 0);
     display: inline-block;
     color: #fef8ed;
     position: relative;
     vertical-align: middle;
     text-indent: 24px;
 }
+
 :local(.leftUpCorner) {
     position: relative;
     width: 800px;
     height: 300px;
 }
+
 :local(.leftDownCorner) {
     position: relative;
     width: 800px;
     height: 300px;
     margin-top: 0px;
 }
+
 :local(.chartTitle) {
     text-align: center;
     font-family: sans-serif;
 }
+
 :local(.chartLabel) {
     font-family: sans-serif
 }
@@ -208,13 +212,15 @@
     float: right;
     margin-right: 5%;
 }
+
 :local(.leftAllignelement) {
     float: left;
     margin-left: 5%;
 }
+
 :local(.rowDisplay) {
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex-direction: row;
     margin-left: 5%;
     margin-top: 2%;
 }
@@ -229,6 +235,7 @@
 :local(.middleAllign) {
     horiz-align: center;
 }
+
 :local(.container) {
     margin-left: 0;
     margin-bottom: 30px;
@@ -256,8 +263,8 @@
 }
 
 :local(.columnDisplayDayAhead) {
-    display:flex;
-    flex-direction:column;
+    display: flex;
+    flex-direction: column;
     position: relative;
     margin-left: 5%;
     margin-top: 2%;
@@ -277,7 +284,7 @@
 }
 
 :local(.tablesInRow) {
-    width:800px;
+    width: 800px;
     height: 350px;
     position: relative;
 
@@ -294,10 +301,12 @@
 :local(.cardMargin) {
     margin-top: 4%;
 }
+
 :local(.rightPositionedTable) {
     margin-right: 40px;
     width: 800px;
 }
+
 :local(.tableColors) {
     background: #DCDCDC;
     border-color: #A9A9A9
