@@ -7,11 +7,7 @@ import {
     NavbarBrand, Row, Col
 } from 'reactstrap';
 import {Button} from "@material-ui/core";
-
-const textStyle = {
-    color: 'white',
-    textDecoration: 'none'
-};
+import DashboardSharpIcon from '@material-ui/icons/DashboardSharp';
 
 
 const NavigationBar = () => (
@@ -20,8 +16,9 @@ const NavigationBar = () => (
 
             <NavbarBrand href="/dashboard">
                 <img src={logo}
-                     width={"40"}
-                     height={"32"}
+                     style={{marginLeft: '30px'}}
+                     width={"55"}
+                     height={"38"}
                      alt="logo"
                 />
             </NavbarBrand>
@@ -31,6 +28,7 @@ const NavigationBar = () => (
                     <Col sm={{size: '1', offset: '2'}}>
 
                         <Button
+                            startIcon={<DashboardSharpIcon/>}
                             size={"small"}
                             variant={"contained"}
                             color={"primary"}>

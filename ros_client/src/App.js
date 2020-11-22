@@ -2,7 +2,7 @@ import './App.css';
 import React from "react";
 import DashboardContainer from "./page/dashboard/container/DashboardContainer"
 import styles from "../src/common/style/main_style.css"
-import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 
 class App extends React.Component {
 
