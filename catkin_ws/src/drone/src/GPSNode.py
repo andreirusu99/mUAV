@@ -2,9 +2,10 @@
 
 import time
 
+import numpy as np
 import rospy
 import serial
-from geometry_msgs.msg import Pose2D as GPSMsg
+from drone.msg import GPSinfo as GPSMsg
 
 fix_quality = 0
 gps_time = ""  # UTC
@@ -29,11 +30,15 @@ def getTime(string, format, returnFormat):
 
 
 def getLatLng(latString, lngString):
-    latString = latString[:2].lstrip(
-        '0') + "." + "%.7s" % str(float(latString[2:]) * 1.0 / 60.0).lstrip("0.")
-    lngString = lngString[:3].lstrip(
-        '0') + "." + "%.7s" % str(float(lngString[3:]) * 1.0 / 60.0).lstrip("0.")
-    return latString, lngString
+    if len(latString) > 0 and len(lngString) > 0:
+        latString = latString[:2].lstrip(
+            '0') + "." + "%.7s" % str(float(latString[2:]) * 1.0 / 60.0).lstrip("0.")
+        lngString = lngString[:3].lstrip(
+            '0') + "." + "%.7s" % str(float(lngString[3:]) * 1.0 / 60.0).lstrip("0.")
+        return latString, lngString
+
+    else:
+        return "0.0", "0.0"
 
 
 def processRMC(lines):
@@ -50,8 +55,10 @@ def processGGA(lines):
     latlng = getLatLng(lines[2], lines[4])
     latitude = latlng[0]
     longitude = latlng[1]
-    fix_quality = lines[6]
-    gps_altitude = lines[9]
+    if len(lines[6]) > 0:
+        fix_quality = lines[6]
+    if len(lines[9]) > 0:
+        gps_altitude = lines[9]
 
 
 def processGLL(lines):
@@ -64,7 +71,8 @@ def processGLL(lines):
 
 def processVTG(lines):
     global ground_speed
-    ground_speed = lines[7]
+    if len(lines[7]) > 0:
+        ground_speed = lines[7]
 
 
 def checksum(line):
@@ -87,15 +95,22 @@ def checksum(line):
 
 
 def main(ser):
+    global latitude, longitude, gps_altitude, ground_speed, fix_quality
     rospy.init_node('GPSNode')
-    gps_pub = rospy.Publisher('Location', GPSMsg, queue_size=1)
 
+    gps_pub = rospy.Publisher('/GPS', GPSMsg, queue_size=1)
+
+    rate = rospy.Rate(1)
+    it = 0
+    ring = 5
+    alts = [0.0] * ring
+    speeds = [0.0] * ring
     while not rospy.is_shutdown():
 
         line = readString(ser)
         lines = line.split(",")
 
-        if checksum(line):
+        try:
             if lines[0] == "GPRMC":
                 processRMC(lines)
 
@@ -108,13 +123,42 @@ def main(ser):
             elif lines[0] == "GPVTG":
                 processVTG(lines)
 
-            rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h".format(
-                rospy.get_caller_id(),
-                gps_time,
-                float(latitude),
-                float(longitude),
-                float(gps_altitude),
-                float(ground_speed)))
+            latitude = float(latitude)
+            longitude = float(longitude)
+            gps_altitude = float(gps_altitude)
+            ground_speed = float(ground_speed)
+
+            if ground_speed < 10:
+                ground_speed = 0
+
+            it += 1
+            it %= ring
+
+            alts[it] = gps_altitude
+            speeds[it] = ground_speed
+
+            alts = np.sort(alts)
+            speeds = np.sort(speeds)
+
+            gps_altitude = round(alts[ring // 2])
+            ground_speed = round(speeds[ring // 2])
+
+            # rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h, {}".format(
+            #     rospy.get_caller_id(),
+            #     gps_time,
+            #     latitude,
+            #     longitude,
+            #     gps_altitude,
+            #     ground_speed,
+            #     fix_quality
+            # ))
+
+            gps_pub.publish(GPSMsg(latitude, longitude, gps_altitude, ground_speed, int(fix_quality)))
+
+            rate.sleep()
+
+        except Exception as e:
+            rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
 
 
 if __name__ == '__main__':

@@ -20,7 +20,8 @@ CMDS = {
 
 CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 
-INFO_PERIOD = 1
+INFO_PERIOD = 1  # seconds
+SEND_PERIOD = 0.1  # seconds
 
 STICK_MIN = 1200
 STICK_MAX = 1800
@@ -61,10 +62,10 @@ def getFCinfo(drone):
 
 def control_callback(data):
     global CMDS
-    CMDS['roll'] = clamp(data.axis[0], STICK_MIN, STICK_MAX) + ROLL_TRIM
-    CMDS['pitch'] = clamp(data.axis[1], STICK_MIN, STICK_MAX) + PITCH_TRIM
+    CMDS['roll'] = clamp(data.axis[0] + ROLL_TRIM, STICK_MIN, STICK_MAX)
+    CMDS['pitch'] = clamp(data.axis[1] + PITCH_TRIM, STICK_MIN, STICK_MAX)
     CMDS['throttle'] = clamp(data.axis[2], 1000, THROTTLE_MAX)
-    CMDS['yaw'] = clamp(data.axis[3], STICK_MIN, STICK_MAX) + YAW_TRIM
+    CMDS['yaw'] = clamp(data.axis[3] + YAW_TRIM, STICK_MIN, STICK_MAX)
 
     applyDeadZone()
 
@@ -72,7 +73,7 @@ def control_callback(data):
 def applyDeadZone():
     global CMDS
     # deadzone configuration
-    dead_zone_ratio = 0.1
+    dead_zone_ratio = 0.08
     input_range = 1000.0
     dead_zone = input_range * dead_zone_ratio
     roll, pitch, throttle, yaw = CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']
@@ -98,6 +99,7 @@ def main(drone):
     # publish Attitude and Power info
     attitude_pub = rospy.Publisher('CraftAttitude', AttitudeMsg, queue_size=1)
     arm_pub = rospy.Publisher('Armed', Bool, queue_size=1)
+    control_pub = rospy.Publisher('ControlSlow', ControlAxesMsg, queue_size=1)
 
     drone.is_ser_open = not drone.connect(trials=drone.ser_trials)
     if drone.is_ser_open:
@@ -107,7 +109,7 @@ def main(drone):
         rospy.logerr("{}: Error opening serial port.".format(
             rospy.get_caller_id()))
 
-    last_info = time.time()
+    last_info = last_send = time.time()
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
@@ -131,7 +133,10 @@ def main(drone):
             dataHandler = drone.receive_msg()
             drone.process_recv_data(dataHandler)
 
-        attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_deg))
+        if time.time() - last_send > SEND_PERIOD:
+            attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_deg))
+            control_pub.publish(ControlAxesMsg([CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']]))
+            last_send = time.time()
 
         # if time.time() - last_info > INFO_PERIOD:
         #     rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(

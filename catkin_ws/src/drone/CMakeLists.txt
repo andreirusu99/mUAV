@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    ControlAxes.msg
    Attitude.msg
+   GPSinfo.msg
  )
 
 ## Generate services in the 'srv' folder

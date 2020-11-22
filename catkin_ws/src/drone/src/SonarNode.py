@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
-import rospy
 import time
-import threading
-import os
-import numpy as np
-
-from std_msgs.msg import Float32 as SonarMsg
 
 import Jetson.GPIO as GPIO
+import numpy as np
+import rospy
+from std_msgs.msg import Float32 as SonarMsg
 
 TRIG = 27
 ECHO = 17
@@ -21,7 +18,7 @@ def reading():
     # set Trigger to HIGH
     GPIO.output(TRIG, True)
 
-    # set Trigger after 0.01ms to LOW
+    # set Trigger after 0.02ms to LOW
     time.sleep(0.00002)
     GPIO.output(TRIG, False)
 
@@ -29,7 +26,6 @@ def reading():
 
     maxTime = 0.02
     timeout = pulse_start + maxTime
-    timed_out = False
 
     while GPIO.input(ECHO) == 0 and pulse_start < timeout:
         pulse_start = time.time()
@@ -66,19 +62,31 @@ def main():
     GPIO.setup(ECHO, GPIO.IN)
 
     it = 0
-    ring = 5
+    ring = 10
     distances = [0.0] * ring
-    rate = rospy.Rate(5) # Hz
+    rate = rospy.Rate(10)  # Hz
+    last_pub = 0
+    pub_hz = 5
+    pub_rate = 1.0 / pub_hz
     while not rospy.is_shutdown():
         it += 1
         it %= ring
         distances[it] = reading()
-        median = np.median(distances)
-        mean = np.mean(distances)
-        distance = np.round((mean + median) / 2, decimals=0)
 
-        # rospy.loginfo("{}: {}cm".format(rospy.get_caller_id(), distance))
-        pub.publish(SonarMsg(distance))
+        if distances[it] > 400:
+            distances[it] = 400
+
+        elif distances[it] < 2:
+            distances[it] = 2
+
+        distances = np.sort(distances)
+        distance = round(distances[ring // 2])
+
+        if time.time() - last_pub > pub_rate:
+            # rospy.loginfo("{}: {}cm".format(rospy.get_caller_id(), distance))
+            pub.publish(SonarMsg(distance))
+            last_pub = time.time()
+
         rate.sleep()
 
 
