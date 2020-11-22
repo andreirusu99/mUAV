@@ -153,5 +153,7 @@ if __name__ == '__main__':
 
         main(drone)
 
-    except rospy.ROSInterruptException as error:
         drone.conn.close()
+
+    except rospy.ROSInterruptException as error:
+        pass

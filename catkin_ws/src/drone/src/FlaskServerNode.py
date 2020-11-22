@@ -46,11 +46,18 @@ def streamFrames():
 
 
 if __name__ == '__main__':
-    # start the camera thread
-    camera_thread = threading.Thread(target=lambda: cam.captureFrames())
-    camera_thread.daemon = True
-    camera_thread.start()
+    try:
+        # start the camera thread
+        camera_thread = threading.Thread(target=lambda: cam.captureFrames())
+        camera_thread.daemon = True
+        camera_thread.start()
 
-    # start the Flask Web Application
-    rospy.loginfo("{}: Starting Flask Server on {}:{}".format(rospy.get_caller_id(), HOST_IP, HOST_PORT))
-    app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=False)
+        # start the Flask Web Application
+        rospy.loginfo("{}: Starting Flask Server on {}:{}".format(rospy.get_caller_id(), HOST_IP, HOST_PORT))
+        app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=False)
+
+        cam.video_capture.release()
+        camera_thread.join(1)
+
+    except rospy.ROSInterruptException as error:
+        pass

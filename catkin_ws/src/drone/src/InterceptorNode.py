@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import threading
 import time
 
@@ -39,13 +40,12 @@ def processInput(udp_message):
 
 
 def UDPthread():
-    _TAG = "UDP Thread"
-
     try:
         udp.startTwisted()
 
     except Exception as error:
-        rospy.logerr("{}: {}".format(_TAG, error))
+        udp.stop()
+        rospy.logerr("{}: {}".format(rospy.get_caller_id(), error))
 
 
 def main():
@@ -78,9 +78,11 @@ def main():
                 rospy.logwarn("{}: ARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", True)
                 arm_time = time.time()
+            elif triggers[1] > 1800 and joy_sticks[2] > 1100 and not armed:
+                rospy.logwarn("{}: Cannot ARM, lower throttle!".format(rospy.get_caller_id()))
 
             # manual disarming (debounced)
-            elif triggers[1] > 1800 and joy_sticks[2] <= 1100 and armed and time.time() - arm_time >= 1:
+            if triggers[1] > 1800 and joy_sticks[2] <= 1100 and armed and time.time() - arm_time >= 1:
                 rospy.logwarn("{}: DISARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", False)
                 disarm_time = time.time()
@@ -134,7 +136,7 @@ if __name__ == "__main__":
         thread_udp.start()
 
         main()
+        sys.exit()
 
     except rospy.ROSInterruptException as error:
-        thread_udp.stop()
-        pass
+        sys.exit()

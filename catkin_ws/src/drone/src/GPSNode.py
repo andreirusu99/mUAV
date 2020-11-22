@@ -7,11 +7,12 @@ import rospy
 import serial
 from drone.msg import GPSinfo as GPSMsg
 
+
 fix_quality = 0
 gps_time = ""  # UTC
 latitude = 0.0  # N
 longitude = 0.0  # E
-gps_altitude = 0.0  # m
+elevation = 0.0  # m
 ground_speed = 0.0  # km/h
 
 
@@ -37,9 +38,6 @@ def getLatLng(latString, lngString):
             '0') + "." + "%.7s" % str(float(lngString[3:]) * 1.0 / 60.0).lstrip("0.")
         return latString, lngString
 
-    else:
-        return "0.0", "0.0"
-
 
 def processRMC(lines):
     global latitude, longitude
@@ -50,7 +48,7 @@ def processRMC(lines):
 
 
 def processGGA(lines):
-    global latitude, longitude, fix_quality, gps_altitude
+    global latitude, longitude, fix_quality, elevation
     getTime(lines[1], "%H%M%S.%f", "%H:%M:%S")
     latlng = getLatLng(lines[2], lines[4])
     latitude = latlng[0]
@@ -58,7 +56,7 @@ def processGGA(lines):
     if len(lines[6]) > 0:
         fix_quality = lines[6]
     if len(lines[9]) > 0:
-        gps_altitude = lines[9]
+        elevation = lines[9]
 
 
 def processGLL(lines):
@@ -95,7 +93,7 @@ def checksum(line):
 
 
 def main(ser):
-    global latitude, longitude, gps_altitude, ground_speed, fix_quality
+    global latitude, longitude, elevation, ground_speed, fix_quality
     rospy.init_node('GPSNode')
 
     gps_pub = rospy.Publisher('/GPS', GPSMsg, queue_size=1)
@@ -103,8 +101,9 @@ def main(ser):
     rate = rospy.Rate(1)
     it = 0
     ring = 5
-    alts = [0.0] * ring
+    elevs = [0.0] * ring
     speeds = [0.0] * ring
+    fixed = False
     while not rospy.is_shutdown():
 
         line = readString(ser)
@@ -123,42 +122,57 @@ def main(ser):
             elif lines[0] == "GPVTG":
                 processVTG(lines)
 
-            latitude = float(latitude)
-            longitude = float(longitude)
-            gps_altitude = float(gps_altitude)
-            ground_speed = float(ground_speed)
+            fix_quality = int(fix_quality)
 
-            if ground_speed < 10:
-                ground_speed = 0
+            if fix_quality > 0:
 
-            it += 1
-            it %= ring
+                if not fixed:
+                    rospy.loginfo("{}: Fix gained with {} sat".format(rospy.get_caller_id(), fix_quality))
+                    fixed = True
 
-            alts[it] = gps_altitude
-            speeds[it] = ground_speed
+                latitude = float(latitude)
+                longitude = float(longitude)
+                elevation = round(float(elevation))
+                ground_speed = round(float(ground_speed), 1)
 
-            alts = np.sort(alts)
-            speeds = np.sort(speeds)
+                if ground_speed < 10:
+                    ground_speed = 0
 
-            gps_altitude = round(alts[ring // 2])
-            ground_speed = round(speeds[ring // 2])
+           
+                it += 1
+                it %= ring
 
-            # rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h, {}".format(
-            #     rospy.get_caller_id(),
-            #     gps_time,
-            #     latitude,
-            #     longitude,
-            #     gps_altitude,
-            #     ground_speed,
-            #     fix_quality
-            # ))
+                elevs[it] = elevation
+                speeds[it] = ground_speed
 
-            gps_pub.publish(GPSMsg(latitude, longitude, gps_altitude, ground_speed, int(fix_quality)))
+                elevs_sorted = np.sort(elevs)
+                speeds_sorted = np.sort(speeds)
+
+                elev = round(elevs_sorted[ring // 2])
+                spd = round(speeds_sorted[ring // 2])
+
+                # rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h, {}".format(
+                #     rospy.get_caller_id(),
+                #     gps_time,
+                #     latitude,
+                #     longitude,
+                #     elev,
+                #     spd,
+                #     fix_quality
+                # ))
+
+                gps_pub.publish(GPSMsg(latitude, longitude, elev, spd, fix_quality))
+
+            else:
+                if fixed:
+                    rospy.loginfo("{}: Fix Lost!".format(rospy.get_caller_id()))
+                    fixed = False
 
             rate.sleep()
 
         except Exception as e:
-            rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
+            pass
+            # rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
 
 
 if __name__ == '__main__':

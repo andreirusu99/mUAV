@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import struct
-from twisted.internet.protocol import DatagramProtocol
+
 from twisted.internet import reactor
 from twisted.internet import task
+from twisted.internet.protocol import DatagramProtocol
 
 PORT = 51444
 message = [
@@ -12,6 +13,7 @@ message = [
 
 active = False
 
+
 def timeout():
     global active, message
     active = False
@@ -19,7 +21,6 @@ def timeout():
         # There is no UDP data, so give "safe" commands
         message = [0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
 
 
 class twistedUDP(DatagramProtocol):
