@@ -7,12 +7,10 @@ import rospy
 import serial
 from drone.msg import GPSinfo as GPSMsg
 
-
 fix_quality = 0
 gps_time = ""  # UTC
 latitude = 0.0  # N
 longitude = 0.0  # E
-elevation = 0.0  # m
 ground_speed = 0.0  # km/h
 
 
@@ -48,15 +46,13 @@ def processRMC(lines):
 
 
 def processGGA(lines):
-    global latitude, longitude, fix_quality, elevation
+    global latitude, longitude, fix_quality
     getTime(lines[1], "%H%M%S.%f", "%H:%M:%S")
     latlng = getLatLng(lines[2], lines[4])
     latitude = latlng[0]
     longitude = latlng[1]
     if len(lines[6]) > 0:
         fix_quality = lines[6]
-    if len(lines[9]) > 0:
-        elevation = lines[9]
 
 
 def processGLL(lines):
@@ -73,25 +69,6 @@ def processVTG(lines):
         ground_speed = lines[7]
 
 
-def checksum(line):
-    checkString = line.partition("*")
-    checksum = 0
-    for c in checkString[0]:
-        checksum ^= ord(c)
-
-    try:  # Just to make sure
-        inputChecksum = int(checkString[2].rstrip(), 16)
-    except:
-        rospy.logerr(rospy.get_caller_id(), "Error in string")
-        return False
-
-    if checksum == inputChecksum:
-        return True
-    else:
-        rospy.logerr(rospy.get_caller_id(), "Checksum error!")
-        return False
-
-
 def main(ser):
     global latitude, longitude, elevation, ground_speed, fix_quality
     rospy.init_node('GPSNode')
@@ -101,7 +78,6 @@ def main(ser):
     rate = rospy.Rate(1)
     it = 0
     ring = 5
-    elevs = [0.0] * ring
     speeds = [0.0] * ring
     fixed = False
     while not rospy.is_shutdown():
@@ -138,30 +114,16 @@ def main(ser):
                 if ground_speed < 10:
                     ground_speed = 0
 
-           
                 it += 1
                 it %= ring
 
-                elevs[it] = elevation
                 speeds[it] = ground_speed
 
-                elevs_sorted = np.sort(elevs)
                 speeds_sorted = np.sort(speeds)
 
-                elev = round(elevs_sorted[ring // 2])
                 spd = round(speeds_sorted[ring // 2])
 
-                # rospy.loginfo("{}: {}UTC: {:.5f}N {:.5f}E @ {:.1f}M, {:.1f}km/h, {}".format(
-                #     rospy.get_caller_id(),
-                #     gps_time,
-                #     latitude,
-                #     longitude,
-                #     elev,
-                #     spd,
-                #     fix_quality
-                # ))
-
-                gps_pub.publish(GPSMsg(latitude, longitude, elev, spd, fix_quality))
+                gps_pub.publish(GPSMsg(latitude, longitude, spd, fix_quality))
 
             else:
                 if fixed:
@@ -172,7 +134,6 @@ def main(ser):
 
         except Exception as e:
             pass
-            # rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
 
 
 if __name__ == '__main__':

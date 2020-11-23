@@ -2,10 +2,13 @@
 import time
 
 import rospy
+from drone.msg import Altitude as AltitudeMsg
 from drone.msg import Attitude as AttitudeMsg
 from drone.msg import ControlAxes as ControlAxesMsg
 from std_msgs.msg import Bool
 from yamspy import MSPy
+
+import BMP_Interface as bmp
 
 FCinfo = ['MSP_ANALOG', 'MSP_ATTITUDE']
 
@@ -100,6 +103,7 @@ def main(drone):
     attitude_pub = rospy.Publisher('CraftAttitude', AttitudeMsg, queue_size=1)
     arm_pub = rospy.Publisher('Armed', Bool, queue_size=1)
     control_pub = rospy.Publisher('ControlSlow', ControlAxesMsg, queue_size=1)
+    alt_pub = rospy.Publisher('Altitude', AltitudeMsg, queue_size=1)
 
     drone.is_ser_open = not drone.connect(trials=drone.ser_trials)
     if drone.is_ser_open:
@@ -110,6 +114,7 @@ def main(drone):
             rospy.get_caller_id()))
 
     last_info = last_send = time.time()
+    initial_altitude, _ = bmp.getAltAndTemp()
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
@@ -134,6 +139,10 @@ def main(drone):
             drone.process_recv_data(dataHandler)
 
         if time.time() - last_send > SEND_PERIOD:
+            abs_alt, temp = bmp.getAltAndTemp()
+            rel_alt = abs_alt - initial_altitude
+
+            alt_pub.publish(AltitudeMsg(rel_alt, abs_alt, temp))
             attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_deg))
             control_pub.publish(ControlAxesMsg([CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']]))
             last_send = time.time()

@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
    ControlAxes.msg
    Attitude.msg
    GPSinfo.msg
+   Altitude.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -165,7 +166,6 @@ include_directories(
    src/DispatcherNode.py
    src/SonarNode.py
    src/GPSNode.py
-   src/UDP_Listener.py
    src/FlaskServerNode.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
