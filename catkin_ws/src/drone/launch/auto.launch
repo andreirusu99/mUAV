@@ -18,6 +18,5 @@
     <node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
     <node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>
     <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/>
-    <node name="ComputingNode" pkg="drone" type="ComputingNode.py" output="screen"/>
 
 </launch>

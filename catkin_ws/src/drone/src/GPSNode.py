@@ -70,10 +70,10 @@ def processVTG(lines):
 
 
 def main(ser):
-    global latitude, longitude, elevation, ground_speed, fix_quality
+    global latitude, longitude, ground_speed, fix_quality
     rospy.init_node('GPSNode')
 
-    gps_pub = rospy.Publisher('/GPS', GPSMsg, queue_size=1)
+    gps_pub = rospy.Publisher('GPS', GPSMsg, queue_size=1)
 
     rate = rospy.Rate(1)
     it = 0
@@ -108,7 +108,6 @@ def main(ser):
 
                 latitude = float(latitude)
                 longitude = float(longitude)
-                elevation = round(float(elevation))
                 ground_speed = round(float(ground_speed), 1)
 
                 if ground_speed < 10:
@@ -133,7 +132,7 @@ def main(ser):
             rate.sleep()
 
         except Exception as e:
-            pass
+            rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
 
 
 if __name__ == '__main__':

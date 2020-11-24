@@ -70,8 +70,8 @@ def main():
 
             triggers = joystick[4:6]
 
-            A, B, X, Y, shoulders, hat = joystick[6], joystick[7], joystick[8], joystick[9], joystick[10:12], joystick[
-                                                                                                              12:14]
+            A, B, X, Y, shoulders, hat = \
+                joystick[6], joystick[7], joystick[8], joystick[9], joystick[10:12], joystick[12:14]
 
             # manual arming (debounced)
             if triggers[1] > 1800 and joy_sticks[2] <= 1100 and not armed and time.time() - disarm_time >= 1:
