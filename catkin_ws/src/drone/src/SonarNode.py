@@ -73,10 +73,7 @@ def main():
         it %= ring
         distances[it] = reading()
 
-        if distances[it] > 400:
-            distances[it] = 400
-
-        elif distances[it] < 2:
+        if distances[it] < 2:
             distances[it] = 2
 
         distances = np.sort(distances)
