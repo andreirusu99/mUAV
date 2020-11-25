@@ -26,8 +26,10 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import GoogleMap from "../component/GoogleMap";
 import CallMissedIcon from '@material-ui/icons/CallMissed';
 import {RemoveScroll} from "react-remove-scroll";
+import {Slider} from "@material-ui/core";
 
-
+// the boundary where the sonar reading is replaced with the barometer reading
+const BARO_THRESH = 100 //cm
 class DashboardContainer extends React.Component {
 
     constructor(props, context) {
@@ -77,13 +79,27 @@ class DashboardContainer extends React.Component {
                         lat: 46.766715,//N
                         lng: 23.618749, //E
                         fix: 0,
-                        speed: 0.0,
-                        elevation: 0
+                        speed: 0.0
                     },
                     path: '/GPS',
                     type: 'drone/GPSinfo'
+                },
+                bmp: {
+                    value: {
+                        rel_alt: 0.0,
+                        abs_alt: 0.0,
+                        temp: 0.0
+                    },
+                    path: '/Altitude',
+                    type: 'drone/Altitude'
+                },
+                run: {
+                    value: {
+                        runtime: 0.0
+                    },
+                    path: '/Run',
+                    type: 'drone/RunInfo'
                 }
-
             }
         }
     }
@@ -107,6 +123,21 @@ class DashboardContainer extends React.Component {
                         yaw: 1500,
                         throttle: 1000
                     }
+                }
+                self.setState(state)
+            }
+        });
+
+        // subscribe to run info
+        new ROSLIB.Topic({
+            ros: this.state.ros,
+            name: this.state.topic.run.path,
+            messageType: this.state.topic.run.type
+        }).subscribe(function (message) {
+            if (message) {
+                let state = self.state
+                state['topic']['run']['value'] = {
+                    runtime: message.runtime
                 }
                 self.setState(state)
             }
@@ -161,8 +192,8 @@ class DashboardContainer extends React.Component {
         }).subscribe(function (message) {
             if (message) {
                 let state = self.state
-                if (message.data > 400)
-                    state['topic']['sonar']['value'] = 400
+                if (message.data > BARO_THRESH)
+                    state['topic']['sonar']['value'] = BARO_THRESH
                 else
                     state['topic']['sonar']['value'] = message.data
                 self.setState(state)
@@ -181,12 +212,29 @@ class DashboardContainer extends React.Component {
                     fix: message.fix,
                     lat: message.lat,
                     lng: message.lng,
-                    speed: message.speed,
-                    elevation: message.elevation
+                    speed: message.speed
                 }
                 self.setState(state)
             }
         });
+
+        // subscribe to barometer readings
+        new ROSLIB.Topic({
+            ros: this.state.ros,
+            name: this.state.topic.bmp.path,
+            messageType: this.state.topic.bmp.type
+        }).subscribe(function (message) {
+            if (message) {
+                let state = self.state
+                state['topic']['bmp']['value'] = {
+                    rel_alt: message.relative,
+                    abs_alt: message.absolute,
+                    temp: message.temp
+                }
+                self.setState(state)
+            }
+        });
+
     }
 
     componentDidMount() {
@@ -223,6 +271,13 @@ class DashboardContainer extends React.Component {
                 throttle: 1000
             }
             state['topic']['gps']['value']['fix'] = 0
+            state['topic']['gps']['value']['speed'] = 0.0
+            state['topic']['bmp']['value'] = {
+                rel_alt: 0.0,
+                abs_alt: 0.0,
+                temp: 0.0
+            }
+            state['topic']['sonar']['value'] = 0.0
             self.setState(state)
         });
 
@@ -237,7 +292,7 @@ class DashboardContainer extends React.Component {
                     <NavigationBar/>
 
                     <Row style={{
-                        backgroundColor: '#f0f0f0',
+                        backgroundColor: '#eaeaea',
                         paddingTop: '10px',
                         paddingBottom: '10px'
                     }}>
@@ -252,7 +307,9 @@ class DashboardContainer extends React.Component {
                                     backgroundColor: this.state.ros_connected ? 'green' : 'red',
                                     color: 'white', fontSize: '16px'
                                 }}
-                                label={this.state.ros_connected ? 'ROS connected' : 'ROS disconnected'}
+                                label={this.state.ros_connected
+                                    ? 'ROS up: ' + (this.state.topic.run.value.runtime / 60).toFixed(2) + ' mins'
+                                    : 'ROS disconnected'}
                             />
                         </Col>
 
@@ -281,7 +338,7 @@ class DashboardContainer extends React.Component {
                                     color: 'white', fontSize: '16px'
                                 }}
                                 label={this.state.topic.gps.value.fix > 0
-                                    ? 'GPS Fixed - ' + this.state.topic.gps.value.fix
+                                    ? 'GPS Fix: ' + this.state.topic.gps.value.fix + ' sat'
                                     : 'GPS not fixed'}
                             />
                         </Col>
@@ -293,17 +350,21 @@ class DashboardContainer extends React.Component {
 
                             <Row>
                                 <Col>
-                                    <Paper>
+                                    <Paper elevation={3}>
 
                                         <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
                                             <VideocamIcon style={{color: '#de3636', float: 'left'}}/>
                                             <strong>{'Live Video Feed @ ' + this.state.topic.attitude.value.camera_angle + '°'}</strong>
                                         </CardHeader>
-                                        <Card style={{paddingLeft: '5px', paddingTop: '5px', paddingBottom: '5px'}}>
+                                        <Card style={{paddingLeft: '0px', paddingTop: '0px', paddingBottom: '0px'}}>
                                             <img
-                                                style={{backgroundColor: '#585858'}}
-                                                width={390}
-                                                height={220}
+                                                style={{
+                                                    backgroundColor: '#585858',
+                                                    borderBottomLeftRadius: '3px',
+                                                    borderBottomRightRadius: '3px'
+                                                }}
+                                                width={404}
+                                                height={227}
                                                 src={'http://' + ROS_REMOTE.address + ':' + ROS_REMOTE.video_port + '/' + ROS_REMOTE.video_path}
                                                 alt={'Live Video Feed'}/>
                                         </Card>
@@ -313,7 +374,7 @@ class DashboardContainer extends React.Component {
 
                             <Row>
                                 <Col>
-                                    <Paper>
+                                    <Paper elevation={3}>
 
                                         <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
                                             <PowerSettingsNewIcon style={{float: 'left', color: '#3398e3'}}/>
@@ -328,7 +389,7 @@ class DashboardContainer extends React.Component {
                                                 <FlashOnIcon fontSize={'large'}
                                                              style={{float: 'left', color: '#DC3443',}}/>
                                                 <div style={{textAlign: 'left', marginBottom: '-25px'}}>
-                                                    {'Power'}
+                                                    {'Energy usage'}
                                                 </div>
 
                                                 <strong>{this.state.topic.attitude.value.power + ' W'}</strong>
@@ -337,12 +398,12 @@ class DashboardContainer extends React.Component {
                                                           value={this.state.topic.attitude.value.power / 2}/>
                                             </div>
 
-                                            <div style={{fontSize: '18px', marginTop: '20px'}}
+                                            <div style={{fontSize: '18px', marginTop: '20px', marginBottom: '5px'}}
                                                  className={'text-center'}>
                                                 <div style={{textAlign: 'left', marginBottom: '-25px'}}>
                                                     <BatteryChargingFullIcon fontSize={'large'}
                                                                              style={{color: '#26A843', float: 'left'}}/>
-                                                    {'Battery'}
+                                                    {'Battery status'}
                                                 </div>
                                                 <strong>{this.state.topic.attitude.value.percentage + '%'}</strong>
 
@@ -360,10 +421,8 @@ class DashboardContainer extends React.Component {
                         <Col sm={{size: '3', offset: 0}}>
 
                             <Row>
-
                                 <Col>
-
-                                    <Paper>
+                                    <Paper elevation={3}>
                                         <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
                                             <GamepadIcon style={{float: 'left', color: '#ff6d00'}}/>
                                             <strong>{'Control Axes'}</strong>
@@ -476,7 +535,7 @@ class DashboardContainer extends React.Component {
 
                             <Row>
                                 <Col>
-                                    <Paper>
+                                    <Paper elevation={3}>
                                         <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
                                             <OpenWithIcon style={{float: 'left', color: '#5ed416'}}/>
                                             <strong>{'UAV Orientation'}</strong>
@@ -544,9 +603,8 @@ class DashboardContainer extends React.Component {
                         <Col sm={{size: '4', offset: 0}}>
 
                             <Row>
-
                                 <Col>
-                                    <Paper>
+                                    <Paper elevation={3}>
 
                                         <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
                                             <ExploreIcon style={{float: 'left', color: '#1f55a7'}}/>
@@ -557,7 +615,6 @@ class DashboardContainer extends React.Component {
                                             fontSize: '16px',
                                             height: '100%'
                                         }}>
-
                                             <GoogleMap
                                                 center={{
                                                     lat: this.state.topic.gps.value.lat,
@@ -574,7 +631,7 @@ class DashboardContainer extends React.Component {
                                             />
 
                                             <div style={{
-                                                marginTop: '20px',
+                                                marginTop: '5px',
                                                 paddingLeft: '50px',
                                                 paddingRight: '50px',
                                                 fontSize: '18px'
@@ -583,38 +640,65 @@ class DashboardContainer extends React.Component {
                                                 <div>
 
                                                     <div style={{float: 'left'}}>
-                                                        {"Absolute Elevation"}
+                                                        {"Altitude"}
+                                                        <i>{" (barometric)"}</i>
                                                     </div>
 
                                                     <strong
                                                         style={{float: "right"}}>
-                                                        {this.state.topic.gps.value.elevation + " m"}
+                                                        {this.state.topic.bmp.value.abs_alt.toFixed(1) + " m"}
                                                     </strong>
                                                 </div>
 
-                                                <div style={{marginTop: '40px'}}>
+                                                <div style={{marginTop: '35px'}}>
 
                                                     <div style={{float: 'left'}}>
-                                                        {"Ground Distance"}
+                                                        {"Height"}
+                                                        <i>{" (relative)"}</i>
                                                     </div>
 
                                                     <strong
                                                         style={{float: "right"}}>
-                                                        {this.state.topic.sonar.value + " cm"}
+                                                        {this.state.topic.sonar.value >= BARO_THRESH
+                                                            ? (this.state.topic.bmp.value.rel_alt).toFixed(1) + " m"
+                                                            : this.state.topic.sonar.value > 5
+                                                                ? this.state.topic.sonar.value + " cm"
+                                                                : this.state.topic.armed.value && this.state.topic.control.value.throttle > 1300
+                                                                    ? (this.state.topic.bmp.value.rel_alt).toFixed(1) + " m"
+                                                                    : "GROUNDED"
+                                                        }
                                                     </strong>
                                                 </div>
 
-                                                <div style={{marginTop: '80px'}}>
+                                                <div style={{marginTop: '70px'}}>
 
                                                     <div style={{float: 'left'}}>
-                                                        {"Ground Speed"}
+                                                        {"Air Temperature"}
                                                     </div>
 
                                                     <strong
                                                         style={{float: "right"}}>
-                                                        {this.state.topic.gps.value.speed + " km/h"}
+                                                        {(this.state.topic.bmp.value.temp).toFixed(1) + " °C"}
                                                     </strong>
                                                 </div>
+
+                                                <Slider
+                                                    draggable={"false"}
+                                                    style={{marginBottom: '0px', marginTop: '-10px', color: '#e33c3c'}}
+                                                    marks={[
+                                                        {value: 0, label: '0°'},
+                                                        {value: 12.5, label: '5°'},
+                                                        {value: 25, label: '10°'},
+                                                        {value: 37.5, label: '15°'},
+                                                        {value: 50, label: '20°'},
+                                                        {value: 62.5, label: '25°'},
+                                                        {value: 75, label: '30°'},
+                                                        {value: 87.5, label: '35°'},
+                                                        {value: 100, label: '40°'},
+                                                    ]}
+                                                    value={this.state.topic.bmp.value.temp.toFixed(1) * 100 / 40}
+                                                />
+
                                             </div>
 
 

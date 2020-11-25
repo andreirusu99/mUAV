@@ -4,9 +4,6 @@ import GoogleMapReact from "google-map-react";
 
 class GoogleMap extends React.Component {
 
-    constructor(props, context) {
-        super(props, context);
-    }
 
     getMapOptions = (maps: Maps) => {
 
@@ -31,7 +28,7 @@ class GoogleMap extends React.Component {
 
             zoomControl: false,
             rotateControl: false,
-            clickableIcons: true
+            clickableIcons: false
         };
     }
 
