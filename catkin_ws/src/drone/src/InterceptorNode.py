@@ -56,7 +56,7 @@ def main():
     arm_time = disarm_time = 0.0
     last_camera = last_print = 0.0
     last_active = 0.0
-
+    rate = rospy.Rate(20)  # Hz
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
@@ -99,6 +99,7 @@ def main():
             # shoulder yaw
             if shoulders[0] == 1:
                 joy_sticks[3] = 1300
+
             elif shoulders[1] == 1:
                 joy_sticks[3] = 1800
             else:
@@ -112,20 +113,22 @@ def main():
             timeout_th = rospy.get_param("/udp/timeout_threshold")
 
             if time.time() - last_print > 1:
-                rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
+                # rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
                 last_print = time.time()
 
             # signal lost while armed (flying)
             if armed and time.time() - last_active >= timeout_th:
                 rospy.set_param("/run/armed", False)
-                rospy.logerr("{}: UDP timeout: DISARM for safety".format(
+                rospy.logerr("{}: UDP timeout: DISARMED for safety".format(
                     rospy.get_caller_id()))
 
                 # suspend until connection regained
-                while not udp.active:
+                while not udp.active and time.time():
                     pass
-                rospy.logwarn("{}: UDP connection regained!".format(
+                rospy.info("{}: UDP connection regained!".format(
                     rospy.get_caller_id()))
+
+        rate.sleep()
 
 
 if __name__ == "__main__":

@@ -33,10 +33,11 @@ STICK_MIN = 1200
 STICK_MAX = 1800
 THROTTLE_MAX = 1700
 
-ROLL_TRIM = 15
-PITCH_TRIM = -17
-YAW_TRIM = 0
+ROLL_TRIM = -13
+PITCH_TRIM = -13
+YAW_TRIM = 1
 
+# TODO: Add the Computing Node back
 # the ground height from the sonar
 SONAR = 0.0
 
@@ -85,28 +86,28 @@ def getFCinfo(drone):
 
 def control_callback(data):
     global CMDS
-    CMDS['roll'] = clamp(data.axis[0] + ROLL_TRIM, STICK_MIN, STICK_MAX)
-    CMDS['pitch'] = clamp(data.axis[1] + PITCH_TRIM, STICK_MIN, STICK_MAX)
+    CMDS['roll'] = clamp(data.axis[0], STICK_MIN, STICK_MAX)
+    CMDS['pitch'] = clamp(data.axis[1], STICK_MIN, STICK_MAX)
     CMDS['throttle'] = clamp(data.axis[2], 1000, THROTTLE_MAX)
-    CMDS['yaw'] = clamp(data.axis[3] + YAW_TRIM, STICK_MIN, STICK_MAX)
+    CMDS['yaw'] = clamp(data.axis[3], STICK_MIN, STICK_MAX)
 
-    applyDeadZone()
+    applyDeadZoneAndTrims()
 
 
-def applyDeadZone():
+def applyDeadZoneAndTrims():
     global CMDS
     # deadzone configuration
-    dead_zone_ratio = 0.08
+    dead_zone_ratio = 0.1
     input_range = 1000.0
     dead_zone = input_range * dead_zone_ratio
     roll, pitch, throttle, yaw = CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']
 
     if abs(roll - 1500) < dead_zone:
-        roll = 1500
+        roll = 1500 + ROLL_TRIM
     if abs(pitch - 1500) < dead_zone:
-        pitch = 1500
+        pitch = 1500 + PITCH_TRIM
     if abs(yaw - 1500) < dead_zone * 1.5:
-        yaw = 1500
+        yaw = 1500 + YAW_TRIM
     if abs(throttle - 1000) < 50:
         throttle = 1000
 
@@ -182,6 +183,7 @@ def main(drone):
     last_info = last_send = time.time()
     initial_altitude, _ = bmp.getAltAndTemp()
     ros_start_time = time.time()
+    rate = rospy.Rate(20)  # Hz
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
@@ -211,12 +213,16 @@ def main(drone):
             rel_alt = abs_alt - initial_altitude
             runtime = time.time() - ros_start_time
 
+            if armed:
+                control_pub.publish(ControlAxesMsg([CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']]))
+
             alt_pub.publish(AltitudeMsg(rel_alt, abs_alt, temp))
             attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_angle))
-            control_pub.publish(ControlAxesMsg([CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']]))
             run_pub.publish(RunInfoMsg(runtime))
             area_pub.publish(Float32(cam_area))
             last_send = time.time()
+
+        rate.sleep()
 
         # if time.time() - last_info > INFO_PERIOD:
         #     rospy.loginfo("{}: {:.0f}% left @ {:.0f}W, (R{:.2f}, P{:.2f}, Y{:.2f}) -> {}".format(

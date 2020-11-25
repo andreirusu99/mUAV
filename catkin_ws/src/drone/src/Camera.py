@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+
+# The unique camera image source of the system
 import time
 
 import cv2
 
 FRAME = None
+
+# the speed at which the FRAMe object is updated
 MAX_CAM_FPS = 20
 MAX_FRAME_TIME = 1.0 / MAX_CAM_FPS  # seconds
 last_cam_read = 0.0

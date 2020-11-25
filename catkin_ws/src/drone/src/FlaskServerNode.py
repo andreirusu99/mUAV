@@ -8,9 +8,10 @@ from flask import Flask, Response
 
 import Camera as cam
 
-# Image frame sent to the Flask object
+# Image frame sent to the Ground Station
 FRAME = None
-MAX_FRAME_TIME = cam.MAX_FRAME_TIME
+SEND_FPS = 20
+FRAME_TIME = 1.0 / SEND_FPS
 last_cam_sent = 0.0
 
 # Server configuration
@@ -28,8 +29,8 @@ def encodeFrame():
     global FRAME, last_cam_sent
     while True:
         FRAME = cam.FRAME
-        # send valid frames, only after MAX_FRAME_TIME
-        if FRAME is None or time.time() - last_cam_sent < MAX_FRAME_TIME:
+        # send valid frames at SEND_FPS frames per second
+        if FRAME is None or time.time() - last_cam_sent < FRAME_TIME:
             continue
 
         _, encoded = cv2.imencode(".jpg", FRAME)
@@ -53,7 +54,6 @@ if __name__ == '__main__':
         camera_thread.start()
 
         # start the Flask Web Application
-        rospy.loginfo("{}: Starting Flask Server on {}:{}".format(rospy.get_caller_id(), HOST_IP, HOST_PORT))
         app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=False)
 
         cam.video_capture.release()

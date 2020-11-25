@@ -132,7 +132,8 @@ def main(ser):
             rate.sleep()
 
         except Exception as e:
-            rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
+            # rospy.logerr("{}: {}".format(rospy.get_caller_id(), e))
+            pass
 
 
 if __name__ == '__main__':
