@@ -10,7 +10,7 @@ import Camera as cam
 
 # Image frame sent to the Ground Station
 FRAME = None
-SEND_FPS = 20
+SEND_FPS = 30
 FRAME_TIME = 1.0 / SEND_FPS
 last_cam_sent = 0.0
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import math
 import time
 
 import rospy
@@ -8,7 +7,6 @@ from drone.msg import Attitude as AttitudeMsg
 from drone.msg import ControlAxes as ControlAxesMsg
 from drone.msg import RunInfo as RunInfoMsg
 from std_msgs.msg import Bool
-from std_msgs.msg import Float32
 from yamspy import MSPy
 
 import BMP_Interface as bmp
@@ -29,31 +27,16 @@ CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 INFO_PERIOD = 1  # seconds
 SEND_PERIOD = 0.1  # seconds
 
+# control stick limits
 STICK_MIN = 1200
 STICK_MAX = 1800
 THROTTLE_MAX = 1700
 
+# control stick trims and dead zone
 ROLL_TRIM = -13
 PITCH_TRIM = -13
 YAW_TRIM = 1
-
-# TODO: Add the Computing Node back
-# the ground height from the sonar
-SONAR = 0.0
-
-# the distance to the ground
-H = 0.0
-
-# the width and length of the projection (rectangle) of the camera frustum on the ground
-AREA_LEN_VERT = 0.0
-AREA_LEN_HORIZ = 0.0
-
-# the altitudes from the barometer
-REL_ALT = 0.0
-ABS_ALT = 0.0
-
-# PiCam intrinsic parameters
-CAM_V_FOV = 48.8
+DEAD_ZONE = 0.09
 
 
 def clamp(n, low, high):
@@ -97,9 +80,9 @@ def control_callback(data):
 def applyDeadZoneAndTrims():
     global CMDS
     # deadzone configuration
-    dead_zone_ratio = 0.1
+
     input_range = 1000.0
-    dead_zone = input_range * dead_zone_ratio
+    dead_zone = input_range * DEAD_ZONE
     roll, pitch, throttle, yaw = CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']
 
     if abs(roll - 1500) < dead_zone:
@@ -114,50 +97,6 @@ def applyDeadZoneAndTrims():
     CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw'] = roll, pitch, throttle, yaw
 
 
-def resolveHeight():
-    global H
-    if 5 <= SONAR <= 300:
-        H = SONAR / 100  # convert cm to m
-    elif REL_ALT > 0:
-        H = REL_ALT
-
-
-def sonar_callback(data):
-    global SONAR
-    SONAR = data.data
-    resolveHeight()
-
-
-def alt_callback(data):
-    global REL_ALT, ABS_ALT
-    REL_ALT = data.relative
-    ABS_ALT = data.absolute
-    resolveHeight()
-
-
-def computeVisibleCamArea(cam_angle):
-    global AREA_LEN_VERT, AREA_LEN_HORIZ
-
-    AREA_LEN_HORIZ = 1.2 * H  # fixed, since camera cannot move side-to-side
-
-    theta = cam_angle - (CAM_V_FOV / 2)
-    alpha = 90.0 - (CAM_V_FOV / 2) - cam_angle
-    coeff = 1.0 / math.tan(math.radians(alpha)) - math.sin(math.radians(theta))
-
-    if coeff < 0:
-        return
-
-    AREA_LEN_VERT = H * coeff
-
-    AREA_LEN_VERT = round(AREA_LEN_VERT, 2)
-    AREA_LEN_HORIZ = round(AREA_LEN_HORIZ, 2)
-
-    # rospy.loginfo(
-    #     "{}: {:.2f}m X {:.2f}m, H={:.2f}m, coeff={:.2f}".format(rospy.get_caller_id(), AREA_HORIZ, AREA_VERT, H, coeff))
-
-    return round(AREA_LEN_VERT * AREA_LEN_HORIZ, 2)
-
-
 def main(drone):
     rospy.init_node('Dispatcher')
 
@@ -170,7 +109,6 @@ def main(drone):
     control_pub = rospy.Publisher('ControlSlow', ControlAxesMsg, queue_size=1)
     alt_pub = rospy.Publisher('Altitude', AltitudeMsg, queue_size=1)
     run_pub = rospy.Publisher('Run', RunInfoMsg, queue_size=1)
-    area_pub = rospy.Publisher('Area', Float32, queue_size=1)
 
     drone.is_ser_open = not drone.connect(trials=drone.ser_trials)
     if drone.is_ser_open:
@@ -208,7 +146,6 @@ def main(drone):
             drone.process_recv_data(dataHandler)
 
         if time.time() - last_send > SEND_PERIOD:
-            cam_area = computeVisibleCamArea(cam_angle)
             abs_alt, temp = bmp.getAltAndTemp()
             rel_alt = abs_alt - initial_altitude
             runtime = time.time() - ros_start_time
@@ -219,7 +156,6 @@ def main(drone):
             alt_pub.publish(AltitudeMsg(rel_alt, abs_alt, temp))
             attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_angle))
             run_pub.publish(RunInfoMsg(runtime))
-            area_pub.publish(Float32(cam_area))
             last_send = time.time()
 
         rate.sleep()
