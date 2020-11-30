@@ -8,13 +8,13 @@ import cv2
 FRAME = None
 
 # the speed at which the FRAME object is updated
-MAX_CAM_FPS = 30
+MAX_CAM_FPS = 25
 MAX_FRAME_TIME = 1.0 / MAX_CAM_FPS  # seconds
 last_cam_read = 0.0
 CAPTURE_WIDTH = 1280
 CAPTURE_HEIGHT = 720
-CONV_WIDTH = 640
-CONV_HEIGHT = 360
+CONV_WIDTH = 1280
+CONV_HEIGHT = 720
 
 # GStreamer Pipeline to access the Raspberry Pi camera
 GSTREAMER_PIPELINE = 'nvarguscamerasrc ' \

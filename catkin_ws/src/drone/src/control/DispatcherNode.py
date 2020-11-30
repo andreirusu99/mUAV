@@ -9,7 +9,7 @@ from drone.msg import RunInfo as RunInfoMsg
 from std_msgs.msg import Bool
 from yamspy import MSPy
 
-import BMP_Interface as bmp
+from src.sensors import BMP_Interface as bmp
 
 FCinfo = ['MSP_ANALOG', 'MSP_ATTITUDE']
 
@@ -27,12 +27,12 @@ CMDS_ORDER = ['roll', 'pitch', 'throttle', 'yaw', 'aux1', 'aux2']
 INFO_PERIOD = 1  # seconds
 SEND_PERIOD = 0.1  # seconds
 
-# control stick limits
+# controls stick limits
 STICK_MIN = 1200
 STICK_MAX = 1800
 THROTTLE_MAX = 1700
 
-# control stick trims and dead zone
+# controls stick trims and dead zone
 ROLL_TRIM = -13
 PITCH_TRIM = -13
 YAW_TRIM = 1
@@ -100,7 +100,7 @@ def applyDeadZoneAndTrims():
 def main(drone):
     rospy.init_node('Dispatcher')
 
-    # subscribe to get control axes from Interceptor
+    # subscribe to get controls axes from Interceptor
     rospy.Subscriber('Control', ControlAxesMsg, control_callback)
 
     # publish Attitude and Power info

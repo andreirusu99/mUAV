@@ -63,7 +63,7 @@ def computeVisibleCamArea(cam_angle):
     AREA_DIST_HORIZ = 1.2 * H  # fixed, since camera cannot move side-to-side
     # 1.2 coefficient calculated from the cosine of the camera's horizontal FOV
 
-    # compute the vertical length area coefficient
+    # computing the vertical length area coefficient
     # = the multiplier of the vertical length of the rectangle that describes the visible area of the camera
     # -> depends on the angle that the camera is angled at the ground
     theta = cam_angle - (CAM_V_FOV / 2)
@@ -105,7 +105,7 @@ def main():
         computePixelSize(640, 360)
 
         area_pub.publish(Float32(cam_area))
-        rospy.loginfo("{}: {}H, {}V".format(rospy.get_caller_id(), round(PIXEL_SIZE_H, 3), round(PIXEL_SIZE_V, 3)))
+        # rospy.loginfo("{}: {}H, {}V".format(rospy.get_caller_id(), round(PIXEL_SIZE_H, 1), round(PIXEL_SIZE_V, 1)))
         rate.sleep()
 
 

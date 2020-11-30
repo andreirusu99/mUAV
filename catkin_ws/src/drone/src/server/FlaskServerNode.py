@@ -6,11 +6,11 @@ import cv2
 import rospy
 from flask import Flask, Response
 
-import Camera as cam
+from src.sensors import Camera as cam
 
 # Image frame sent to the Ground Station
 FRAME = None
-SEND_FPS = 30
+SEND_FPS = 25
 FRAME_TIME = 1.0 / SEND_FPS
 last_cam_sent = 0.0
 
@@ -33,7 +33,9 @@ def encodeFrame():
         if FRAME is None or time.time() - last_cam_sent < FRAME_TIME:
             continue
 
-        _, encoded = cv2.imencode(".jpg", FRAME)
+        # nearest interpolation since quality is not important for the video stream
+        resized = cv2.resize(FRAME, (640, 360), interpolation=cv2.INTER_NEAREST)
+        _, encoded = cv2.imencode(".jpg", resized)
         last_cam_sent = time.time()
 
         # Output image as a byte array

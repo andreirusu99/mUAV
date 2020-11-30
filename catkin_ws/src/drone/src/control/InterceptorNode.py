@@ -105,7 +105,7 @@ def main():
             else:
                 joy_sticks[3] = 1500
 
-            # publish the control axes if craft is armed
+            # publish the controls axes if craft is armed
             if armed:
                 pub.publish(ControlAxesMsg(joy_sticks))
 
@@ -113,7 +113,7 @@ def main():
             timeout_th = rospy.get_param("/udp/timeout_threshold")
 
             if time.time() - last_print > 1:
-                # rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
+                rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
                 last_print = time.time()
 
             # signal lost while armed (flying)
