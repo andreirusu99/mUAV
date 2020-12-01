@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 # The unique camera image source of the system
-import time
-
 import cv2
+import time
+import numpy as np
 
-FRAME = None
+import jetson.utils
 
 # the speed at which the FRAME object is updated
 MAX_CAM_FPS = 25
@@ -26,20 +26,34 @@ GSTREAMER_PIPELINE = 'nvarguscamerasrc ' \
                      '! appsink wait-on-eos=false max-buffers=1 drop=True' \
     .format(CAPTURE_WIDTH, CAPTURE_HEIGHT, CONV_WIDTH, CONV_HEIGHT)
 
-# Video capturing from OpenCV and GStreamer
-video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
+FRAME = np.zeros((CONV_HEIGHT, CONV_WIDTH, 3), dtype=np.uint8)
+
+CUDA_FRAME = jetson.utils.cudaFromNumpy(np.asarray(cv2.cvtColor(FRAME.copy(), cv2.COLOR_BGR2RGB)))
 
 
 def captureFrames():
-    global FRAME, video_capture, last_cam_read
+    global FRAME, CUDA_FRAME, last_cam_read
+
+    # Video capturing from OpenCV and GStreamer
+    video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
 
     while True and video_capture.isOpened():
         if time.time() - last_cam_read < MAX_FRAME_TIME:
             continue
 
         _, frame = video_capture.read()
+
         last_cam_read = time.time()
 
         FRAME = frame.copy()
+
+        # store a CUDA frame for jetson inference lib
+        cuda = frame.copy()
+        # needs to be RGB, not BGR as captured
+        cuda = cv2.cvtColor(cuda, cv2.COLOR_BGR2RGB)
+        # convert to numpy array
+        cuda = np.asarray(cuda)
+        # save as cudaImage
+        CUDA_FRAME = jetson.utils.cudaFromNumpy(cuda)
 
     video_capture.release()

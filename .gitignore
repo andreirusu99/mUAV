@@ -1,5 +1,5 @@
 
-# Don't update the Hardware and GroundStation
+# Don't update the Hardware and GroundStation on this branch
 GroundStation/
 Hardware/
 
@@ -13,6 +13,7 @@ GroundStation/ENV/
 GroundStation/env.bak/
 GroundStation/venv.bak/
 GroundStation/pythonenv*
+GroundStation/.idea/
 
 
 ### ROS ###
@@ -24,10 +25,8 @@ catkin_ws/build/
 catkin_ws/src/drone/src/__pycache__/
 catkin_ws/src/drone/.vscode/
 catkin_ws/src/drone/.idea/
+catkin_ws/src/drone/drone.egg-info/
 catkin_ws/src/drone/!.vscode/tasks.json
 catkin_ws/src/drone/!.vscode/launch.json
 catkin_ws/src/drone/*.code-workspace
-
-# End of https://www.toptal.com/developers/gitignore/api/python,pycharm,ros,visualstudiocode,venv
-GroundStation/.idea/
 
