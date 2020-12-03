@@ -12,11 +12,6 @@ import jetson.utils
 import rospy
 from drone.msg import Altitude as AltitudeMsg
 from std_msgs.msg import Float32
-from sensor_msgs.msg import Image
-
-from cv_bridge import CvBridge, CvBridgeError
-
-from src.sensors import Camera as cam
 
 # the current camera frame
 FRAME = None
@@ -53,8 +48,6 @@ SONAR_MIN = 2  # cm
 # the side length of one pixel, projected onto the ground plane
 PIXEL_SIZE_V = 0.0  # cm
 PIXEL_SIZE_H = 0.0  # cm
-
-bridge = CvBridge()
 
 
 def sonar_callback(data):
@@ -121,39 +114,32 @@ def main():
     rospy.Subscriber('Altitude', AltitudeMsg, alt_callback)
 
     area_pub = rospy.Publisher('Area', Float32, queue_size=1)
-    img_pub = rospy.Publisher('Camera', Image)
 
-    net = jetson.inference.detectNet("ssd-inception-v2", threshold=0.3)
+    net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.3)
 
-    rate = rospy.Rate(30)
+    rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         cam_angle = rospy.get_param("/physical/camera_angle")
-        FRAME = cam.FRAME
-        CUDA_FRAME = cam.CUDA_FRAME
 
         # computing the visible area
         cam_area = computeVisibleCamArea(cam_angle)
 
         # computing the pixel size
-        computePixelSize(FRAME.shape[1], FRAME.shape[0])
+        computePixelSize(1280, 720)
 
         # computing detections on cudaImage object
-        detections = net.Detect(CUDA_FRAME, FRAME.shape[1], FRAME.shape[0])
+        detections = net.Detect(CUDA_FRAME, 1280, 720)
+
         # rospy.loginfo("{}: {} detections, max {:.1f}FPS".format(
         #     rospy.get_caller_id(), len(detections), net.GetNetworkFPS()))
 
         # after detection, convert CUDA_FRAME to np array in BGR mode
-        FRAME_OVERLAY_NP = jetson.utils.cudaToNumpy(CUDA_FRAME, FRAME.shape[1], FRAME.shape[0], FRAME.shape[2])
+        FRAME_OVERLAY_NP = jetson.utils.cudaToNumpy(CUDA_FRAME, 1280, 720, 3)
         FRAME_OVERLAY_NP = cv2.cvtColor(FRAME_OVERLAY_NP, cv2.COLOR_RGB2BGR)
         FRAME_OVERLAY_NP = np.asarray(FRAME_OVERLAY_NP)
 
         # publishing
         area_pub.publish(Float32(cam_area))
-
-        try:
-            img_pub.publish(bridge.cv2_to_imgmsg(FRAME, encoding="bgr8"))
-        except CvBridgeError as e:
-            print(e)
 
         # rospy.loginfo("{}: {}H, {}V".format(rospy.get_caller_id(), round(PIXEL_SIZE_H, 1), round(PIXEL_SIZE_V, 1)))
         rate.sleep()
@@ -161,14 +147,8 @@ def main():
 
 if __name__ == '__main__':
     try:
-        # start the camera thread
-        camera_thread = threading.Thread(target=lambda: cam.captureFrames())
-        camera_thread.daemon = True
-        camera_thread.start()
 
         main()
-
-        camera_thread.join(1)
 
     except rospy.ROSInterruptException as error:
         pass

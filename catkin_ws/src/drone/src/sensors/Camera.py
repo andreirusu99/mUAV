@@ -8,7 +8,7 @@ import numpy as np
 import jetson.utils
 
 # the speed at which the FRAME object is updated
-MAX_CAM_FPS = 25
+MAX_CAM_FPS = 30
 MAX_FRAME_TIME = 1.0 / MAX_CAM_FPS  # seconds
 last_cam_read = 0.0
 CAPTURE_WIDTH = 1280
@@ -26,6 +26,9 @@ GSTREAMER_PIPELINE = 'nvarguscamerasrc ' \
                      '! appsink wait-on-eos=false max-buffers=1 drop=True' \
     .format(CAPTURE_WIDTH, CAPTURE_HEIGHT, CONV_WIDTH, CONV_HEIGHT)
 
+# Video capturing from OpenCV and GStreamer
+video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
+
 FRAME = np.zeros((CONV_HEIGHT, CONV_WIDTH, 3), dtype=np.uint8)
 
 CUDA_FRAME = jetson.utils.cudaFromNumpy(np.asarray(cv2.cvtColor(FRAME.copy(), cv2.COLOR_BGR2RGB)))
@@ -33,9 +36,6 @@ CUDA_FRAME = jetson.utils.cudaFromNumpy(np.asarray(cv2.cvtColor(FRAME.copy(), cv
 
 def captureFrames():
     global FRAME, CUDA_FRAME, last_cam_read
-
-    # Video capturing from OpenCV and GStreamer
-    video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
 
     while True and video_capture.isOpened():
         if time.time() - last_cam_read < MAX_FRAME_TIME:

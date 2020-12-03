@@ -6,11 +6,11 @@ import cv2
 import rospy
 from flask import Flask, Response
 
-from src.compute import ComputingNode as compute
+from src.sensors import Camera as cam
 
 # image to be sent to the Ground Station
 FRAME = None
-SEND_FPS = 25
+SEND_FPS = 30
 FRAME_TIME = 1.0 / SEND_FPS
 last_send_loop = 0.0
 
@@ -35,13 +35,8 @@ def encodeFrame():
 
         last_send_loop = time.time()
 
-        frame = compute.CUDA_FRAME
-        print("Flask: {}".format(frame))
+        frame = cam.FRAME
 
-        if frame is None:
-            continue
-
-        # print(FRAME)
         # nearest interpolation since quality is not important for the video stream
         resized = cv2.resize(frame, (640, 360), interpolation=cv2.INTER_NEAREST)
         _, encoded = cv2.imencode(".jpg", resized)
@@ -59,8 +54,16 @@ def streamFrames():
 if __name__ == '__main__':
     try:
 
+        # start the camera thread
+        camera_thread = threading.Thread(target=lambda: cam.captureFrames())
+        camera_thread.daemon = True
+        camera_thread.start()
+
         # start the Flask Web Application
         app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=False)
+
+        cam.video_capture.release()
+        camera_thread.join(1)
 
     except rospy.ROSInterruptException as error:
         pass
