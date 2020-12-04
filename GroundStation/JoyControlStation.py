@@ -9,7 +9,6 @@ over UDP to the aircraft computer.
 import socket
 import struct
 import time
-import threading
 
 import pygame
 
@@ -25,25 +24,16 @@ UDP_IP = "192.168.137.113"  # WiFi Vehicle IP address
 UDP_PORT = 51444
 
 # Create UDP socket
-sockt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-cycle_Hz = 100  # 100 hz loop cycle
+cycle_Hz = 20  # loop cycle
 update_rate = 1 / cycle_Hz
 
 joystick = None
 
-def UDPthread():
-    _TAG = "UDP Thread"
-
-    try:
-        udp.startTwisted()
-
-    except Exception as error:
-        print("{}: {}".format(_TAG, error))
-        UDPthread()
-
 
 def main():
+    global joystick
     print("Starting Ground Control Station...")
 
     try:
@@ -92,31 +82,27 @@ def main():
             ]
 
             # Print message to STDOUT
-            # print("{} to {}:{}".format(message, UDP_IP, UDP_PORT))
+            # print("{}: {} to {}:{}".format(time.time(), message, UDP_IP, UDP_PORT))
 
             # Assemble message
             buf = struct.pack('>' + 'd' * len(message), *message)
 
             # Send message via UDP
-            sockt.sendto(buf, (UDP_IP, UDP_PORT))
+            sock.sendto(buf, (UDP_IP, UDP_PORT))
 
             # Make this loop work at update_rate
-            # while elapsed < update_rate:
-            #     elapsed = time.time() - current
+            while elapsed < update_rate:
+                elapsed = time.time() - current
 
-        finally:
-            pass
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
 
     try:
-        # thread_udp = threading.Thread(target=UDPthread)
-        # thread_udp.daemon = True
-        # thread_udp.start()
 
         main()
 
     except Exception as error:
-        # thread_udp.stop()
         pass
