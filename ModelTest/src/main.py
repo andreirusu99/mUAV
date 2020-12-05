@@ -5,6 +5,7 @@ import pathlib
 import matplotlib
 import tensorflow as tf
 import cv2
+import skimage as sk
 
 import time
 from PIL import Image
@@ -34,7 +35,7 @@ for gpu in gpus:
 # takes an OpenCV image in numpy format
 # and returns an array of tiles obtained
 # from cropping the image
-def tileImage(image, xPieces, yPieces):
+def tile_image(image, xPieces, yPieces):
     im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
     imgwidth, imgheight = im.size
@@ -62,10 +63,10 @@ def retrieve_images():
 
 
 # IMAGE_PATHS = retrieve_images()
-IMAGE_PATHS = ["C:\\Users\\andre\\mUAV\\ModelTest\\data\\images\\0000213_03920_d_0000243.jpg"]
+IMAGE_PATHS = ["C:\\Users\\andre\\mUAV\\ModelTest\\data\\images\\nyc.jpg"]
 print("Running on {} images: {}".format(len(IMAGE_PATHS), IMAGE_PATHS))
 
-MODEL_NAME = 'ssd_resnet50_v1_fpn_640x640_coco17_tpu-8'
+MODEL_NAME = 'ssd_mobilenet_v2_320x320_coco17_tpu-8'
 PATH_TO_MODEL_DIR = "C:\\Users\\andre\\mUAV\\ModelTest\\model\\" + MODEL_NAME
 
 
@@ -108,9 +109,12 @@ def load_image_into_numpy_array(path):
     Returns:
       uint8 numpy array with shape (img_height, img_width, 3)
     """
-    image = cv2.imread(path)
-    image = cv2.resize(image, (1280, 720), cv2.INTER_LANCZOS4)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.imread(path)  # open image
+    image = cv2.resize(image, (1280, 720), cv2.INTER_LANCZOS4)  # resize to 720p
+    image = cv2.blur(image, (3, 3))  # blur image to better mach real sensor output
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert to RGB for detection
+    image = sk.util.random_noise(image, mode='gaussian', var=0.05 ** 2)  # add random gaussian noise
+    image = (255 * image).astype(np.uint8)
     return np.array(image)
 
 
@@ -125,25 +129,19 @@ for image_path in IMAGE_PATHS:
 
     print('Preprocessing took {:.1f} ms'.format((end_preprocessing - start_time) * 1000))
 
-    for i, image_np in enumerate(tileImage(image_np, 3, 2)):
-        print('Running inference for {}, tile {} '.format(image_path, i + 1))
+    plt.imsave("..\\results\\" + MODEL_NAME + "\\" + image_path.split("\\")[-1], image_np)
+
+    width_tiles = 4
+    height_tiles = 3
+    for tile_no, image_np in enumerate(tile_image(image_np, width_tiles, height_tiles)):
+        print('Running inference for {}, tile {} '.format(image_path, tile_no + 1))
         start_time = time.time()
-
-        # Things to try:
-        # Flip horizontally
-        # image_np = np.fliplr(image_np).copy()
-
-        # Convert image to grayscale
-        # image_np = np.tile(
-        #     np.mean(image_np, 2, keepdims=True), (1, 1, 3)).astype(np.uint8)
 
         # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
         input_tensor = tf.convert_to_tensor(image_np)
 
         # The model expects a batch of images, so add an axis with `tf.newaxis`.
         input_tensor = input_tensor[tf.newaxis, ...]
-
-        # input_tensor = np.expand_dims(image_np, 0)
 
         # perform inference on the input batch
         detections = detect_fn(input_tensor)
@@ -172,14 +170,15 @@ for image_path in IMAGE_PATHS:
             detections['detection_scores'],
             category_index,
             use_normalized_coordinates=True,
-            max_boxes_to_draw=100,
+            max_boxes_to_draw=20,
             min_score_thresh=.4,
-            line_thickness=2
+            line_thickness=1
         )
 
         plt.figure()
         # plt.imshow(image_np_with_detections)
-        plt.imsave("..\\results\\" + MODEL_NAME + "\\" + str(i + 1) + '_' + image_path.split("\\")[-1], image_np_with_detections)
+        plt.imsave("..\\results\\" + MODEL_NAME + "\\" + str(tile_no + 1) + '_' + image_path.split("\\")[-1],
+                   image_np_with_detections)
         print('Done')
 
 # plt.show()
