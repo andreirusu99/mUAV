@@ -117,7 +117,7 @@ def main():
 
     net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.3)
 
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(20)
     while not rospy.is_shutdown():
         cam_angle = rospy.get_param("/physical/camera_angle")
 
