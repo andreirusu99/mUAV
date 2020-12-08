@@ -6,12 +6,11 @@ import time
 import numpy as np
 import threading
 
-import jetson.inference
-import jetson.utils
-
 import rospy
 from drone.msg import Altitude as AltitudeMsg
 from std_msgs.msg import Float32
+
+from src.compute import Detector as detector
 
 # the current camera frame
 FRAME = None
@@ -48,6 +47,12 @@ SONAR_MIN = 2  # cm
 # the side length of one pixel, projected onto the ground plane
 PIXEL_SIZE_V = 0.0  # cm
 PIXEL_SIZE_H = 0.0  # cm
+
+# number of horizontal and vertical regions
+# in which to tile the input image
+# for better accuracy in detection
+WIDTH_TILES = 4
+HEIGHT_TILES = 3
 
 
 def sonar_callback(data):
@@ -115,11 +120,13 @@ def main():
 
     area_pub = rospy.Publisher('Area', Float32, queue_size=1)
 
-    net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.3)
+    # load a pre-trained network, using TensorRT
+    detector.load_net("ssd-mobilenet-v2", threshold=0.4)
 
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         cam_angle = rospy.get_param("/physical/camera_angle")
+        detection_started = rospy.get_param("/run/detection_started")
 
         # computing the visible area
         cam_area = computeVisibleCamArea(cam_angle)
@@ -127,16 +134,10 @@ def main():
         # computing the pixel size
         computePixelSize(1280, 720)
 
-        # computing detections on cudaImage object
-        detections = net.Detect(CUDA_FRAME, 1280, 720)
-
-        # rospy.loginfo("{}: {} detections, max {:.1f}FPS".format(
-        #     rospy.get_caller_id(), len(detections), net.GetNetworkFPS()))
-
-        # after detection, convert CUDA_FRAME to np array in BGR mode
-        FRAME_OVERLAY_NP = jetson.utils.cudaToNumpy(CUDA_FRAME, 1280, 720, 3)
-        FRAME_OVERLAY_NP = cv2.cvtColor(FRAME_OVERLAY_NP, cv2.COLOR_RGB2BGR)
-        FRAME_OVERLAY_NP = np.asarray(FRAME_OVERLAY_NP)
+        if detection_started:
+            frame = cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/live/frame.jpg')
+            if frame is not None:
+                detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
 
         # publishing
         area_pub.publish(Float32(cam_area))

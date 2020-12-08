@@ -31,11 +31,9 @@ video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
 
 FRAME = np.zeros((CONV_HEIGHT, CONV_WIDTH, 3), dtype=np.uint8)
 
-CUDA_FRAME = jetson.utils.cudaFromNumpy(np.asarray(cv2.cvtColor(FRAME.copy(), cv2.COLOR_BGR2RGB)))
-
 
 def captureFrames():
-    global FRAME, CUDA_FRAME, last_cam_read
+    global FRAME, last_cam_read
 
     while True and video_capture.isOpened():
         if time.time() - last_cam_read < MAX_FRAME_TIME:
@@ -46,14 +44,5 @@ def captureFrames():
         last_cam_read = time.time()
 
         FRAME = frame.copy()
-
-        # store a CUDA frame for jetson inference lib
-        cuda = frame.copy()
-        # needs to be RGB, not BGR as captured
-        cuda = cv2.cvtColor(cuda, cv2.COLOR_BGR2RGB)
-        # convert to numpy array
-        cuda = np.asarray(cuda)
-        # save as cudaImage
-        CUDA_FRAME = jetson.utils.cudaFromNumpy(cuda)
 
     video_capture.release()

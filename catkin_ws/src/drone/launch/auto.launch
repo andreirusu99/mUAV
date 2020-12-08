@@ -3,6 +3,7 @@
     <param name="/physical/camera_angle" type="int" value="90"/>
 
     <param name="/run/armed" type="bool" value="False"/>
+    <param name="/run/detection_started" type="bool" value="False"/>
 
     <param name="/udp/timeout_threshold" type="double" value="2.0"/>
 

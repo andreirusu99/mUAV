@@ -44,7 +44,6 @@ def UDPthread():
         udp.startTwisted()
 
     except Exception as error:
-        udp.stop()
         rospy.logerr("{}: {}".format(rospy.get_caller_id(), error))
 
 
@@ -56,10 +55,16 @@ def main():
     arm_time = disarm_time = 0.0
     last_camera = last_print = 0.0
     last_active = 0.0
+    detection_start = detection_end = 0.0
+
+    camera_angles = [15, 30, 45, 60, 90]
+    angle_index = len(camera_angles) - 1
+
     rate = rospy.Rate(20)  # Hz
     while not rospy.is_shutdown():
 
         armed = rospy.get_param("/run/armed")
+        detection_started = rospy.get_param("/run/detection_started")
 
         if udp.active:
             last_active = time.time()
@@ -89,12 +94,21 @@ def main():
 
             # set the camera angle parameter manually (debounced)
             if hat[1] != 0 and time.time() - last_camera > 0.2:
-                camera_angle = rospy.get_param("/physical/camera_angle")
-                camera_angle += hat[1] * 30
-                camera_angle = min(max(camera_angle, 0), 90)
-                rospy.set_param("/physical/camera_angle", camera_angle)
-                rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angle))
                 last_camera = time.time()
+                angle_index += hat[1]
+                angle_index = min(max(angle_index, 0), len(camera_angles) - 1)
+                rospy.set_param("/physical/camera_angle", camera_angles[angle_index])
+                rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angles[angle_index]))
+
+            if A == 1 and not detection_started and time.time() - detection_end >= 1:
+                rospy.set_param("/run/detection_started", True)
+                detection_start = time.time()
+                rospy.loginfo("{}: Detection started!".format(rospy.get_caller_id()))
+
+            elif B == 1 and detection_started and time.time() - detection_start >= 1:
+                rospy.set_param("/run/detection_started", False)
+                detection_end = time.time()
+                rospy.loginfo("{}: Detection stopped!".format(rospy.get_caller_id()))
 
             # shoulder yaw
             if shoulders[0] == 1:
