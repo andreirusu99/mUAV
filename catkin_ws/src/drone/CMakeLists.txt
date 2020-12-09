@@ -51,9 +51,6 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    ControlAxes.msg
    Attitude.msg
-   GPSinfo.msg
-   Altitude.msg
-   RunInfo.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -163,12 +160,13 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
-   src/control/InterceptorNode.py
-   src/control/DispatcherNode.py
-   src/sensors/SonarNode.py
-   src/sensors/GPSNode.py
-   src/server/FlaskServerNode.py
-   src/compute/ComputingNode.py
+   src/InterceptorNode.py
+   src/DispatcherNode.py
+   src/SonarNode.py
+   src/GPSNode.py
+   src/UDP_Listener.py
+   src/PilotNode.py
+   src/FlaskServerNode.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
