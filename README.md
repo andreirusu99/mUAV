@@ -3,13 +3,21 @@
 ## Summary
 Repository containing the code for my bachelor's thesis.
 
-The purpouse of the project is to implement a crowd monitoring system that runs on edge, on a drone that I designed and built (see *Hardware* section).
+The purpouse of the project is to implement a crowd monitoring system that runs on edge, on a drone that I designed and built (see *Hardware* folder for details).
 
 Edge computing is done on a nVIDIA Jetson Nano Dev Kit installed on the quadcopter, that runs a ROS environment of about 10 nodes.
 
 Crowd monitoring is performed using neural networks designed for edge devices (SSD MobileNet V2) and computer vision frameworks such as OpenCV.
 
 The Jetson communicates completely wireless over a Wi-Fi hotspot from a computer (my laptop).
+
+## Frameworks & APIs
+- **ROS Melodic** (Robot Operating System), Python implementation
+- **OpenCV 4.1.1**, built from source with CUDA support
+- **TensorFlow 2**, for model tests
+- **Flask Server**, for live video streaming
+- **ReactJS**, for the front-end application
+- **GoogleMapsAPI** for real-time GPS localization
 
 ## Folder Structure
 ### catkin_ws
@@ -29,3 +37,9 @@ Contains the 3D models that make up the quadcopter. These parts were designed wi
 Is a folder that I created to host my neural network experiments, until I decied for the final implementation that I would transfer over to the Jetson for inferencing.
 
 #### Further information can be found in each respective folder.
+
+
+## Helpful work
+ - [Dronepilot](https://github.com/alduxvm/DronePilot) - UDP joystick communication between computers
+ - [YAMSPy](https://github.com/thecognifly/YAMSPy) - MSP library for Python
+ - [Jetson Inference](https://github.com/dusty-nv/jetson-inference) - official deep learning inference library from nVidia
