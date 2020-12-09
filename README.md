@@ -9,6 +9,8 @@ Edge computing is done on a nVIDIA Jetson Nano Dev Kit installed on the quadcopt
 
 Crowd monitoring is performed using neural networks designed for edge devices (SSD MobileNet V2) and computer vision frameworks such as OpenCV.
 
+The Jetson communicates completely wireless over a Wi-Fi hotspot from a computer (my laptop).
+
 ## Folder Structure
 ### catkin_ws
 Contains the ROS workspace, which constitutes the main functional part of the system. Inside, there are the source files of ROS Nodes, message definitions, and a launch file that launches all the required nodes. The programming language is Python, using the *rospy* library.
@@ -17,7 +19,7 @@ Contains the ROS workspace, which constitutes the main functional part of the sy
 Contains a React application that uses ROSLibJS to interact with the Master Node running on the Jetson Nano, that displays real-time data in a dashboard by accessing the topics of the ROS runtime. 
 
 ### GroundStation
-Contains a Python script used to send UDP commands from a joystick connected to the ground computer (my laptop). The commands are sent as-is and all processing is done on the Jetson.
+Contains a Python script used to send UDP commands over Wi-Fi from a joystick connected to the ground computer (my laptop). The commands are sent as-is and all processing is done on the Jetson.
 > Note: the drone's flight is not automated, therefore and operator is required for flying (flight automation was outside the scope of this project).
 
 ### Hardware
