@@ -71,3 +71,10 @@ Additionally, a servo release mechanism is mounted on the underside of the craft
 > Note: this feature is not used in the project, I might do something with it afterwards
 
 ![Servo release](https://i.imgur.com/SF27KIW.png)
+
+## Extra Photos
+![](https://i.imgur.com/sxq4h51.jpeg)
+![](https://i.imgur.com/uD0jeMe.jpeg)
+![](https://i.imgur.com/8PYOLWV.jpeg)
+![](https://i.imgur.com/JVggMCH.jpeg)
+![](https://i.imgur.com/GOhfVe9.jpeg)
