@@ -75,7 +75,7 @@ Additionally, a servo release mechanism is mounted on the underside of the craft
 
 
 ### Motors
-I used 4 BLDC, 2600KV motors (common for medium-scale drones), together with 6040 propellers (6" long, 4" pitch), with a rated thrust of 800g each.
+I used 4 Turnigy BLDC, 2600KV motors (common for medium-scale drones), together with 6040 propellers (6" long, 4" pitch), with a rated thrust of 800g each.
 
 ## Stats
 - Mass without battery: **~850g**
