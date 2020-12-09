@@ -7,7 +7,8 @@ Designed in SolidWorks and sliced with Ultimaker Cura.
 It features a 3-deck design, where in the middle deck lie the most important components (Jetson Nano, Flight Controller, Camera). 
 The upper deck hosts the GPS and the Wi-Fi antennas, while the lower deck contains the LiPo battery, the sonar, and a servo release mechanism.
 
-The front arms are pulled back (in comparison to a regular simmetrical quadcopter) in order for them not to interfere with the camera's image.
+The front arms are pulled back (in comparison to a regular simmetrical quadcopter) in order for them not to interfere with the camera's image. The propellers are placed well above the center of gravity for increased stability.
+Additionally, each motor is inclined by 3 degrees horizontally to further improve hover stability.
 
 The entire craft is suspended on 4 independent legs that can be easily replaced.
 The motor arms are also modular and can be easily replaced if broken.
@@ -71,6 +72,19 @@ Additionally, a servo release mechanism is mounted on the underside of the craft
 > Note: this feature is not used in the project, I might do something with it afterwards
 
 ![Servo release](https://i.imgur.com/SF27KIW.png)
+
+
+### Motors
+I used 4 BLDC, 2600KV motors (common for medium-scale drones), together with 6040 propellers (6" long, 4" pitch), with a rated thrust of 800g each.
+
+## Stats
+- Mass without battery: **~850g**
+- Mass with battery: **~1200g** (1x 3S LiPo 5200mAh, 55Wh)
+- Wingspan: **51cm**
+- Height: **15cm** (without antennas)
+- Power consumption: **10W** idle, **150W** hover + **10W** JetsonNano
+- Average flight time: **20 min**
+> Power consumption and flight times depend heavily on external factors such as air temperature, wind, humidity, and the flying manner.
 
 ## Extra Photos
 ![](https://i.imgur.com/sxq4h51.jpeg)
