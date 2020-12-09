@@ -30,8 +30,8 @@ Contains the ROS workspace, which constitutes the main functional part of the sy
 Contains a React application that uses ROSLibJS to interact with the Master Node running on the Jetson Nano, that displays real-time data in a dashboard by accessing the topics of the ROS runtime. 
 
 ### [GroundStation](/GroundStation)
-Contains a Python script used to send UDP commands over Wi-Fi from a joystick connected to the ground computer (my laptop). The commands are sent as-is and all processing is done on the Jetson.
-> Note: the drone's flight is not automated, therefore and operator is required for flying (flight automation was outside the scope of this project).
+Contains a Python script used to send UDP commands over Wi-Fi from a joystick connected to the ground computer (my laptop). The commands are sent as-is and all processing and interpretation of these commands is done in the air on the Jetson.
+> Note: the drone's flight is not automated, therefore an operator is required for flying (flight automation was outside the scope of this project).
 
 ### [Hardware](/Hardware)
 Contains the 3D models that make up the quadcopter. These parts were designed with 3D printing manufacturing in mind, and as such, are only suitable for this kind of manufacturing process. The parts were printed on my own 3D printer using PETG. and PLA. A detailed description of all the hardware components used (boards, sensors, actuators) is found in the Readme file inside the folder.
@@ -41,7 +41,7 @@ Is a folder that I created to host my neural network experiments, until I decied
 
 ### Further information can be found in each respective folder.
 
-## Helpful work
- - [Dronepilot](https://github.com/alduxvm/DronePilot) - UDP joystick communication between computers
+## Helpful work by others
+ - [DronePilot](https://github.com/alduxvm/DronePilot) - UDP joystick communication between computers
  - [YAMSPy](https://github.com/thecognifly/YAMSPy) - MSP library for Python
  - [Jetson Inference](https://github.com/dusty-nv/jetson-inference) - official deep learning inference library from nVidia
