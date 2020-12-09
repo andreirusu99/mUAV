@@ -11,6 +11,8 @@ The front arms are pulled back (in comparison to a regular simmetrical quadcopte
 
 The entire craft is suspended on 4 independent legs that can be easily replaced.
 The motor arms are also modular and can be easily replaced if broken.
+The sides are covered for extra protection in case of falls.
+
 ![Drone](https://i.imgur.com/v9RKz9P.jpeg)
 
 ## Main Computer
@@ -57,3 +59,15 @@ As GPS, a VK-162 is used. It provides simple USB interface access and has good a
 It can be seen mounted on the topmost part of the drone, for better location signal.
 
 ![VK-162](https://images-na.ssl-images-amazon.com/images/I/31W6-Orz9qL._AC_.jpg)
+
+## Actuators
+### Camera tilt servo
+The camera is mounted on a servo arm that allows its tilting from 0 to 90 degrees. This is a helpful feature to have when taking shots from above, and is commonly found on cinematic drones (although those have extra axes).
+
+![Servo tilt](https://i.imgur.com/mPajbQS.png)
+
+### Servo release mechaism
+Additionally, a servo release mechanism is mounted on the underside of the craft, next to the sonar. It allows the carrying of objects, with a theoretical max capacity of about 2kg, but this is not tested.
+> Note: this feature is not used in the project, I might do something with it afterwards
+
+![Servo release](https://i.imgur.com/SF27KIW.png)
