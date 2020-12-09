@@ -9,11 +9,11 @@ from flask import Flask, Response
 from src.sensors import Camera as cam
 
 # image to be sent to the Ground Station
-SEND_FPS = 30
+SEND_FPS = 25
 FRAME_TIME = 1.0 / SEND_FPS
 last_send_loop = 0.0
 
-DETECTION_MAX_FPS = 3
+DETECTION_MAX_FPS = 2
 DETECTION_FRAME_TIME = 1.0 / DETECTION_MAX_FPS
 last_detection_loop = 0.0
 
@@ -59,7 +59,7 @@ def encodeFrame():
 
         frame = cam.FRAME.copy()
         # nearest interpolation since quality is not important for the video stream
-        resized = cv2.resize(frame, (640, 360), interpolation=cv2.INTER_NEAREST)
+        resized = cv2.resize(frame, (320, 180), interpolation=cv2.INTER_NEAREST)
         _, encoded = cv2.imencode(".jpg", resized)
 
         # Output image as a byte array
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         frame_thread.start()
 
         # start the Flask Web Application
-        app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=False)
+        app.run(host=HOST_IP, port=HOST_PORT, use_reloader=False, threaded=True)
 
         cam.video_capture.release()
         camera_thread.join(1)

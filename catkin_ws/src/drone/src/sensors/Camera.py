@@ -3,18 +3,13 @@
 # The unique camera image source of the system
 import cv2
 import time
-import numpy as np
-
-import jetson.utils
 
 # the speed at which the FRAME object is updated
 MAX_CAM_FPS = 30
 MAX_FRAME_TIME = 1.0 / MAX_CAM_FPS  # seconds
 last_cam_read = 0.0
-CAPTURE_WIDTH = 1280
-CAPTURE_HEIGHT = 720
-CONV_WIDTH = 1280
-CONV_HEIGHT = 720
+CAPTURE_WIDTH = 1920
+CAPTURE_HEIGHT = 1080
 
 # GStreamer Pipeline to access the Raspberry Pi camera
 GSTREAMER_PIPELINE = 'nvarguscamerasrc ' \
@@ -24,12 +19,12 @@ GSTREAMER_PIPELINE = 'nvarguscamerasrc ' \
                      '! videoconvert ' \
                      '! video/x-raw, format=(string)BGR ' \
                      '! appsink wait-on-eos=false max-buffers=1 drop=True' \
-    .format(CAPTURE_WIDTH, CAPTURE_HEIGHT, CONV_WIDTH, CONV_HEIGHT)
+    .format(CAPTURE_WIDTH, CAPTURE_HEIGHT, CAPTURE_WIDTH, CAPTURE_HEIGHT)
 
 # Video capturing from OpenCV and GStreamer
 video_capture = cv2.VideoCapture(GSTREAMER_PIPELINE, cv2.CAP_GSTREAMER)
 
-FRAME = np.zeros((CONV_HEIGHT, CONV_WIDTH, 3), dtype=np.uint8)
+FRAME = None
 
 
 def captureFrames():

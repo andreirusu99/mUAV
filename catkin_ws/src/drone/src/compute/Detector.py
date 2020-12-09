@@ -12,8 +12,6 @@ import jetson.utils
 
 NET = None
 
-IMAGE_PATH = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/images/queue1.jpg'
-
 
 def tile_image(image, xPieces, yPieces):
     im = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
@@ -39,45 +37,27 @@ def filter_detection(detection):
 
 def load_net(net_name, threshold):
     global NET
-    print("Loading network...")
     NET = jetson.inference.detectNet(net_name, threshold=threshold)
-    print("Success! Network loaded.")
 
 
-def run_inference(image_path):
-    image_name = image_path.split(sep='/')[-1]
-    print('Running inference for {}... '.format(image_name))
+def run_inference(image, width_tiles, height_tiles):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert image to RGB for detection
+    image_np = np.asarray(image)  # save as NumPy array
 
-    # open image with OpenCV
-    image_np = cv2.imread(image_path)
-    image_np = cv2.resize(image_np, (1280, 720))  # resize to 720p
-    # image_np = cv2.blur(image_np, (3, 3))  # add blur
-
-    # apply Adaptive Histogram Equalisation
-    # img_hsv = cv2.cvtColor(image_np, cv2.COLOR_BGR2HSV)  # convert image from BGR to HSV
-    # img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])  # Histogram equalisation on the V-channel
-    image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  # convert image from HSV to RGB for detection
-    image_np = np.asarray(image_np)  # save as NumPy array
-
-    width_tiles = 4
-    height_tiles = 3
     tile_width = image_np.shape[1] // width_tiles
     tile_height = image_np.shape[0] // height_tiles
     channels = image_np.shape[2]
 
     all_detections = []
-    print('Tile Width {}, Tile Height {}, {} channels'.format(tile_width, tile_height, channels))
 
-    start_inference = time.time()
     # detect on all tiles separately
     for tile_index, tile in enumerate(tile_image(image_np, width_tiles, height_tiles)):
-        print('Running inference for {}, tile {} '.format(image_name, tile_index + 1))
 
         # copy the tile (numpy array) to GPU as cudaImage
         image_cuda = jetson.utils.cudaFromNumpy(tile)
 
         # perform detection on the cudaImage, add overlays
-        detections = NET.Detect(image_cuda)
+        detections = NET.Detect(image_cuda, overlay='none')
         # add these detections to the list of all detections
         all_detections.extend(detections)
 
@@ -93,31 +73,12 @@ def run_inference(image_path):
             detection.Bottom += row * tile_height
             # center computation is done automatically inside the detectNet.Detection object
 
-        # print out performance info
-        # NET.PrintProfilerTimes()
-
-        # convert back to BGR and numpy array
-        # tile_overlay = jetson.utils.cudaToNumpy(image_cuda, tile_width, tile_height, channels)
-        # tile_overlay = cv2.cvtColor(tile_overlay, cv2.COLOR_RGB2BGR)
-        # tile_overlay = np.asarray(tile_overlay)
-
-        # save to file
-        # print("Saving...")
-        # cv2.imwrite(
-        #     "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/out/images/" + str(tile_index + 1) + '_' + image_name,
-        #     tile_overlay)
-        # print("Saved!")
-
-    end_inference = time.time()
-    print("Inference took {:.1f}ms".format((end_inference - start_inference) * 1000))
-
     # convert back to BGR
     image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
 
-    # filter out the detections based on rules
+    # filter out the detections based on rules (person, box area, etc.)
     all_detections = list(filter(filter_detection, all_detections))
 
-    print("{} detected objects".format(len(all_detections)))
     for detection in all_detections:
         # cv2.putText(image_np,
         #             str(round(detection.Confidence * 100, 1)) + '%',
@@ -133,13 +94,18 @@ def run_inference(image_path):
                       color=(255, 255, 255),
                       thickness=2)
 
-    # save the overlayed image
-    cv2.imwrite("/home/andrei/Desktop/mUAV/catkin_ws/src/drone/out/images/" + image_name, image_np)
+    return image_np, all_detections
 
-
-if __name__ == '__main__':
-    # load a pre-trained network, using TensorRT
-    load_net("ssd-mobilenet-v2", threshold=0.4)
-
-    # run inference (detection) on a supplied image
-    run_inference(IMAGE_PATH)
+# load_net("ssd-mobilenet-v2", 0.4)
+#
+# image, det = run_inference(
+#     cv2.resize(
+#         cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/images/nyc.jpg'),
+#         (1920, 1080),
+#         cv2.INTER_LANCZOS4),
+#     4, 3)
+#
+# cv2.imwrite(
+#     "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/"
+#     + str(time.time()) + '_' + str(len(det)) + '.jpg',
+#     image)

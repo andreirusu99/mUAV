@@ -15,9 +15,6 @@ from src.compute import Detector as detector
 # the current camera frame
 FRAME = None
 
-# the above frame with detection overlays, in cudaImage format
-CUDA_FRAME = None
-
 # the above frame, with overlays, in numpy format
 FRAME_OVERLAY_NP = None
 
@@ -53,6 +50,7 @@ PIXEL_SIZE_H = 0.0  # cm
 # for better accuracy in detection
 WIDTH_TILES = 4
 HEIGHT_TILES = 3
+DETECTION_STARTED = False
 
 
 def sonar_callback(data):
@@ -111,8 +109,40 @@ def computePixelSize(frame_width, frame_height):
     PIXEL_SIZE_V = (AREA_DIST_VERT / frame_height) * 100
 
 
+def detectionThread():
+    global FRAME_OVERLAY_NP
+
+    while True:
+
+        if not DETECTION_STARTED:
+            continue
+
+        frame = cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/live/frame.jpg')
+
+        if frame is not None:
+            # sharpening the input image
+            kernel = np.array([[0, -1, 0],
+                               [-1, 5, -1],
+                               [0, -1, 0]])
+            frame = cv2.filter2D(frame, -1, 0.75 * kernel)
+
+            # run inference on the image
+            start_inference = time.time()
+            FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
+            end_inference = time.time()
+
+            rospy.loginfo("{}: Inference {:.0f}ms, {} detections"
+                          .format(rospy.get_caller_id(), (end_inference - start_inference) * 1000, len(detections)))
+
+            # save the overlaid image
+            cv2.imwrite(
+                "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/"
+                + str(time.time()) + '_' + str(len(detections)) + '.jpg',
+                FRAME_OVERLAY_NP)
+
+
 def main():
-    global FRAME, CUDA_FRAME, FRAME_OVERLAY_NP
+    global FRAME, DETECTION_STARTED
     rospy.init_node('ComputingNode')
 
     rospy.Subscriber('SonarReading', Float32, sonar_callback)
@@ -126,18 +156,13 @@ def main():
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         cam_angle = rospy.get_param("/physical/camera_angle")
-        detection_started = rospy.get_param("/run/detection_started")
+        DETECTION_STARTED = rospy.get_param("/run/detection_started")
 
         # computing the visible area
         cam_area = computeVisibleCamArea(cam_angle)
 
         # computing the pixel size
         computePixelSize(1280, 720)
-
-        if detection_started:
-            frame = cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/live/frame.jpg')
-            if frame is not None:
-                detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
 
         # publishing
         area_pub.publish(Float32(cam_area))
@@ -149,6 +174,12 @@ def main():
 if __name__ == '__main__':
     try:
 
+        # start the object detection thread
+        detector_thread = threading.Thread(target=detectionThread)
+        detector_thread.daemon = True
+        detector_thread.start()
+
+        # main thread
         main()
 
     except rospy.ROSInterruptException as error:
