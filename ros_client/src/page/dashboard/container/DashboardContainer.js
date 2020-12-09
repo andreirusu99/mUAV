@@ -29,7 +29,7 @@ import {RemoveScroll} from "react-remove-scroll";
 import {Slider} from "@material-ui/core";
 
 // the boundary where the sonar reading is replaced with the barometer reading
-const BARO_THRESH = 100 //cm
+const BARO_THRESH = 300 //cm
 class DashboardContainer extends React.Component {
 
     constructor(props, context) {
@@ -449,16 +449,20 @@ class DashboardContainer extends React.Component {
                                                     {'Roll'}
                                                 </div>
 
-                                                {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) !== 0 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowForwardIcon fontSize={"small"}/>
                                                         : <ArrowBackIcon fontSize={"small"}/>}
                                                 </strong>}
 
-                                                <strong>{Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) + '%'}</strong>
+                                                <strong>
+                                                    {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10
+                                                        ? Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) + '%'
+                                                        : "0%"}
+                                                </strong>
 
-                                                {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) !== 0 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowForwardIcon fontSize={"small"}/>
@@ -492,16 +496,20 @@ class DashboardContainer extends React.Component {
                                                     {'Pitch'}
                                                 </div>
 
-                                                {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) !== 0 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowUpwardIcon fontSize={"small"}/>
                                                         : <ArrowDownwardIcon fontSize={"small"}/>}
                                                 </strong>}
 
-                                                <strong>{Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) + '%'}</strong>
+                                                <strong>
+                                                    {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10
+                                                        ? Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) + '%'
+                                                        : "0%"}
+                                                </strong>
 
-                                                {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) !== 0 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowUpwardIcon fontSize={"small"}/>

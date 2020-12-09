@@ -114,7 +114,7 @@ def load_image_into_numpy_array(path):
     image = cv2.blur(image, (3, 3))  # blur image to better mach real sensor output
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # convert to RGB for detection
     image = sk.util.random_noise(image, mode='gaussian', var=0.05 ** 2)  # add random gaussian noise
-    image = (255 * image).astype(np.uint8)
+    image = (255 * image).astype(np.uint8)  # convert back to [0-255] range
     return np.array(image)
 
 
@@ -133,41 +133,50 @@ for image_path in IMAGE_PATHS:
 
     width_tiles = 4
     height_tiles = 3
-    for tile_no, image_np in enumerate(tile_image(image_np, width_tiles, height_tiles)):
+    detections = []
+    for tile_no, tile in enumerate(tile_image(image_np, width_tiles, height_tiles)):
         print('Running inference for {}, tile {} '.format(image_path, tile_no + 1))
         start_time = time.time()
 
         # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
-        input_tensor = tf.convert_to_tensor(image_np)
+        input_tensor = tf.convert_to_tensor(tile)
 
         # The model expects a batch of images, so add an axis with `tf.newaxis`.
         input_tensor = input_tensor[tf.newaxis, ...]
 
         # perform inference on the input batch
-        detections = detect_fn(input_tensor)
+        detections.append(detect_fn(input_tensor))
 
         end_time = time.time()
 
         print("Inference took {:.1f} ms".format((end_time - start_time) * 1000))
 
+        plt.figure()
+        # save each tile separately
+        plt.imsave("..\\results\\" + MODEL_NAME + "\\" + str(tile_no + 1) + '_' + image_path.split("\\")[-1],
+                   tile)
+
+    image_np_with_detections = image_np.copy()
+
+    # NOT WORKING CORRECTLY YET
+    # TODO: scale the boxes to their tiles
+    for i in range(width_tiles * height_tiles):
         # All outputs are batches tensors.
         # Convert to numpy arrays, and take index [0] to remove the batch dimension.
         # We're only interested in the first num_detections.
-        num_detections = int(detections.pop('num_detections'))
-        detections = {key: value[0, :num_detections].numpy()
-                      for key, value in detections.items()}
-        detections['num_detections'] = num_detections
+        num_detections = int(detections[i].pop('num_detections'))
+        detections[i] = {key: value[0, :num_detections].numpy()
+                         for key, value in detections[i].items()}
+        detections[i]['num_detections'] = num_detections
 
         # detection_classes should be ints.
-        detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
-
-        image_np_with_detections = image_np.copy()
+        detections[i]['detection_classes'] = detections[i]['detection_classes'].astype(np.int64)
 
         viz_utils.visualize_boxes_and_labels_on_image_array(
             image_np_with_detections,
-            detections['detection_boxes'],
-            detections['detection_classes'],
-            detections['detection_scores'],
+            detections[i]['detection_boxes'],
+            detections[i]['detection_classes'],
+            detections[i]['detection_scores'],
             category_index,
             use_normalized_coordinates=True,
             max_boxes_to_draw=20,
@@ -175,10 +184,7 @@ for image_path in IMAGE_PATHS:
             line_thickness=1
         )
 
-        plt.figure()
-        # plt.imshow(image_np_with_detections)
-        plt.imsave("..\\results\\" + MODEL_NAME + "\\" + str(tile_no + 1) + '_' + image_path.split("\\")[-1],
-                   image_np_with_detections)
-        print('Done')
+    plt.imsave("..\\results\\" + MODEL_NAME + "\\" + 'boxes_' + image_path.split("\\")[-1], image_np_with_detections)
+    print('Done')
 
 # plt.show()

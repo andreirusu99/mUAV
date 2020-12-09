@@ -27,3 +27,7 @@ catkin_ws/src/drone/*.code-workspace
 ### WebStorm ###
 ros_client/node_modules
 ros_client/.idea
+
+ModelTest/model
+ModelTest/venv
+ModelTest/.idea
