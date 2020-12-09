@@ -1,0 +1,59 @@
+# Hardware
+
+## Quadcopter
+Designed with 3D printing and modularity in mind, it acts as an enclosure for all the other components. 
+Designed in SolidWorks and sliced with Ultimaker Cura.
+
+It features a 3-deck design, where in the middle deck lie the most important components (Jetson Nano, Flight Controller, Camera). 
+The upper deck hosts the GPS and the Wi-Fi antennas, while the lower deck contains the LiPo battery, the sonar, and a servo release mechanism.
+
+The front arms are pulled back (in comparison to a regular simmetrical quadcopter) in order for them not to interfere with the camera's image.
+
+The entire craft is suspended on 4 independent legs that can be easily replaced.
+The motor arms are also modular and can be easily replaced if broken.
+![Drone](https://i.imgur.com/v9RKz9P.jpeg)
+
+## Main Computer
+The nVidia Jetson Nano Developer Kit is used in this project, mainly due to the fact that it boasts a Maxwell GPU (alongside a 4 core ARM CPU) capable of fast deep-learning inference speeds.
+Additionally, the wealth of expasion ports and headers helps in connecting sensors and building complex applications. 
+The Jetson is improved by the addition of an Intel Wi-Fi card, in the dedicated E key slot under the Nano module. 
+This card has 2 antennas, which come out of the top of the drone and give the nano very good wireless coverage.
+
+Runs Tegra4Linux, a custom Linux distro specific to the Jetson platform.
+
+![Jetson Nano](https://developer.nvidia.com/sites/default/files/akamai/embedded/images/jetsonNano/JetsonNano-DevKit_Front-Top_Right_trimmed.jpg)
+
+## Flight Controller
+This is the component that directly interacts with the motors. The FC contains 4 separates ESCs to control the 4 separate motors.
+It also provides a pass-through interface to control the servo to which the camera is attached, for tilt action.
+It receives MSP (MultiWii Serial Protocol) commands on separate channels and runs PID loops and stabilisation algorithms to keep the drone level.
+Uses Betaflight firmware and has an integrated IMU with an accelerometer and gyroscope.
+It is mounted in the head of the craft, behind the camera and the tilting servo.
+
+![Flight Controller](https://cdn-global-hk.hobbyking.com/media/catalog/product/cache/1/image/660x415/17f82f742ffe127f42dca9de82fb58b1/2/0/202844_4.jpg)
+
+
+## Sensors
+
+### Camera
+The camera used in this project is the RasberryPi Camera V2, with up to 4K resolution at 30FPS. It gives out a decent image, and has very good support on the Jetson Nano.
+It plugs into one of the CSI camera ports on the Jetson.
+
+![RPi Cam V2](https://www.raspberrypi.org/homepage-9df4b/static/5892e05a0858779e36ff6045dbc1a414/8924f/4275760945bb7f2b00766f92384de9124335995e_pi-camera-hero-1-1394x1080.jpg)
+
+### Sonar
+I used a simple HC-SR04(P) ultrasonic sensor as a sonar to obtain altitude information. It is mounted on the underside of the craft, facing downwards.
+
+![Sonar](https://cdn.sparkfun.com//assets/parts/1/3/5/0/8/15569-Ultrasonic_Distance_Sensor_-_HC-SR04-01a.jpg)
+
+### Barometer
+A Bosch BMP-280 barometric and temperature sensor is used for altitude information when the craft is out of the range of the sonar (about 4m from the ground).
+Communication between it and the Jetson is done using I2C. It is mounted behind the FC, above a 5V power regulator.
+
+![BMP-280](https://images-na.ssl-images-amazon.com/images/I/41Di32vL6-L.jpg)
+
+### GPS
+As GPS, a VK-162 is used. It provides simple USB interface access and has good accuracy and reliability. 
+It can be seen mounted on the topmost part of the drone, for better location signal.
+
+![VK-162](https://images-na.ssl-images-amazon.com/images/I/31W6-Orz9qL._AC_.jpg)
