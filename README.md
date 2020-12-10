@@ -1,4 +1,4 @@
-## ! This project is a work in progress !
+## ! Work in progress !
 Content can change anytime.
 
 ### ***This project represents the work for my bachelor's thesis and therefore, any usage or distribution of the files without expressly granted written permission and consent is prohibited.***
