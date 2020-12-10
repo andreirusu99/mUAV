@@ -74,21 +74,40 @@ Additionally, a servo release mechanism is mounted on the underside of the craft
 ![Servo release](https://i.imgur.com/SF27KIW.png)
 
 
-### Motors
+### Motors and Propellers
 I used 4 Turnigy BLDC, 2600KV motors (common for medium-scale drones), together with 6040 propellers (6" long, 4" pitch), with a rated thrust of 800g each.
 
 ## Stats
 - Mass without battery: **~850g**
 - Mass with battery: **~1200g** (1x 3S LiPo 5200mAh, 55Wh)
-- Wingspan: **51cm**
+- Propeller span: **51cm**
 - Height: **15cm** (without antennas)
-- Power consumption: **10W** idle, **150W** hover + **10W** JetsonNano
+- Power consumption: **~10W** idle, **~150W** hover + **~10W** JetsonNano
 - Average flight time: **20 min**
-> Power consumption and flight times depend heavily on external factors such as air temperature, wind, humidity, and the flying manner.
+> Power consumption and flight times depend heavily on external factors such as air temperature, wind, humidity.
 
 ## Extra Photos
-![](https://i.imgur.com/sxq4h51.jpeg)
-![](https://i.imgur.com/uD0jeMe.jpeg)
-![](https://i.imgur.com/8PYOLWV.jpeg)
-![](https://i.imgur.com/JVggMCH.jpeg)
-![](https://i.imgur.com/GOhfVe9.jpeg)
+### Top View
+> Shows the upper deck, with the Jetson Nano's fan, the GPS module, the antennas and various other design elements
+
+![top](https://i.imgur.com/sxq4h51.jpeg)
+
+### Bottom View
+> Shos the sonar, the servo release, and the battery cage.
+
+![bottom](https://i.imgur.com/uD0jeMe.jpeg)
+
+### Back View
+> Shows the I/O ports of the Jetson. Left USB is the Flight Controller, right USB is the GPS.
+
+![back](https://i.imgur.com/8PYOLWV.jpeg)
+
+### Flight Controller and Camera Servo
+> You can spot the ventilation cutouts and the M3 nut capture locations embedded in the 3D-printed plastic
+
+![front](https://i.imgur.com/JVggMCH.jpeg)
+
+### Internal View
+> Not all component had been installed when this picture was taken.
+
+![internal](https://i.imgur.com/GOhfVe9.jpeg)
