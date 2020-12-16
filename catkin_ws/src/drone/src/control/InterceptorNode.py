@@ -57,7 +57,7 @@ def main():
     last_active = 0.0
     detection_start = detection_end = 0.0
 
-    camera_angles = [15, 30, 45, 60, 90]
+    camera_angles = [0, 15, 30, 45, 60, 90]
     angle_index = len(camera_angles) - 1
 
     rate = rospy.Rate(20)  # Hz

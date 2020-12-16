@@ -9,6 +9,7 @@ import threading
 import rospy
 from drone.msg import Altitude as AltitudeMsg
 from std_msgs.msg import Float32
+from std_msgs.msg import Bool
 
 from src.compute import Detector as detector
 
@@ -51,6 +52,8 @@ PIXEL_SIZE_H = 0.0  # cm
 WIDTH_TILES = 4
 HEIGHT_TILES = 3
 DETECTION_STARTED = False
+
+FRAME_READY = False
 
 
 def sonar_callback(data):
@@ -109,17 +112,23 @@ def computePixelSize(frame_width, frame_height):
     PIXEL_SIZE_V = (AREA_DIST_VERT / frame_height) * 100
 
 
+def frame_saved_callback(data):
+    global FRAME_READY, FRAME
+    FRAME = cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/live/frame.jpg')
+    FRAME_READY = True
+
+
 def detectionThread():
-    global FRAME_OVERLAY_NP
+    global FRAME_OVERLAY_NP, FRAME_READY
+    frame_pub = rospy.Publisher('FrameRequested', Bool, queue_size=1)
 
     while True:
 
-        if not DETECTION_STARTED:
+        if not DETECTION_STARTED or not FRAME_READY:
             continue
 
-        frame = cv2.imread('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/live/frame.jpg')
-
-        if frame is not None:
+        if FRAME is not None:
+            frame = FRAME.copy()
             # sharpening the input image
             kernel = np.array([[0, -1, 0],
                                [-1, 5, -1],
@@ -131,7 +140,7 @@ def detectionThread():
             FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
             end_inference = time.time()
 
-            rospy.loginfo("{}: Inference {:.0f}ms, {} detections"
+            rospy.loginfo("{}: Detection {:.0f}ms, {} people"
                           .format(rospy.get_caller_id(), (end_inference - start_inference) * 1000, len(detections)))
 
             # save the overlaid image
@@ -140,13 +149,20 @@ def detectionThread():
                 + str(time.time()) + '_' + str(len(detections)) + '.jpg',
                 FRAME_OVERLAY_NP)
 
+            # flag the end of frame processing
+            FRAME_READY = False
+
+            # request another frame
+            frame_pub.publish(Bool(True))
+
 
 def main():
-    global FRAME, DETECTION_STARTED
+    global DETECTION_STARTED
     rospy.init_node('ComputingNode')
 
     rospy.Subscriber('SonarReading', Float32, sonar_callback)
     rospy.Subscriber('Altitude', AltitudeMsg, alt_callback)
+    rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
 
     area_pub = rospy.Publisher('Area', Float32, queue_size=1)
 
