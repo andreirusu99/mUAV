@@ -79,8 +79,8 @@ I used 4 Turnigy BLDC, 2600KV motors (common for medium-scale drones), together 
 
 ## Stats
 - Mass without battery: **~850g**
-- Mass with battery: **~1200g** (1x 3S LiPo 5200mAh, 55Wh)
-- Propeller span: **51cm**
+- Mass with battery: **~1200g** (3S LiPo 5200mAh, 55Wh)
+- Propeller span: **50cm**
 - Height: **15cm** (without antennas)
 - Power consumption: **~10W** idle, **~150W** hover + **~10W** JetsonNano
 - Average flight time: **20 min**
@@ -108,6 +108,6 @@ I used 4 Turnigy BLDC, 2600KV motors (common for medium-scale drones), together 
 ![front](https://i.imgur.com/JVggMCH.jpeg)
 
 ### Internal View
-> Not all component had been installed when this picture was taken.
+> Not all components had been installed when this picture was taken.
 
 ![internal](https://i.imgur.com/GOhfVe9.jpeg)
