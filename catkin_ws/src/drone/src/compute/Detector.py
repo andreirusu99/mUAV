@@ -56,7 +56,7 @@ def run_inference(image, width_tiles, height_tiles):
         # copy the tile (numpy array) to GPU as cudaImage
         image_cuda = jetson.utils.cudaFromNumpy(tile)
 
-        # perform detection on the cudaImage, add overlays
+        # perform detection on the cudaImage, do not add overlays
         detections = NET.Detect(image_cuda, overlay='none')
         # add these detections to the list of all detections
         all_detections.extend(detections)

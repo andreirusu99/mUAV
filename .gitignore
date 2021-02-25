@@ -29,4 +29,5 @@ catkin_ws/src/drone/drone.egg-info/
 catkin_ws/src/drone/!.vscode/tasks.json
 catkin_ws/src/drone/!.vscode/launch.json
 catkin_ws/src/drone/*.code-workspace
+catkin_ws/src/*.txt
 

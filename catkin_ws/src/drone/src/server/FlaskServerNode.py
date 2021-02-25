@@ -10,7 +10,7 @@ from std_msgs.msg import Bool
 from src.sensors import Camera as cam
 
 # image to be sent to the Ground Station
-SEND_FPS = 25
+SEND_FPS = 20
 FRAME_TIME = 1.0 / SEND_FPS
 last_send_loop = 0.0
 
@@ -74,7 +74,7 @@ def encodeFrame():
 
         frame = cam.FRAME.copy()
         # nearest interpolation since quality is not important for the video stream
-        resized = cv2.resize(frame, (320, 180), interpolation=cv2.INTER_NEAREST)
+        resized = cv2.resize(frame, (410, 308), interpolation=cv2.INTER_NEAREST)
         _, encoded = cv2.imencode(".jpg", resized)
 
         # Output image as a byte array

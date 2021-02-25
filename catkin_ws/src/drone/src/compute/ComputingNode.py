@@ -118,6 +118,17 @@ def frame_saved_callback(data):
     FRAME_READY = True
 
 
+def process_data(frame, detections):
+    for detection in detections:
+        print(detection)
+
+    # save the overlaid image
+    cv2.imwrite(
+        "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/"
+        + str(time.time()) + '_' + str(len(detections)) + '.jpg',
+        frame)
+
+
 def detectionThread():
     global FRAME_OVERLAY_NP, FRAME_READY
     frame_pub = rospy.Publisher('FrameRequested', Bool, queue_size=1)
@@ -133,7 +144,7 @@ def detectionThread():
             kernel = np.array([[0, -1, 0],
                                [-1, 5, -1],
                                [0, -1, 0]])
-            frame = cv2.filter2D(frame, -1, 0.75 * kernel)
+            # frame = cv2.filter2D(frame, -1, 0.75 * kernel)
 
             # run inference on the image
             start_inference = time.time()
@@ -143,11 +154,7 @@ def detectionThread():
             rospy.loginfo("{}: Detection {:.0f}ms, {} people"
                           .format(rospy.get_caller_id(), (end_inference - start_inference) * 1000, len(detections)))
 
-            # save the overlaid image
-            cv2.imwrite(
-                "/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/"
-                + str(time.time()) + '_' + str(len(detections)) + '.jpg',
-                FRAME_OVERLAY_NP)
+            process_data(FRAME_OVERLAY_NP.copy(), detections)
 
             # flag the end of frame processing
             FRAME_READY = False
@@ -178,7 +185,7 @@ def main():
         cam_area = computeVisibleCamArea(cam_angle)
 
         # computing the pixel size
-        computePixelSize(1280, 720)
+        computePixelSize(1632, 1232)
 
         # publishing
         area_pub.publish(Float32(cam_area))

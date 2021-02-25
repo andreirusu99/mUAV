@@ -100,11 +100,13 @@ def main():
                 rospy.set_param("/physical/camera_angle", camera_angles[angle_index])
                 rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angles[angle_index]))
 
+            # staring detection
             if A == 1 and not detection_started and time.time() - detection_end >= 1:
                 rospy.set_param("/run/detection_started", True)
                 detection_start = time.time()
                 rospy.loginfo("{}: Detection started!".format(rospy.get_caller_id()))
 
+            # stopping detection
             elif B == 1 and detection_started and time.time() - detection_start >= 1:
                 rospy.set_param("/run/detection_started", False)
                 detection_end = time.time()
