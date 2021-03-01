@@ -138,7 +138,7 @@ def main(drone):
         camera_angle = clamp(cam_angle + pitch, 0, 90)
 
         # setting the camera angle
-        CMDS['aux2'] = round(1000 + (11.111 * camera_angle))
+        CMDS['aux2'] = round(1000 + (11 * camera_angle))
 
         # send the channels to the board
         if drone.send_RAW_RC([CMDS[i] for i in CMDS_ORDER]):

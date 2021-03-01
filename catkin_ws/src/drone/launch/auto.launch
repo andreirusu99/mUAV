@@ -10,8 +10,6 @@
     <param name="/serial/flight_controller" type="string" value="ttyACM0"/>
     <param name="/serial/gps_vk" type="string" value="ttyACM1"/>
 
-    <param name="/computing/" type="int" value="90"/>
-
     <node name="ComputingNode" pkg="drone" type="ComputingNode.py" output="screen"/>
     <node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>
     <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/>
