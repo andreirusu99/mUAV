@@ -66,7 +66,7 @@ AIR_TEMP = 0
 
 # CSV file header
 CSV_HEADER = ['time', 'timestamp',
-              'people_count', 'density[ppl/m2]',
+              'people_count', 'density[ppl/10m2]',
               'latitude', 'longitude', 'sat',
               'altitude[m]', 'height[m]', 'air_temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
 CSV_FILENAME = ''
@@ -83,7 +83,7 @@ DETECTION_STARTED = False
 FRAME_READY = False
 
 # the number of last frames to consider for processing
-DETECTION_RING = 7
+DETECTION_RING = 10
 PREV_OVERLAY = None
 PREV_DETECTIONS = []
 OVERLAY_INDEX = 0
@@ -107,7 +107,7 @@ def alt_callback(data):
 
 def gps_callback(data):
     global LAT_LNG, SAT
-    LAT_LNG = (round(data.lat, 4), round(data.lng), 4)
+    LAT_LNG = (round(data.lat, 4), round(data.lng, 4))
     SAT = data.fix
 
 
@@ -118,10 +118,10 @@ def attitude_callback(data):
 
 def resolveHeight():
     global H
-    if SONAR_MIN <= SONAR <= SONAR_MAX:
-        H = SONAR / 100  # convert cm to m
-    elif REL_ALT > 0:
-        H = REL_ALT
+    # if SONAR_MIN <= SONAR <= SONAR_MAX:
+    #     H = SONAR / 100  # convert cm to m
+    # elif REL_ALT > 0:
+    H = REL_ALT
 
 
 def computeVisibleCamArea(cam_angle):
@@ -141,7 +141,7 @@ def computeVisibleCamArea(cam_angle):
     coeff = 1.0 / math.tan(math.radians(alpha)) - math.sin(math.radians(theta))
 
     if coeff < 0:
-        return 1
+        return 0.001
 
     AREA_DIST_VERT = coeff * H
 
@@ -182,6 +182,7 @@ def process_data(current_overlay, current_detections):
     # -- Center: (311.746, 376.823)
 
     current_people = len(current_detections)  # total number of people in the image
+
     # there is at least one person in the frame
     if current_people > 0:
         OVERLAY_INDEX += 1
@@ -202,9 +203,9 @@ def process_data(current_overlay, current_detections):
             time_of_day = str(datetime.now().strftime('%H:%M:%S'))
             timestamp = round(time.time())
 
-            density = round(people_count / CAM_AREA, 1)
+            density = round((people_count / CAM_AREA) * 10, 2)
 
-            rospy.loginfo('{}: {} people, {}/m2 density'.format(rospy.get_caller_id(), people_count, density))
+            rospy.loginfo('{}: {} people, {}/10m2 density'.format(rospy.get_caller_id(), people_count, density))
 
             # save data to the csv file
             if CSV_PATH is not None:
@@ -217,13 +218,78 @@ def process_data(current_overlay, current_detections):
                     writer.writerow(row)
 
             # save the overlaid image
-            # TODO: save to CSV file + GPS location
             cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/{}_{}.jpg'.format(
                 timestamp, people_count),
                 overlay)
 
     else:
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
+
+
+def process_video():
+    global PREV_DETECTIONS, PREV_OVERLAY, BEST_DETECTIONS, BEST_OVERLAY, OVERLAY_INDEX, H
+
+    video = cv2.VideoCapture('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/videos/fountain.mp4')
+
+    while video.isOpened():
+        ret, frame = video.read()
+
+        if not ret:
+            break
+
+        resized = cv2.resize(frame, (1080, 1920), interpolation=cv2.INTER_NEAREST)
+
+        overlay, detections = detector.run_inference(resized, 3, 5)
+
+        current_people = len(detections)  # total number of people in the image
+
+        # there is at least one person in the frame
+        if current_people > 0:
+            OVERLAY_INDEX += 1
+            # find the image with the maximum number of people
+            if current_people > len(BEST_DETECTIONS):
+                BEST_DETECTIONS = detections
+                BEST_OVERLAY = overlay
+
+            PREV_DETECTIONS = detections
+            PREV_OVERLAY = overlay
+
+            # the maximum from the previous detections has been established
+            if OVERLAY_INDEX == DETECTION_RING:
+                OVERLAY_INDEX = 0
+                people_count = len(BEST_DETECTIONS)
+                overlay = BEST_OVERLAY
+                detections = BEST_DETECTIONS
+                time_of_day = str(datetime.now().strftime('%H:%M:%S'))
+                timestamp = round(time.time())
+
+                H = 10.0
+                area = computeVisibleCamArea(45)
+
+                density = round((people_count / area) * 10, 2)
+
+                rospy.loginfo('{}: {} people, {}/10m2 density'.format(rospy.get_caller_id(), people_count, density))
+
+                # save data to the csv file
+                if CSV_PATH is not None:
+                    with open(CSV_PATH, 'a', newline='') as csv_file:
+                        writer = csv.writer(csv_file)
+                        row = [time_of_day, timestamp,
+                               people_count, density,
+                               LAT_LNG[0], LAT_LNG[1], SAT,
+                               ABS_ALT, 10, AIR_TEMP, 45, area, BATTERY]
+                        writer.writerow(row)
+
+                # save the overlaid image
+                cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/videos/{}_{}.jpg'.format(
+                    timestamp, people_count),
+                    overlay)
+
+    else:
+        rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
+
+    video.release()
+    rospy.loginfo('{}: Video processing done!'.format(rospy.get_caller_id()))
 
 
 def detectionThread():
