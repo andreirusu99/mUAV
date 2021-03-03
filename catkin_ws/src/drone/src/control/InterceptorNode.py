@@ -50,14 +50,14 @@ def UDPthread():
 def main():
     rospy.init_node('InterceptorNode')
 
-    pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
+    control_pub = rospy.Publisher('Control', ControlAxesMsg, queue_size=1)
 
     arm_time = disarm_time = 0.0
     last_camera = last_print = 0.0
     last_active = 0.0
     detection_start = detection_end = 0.0
 
-    camera_angles = [15, 30, 45, 60, 90]
+    camera_angles = [0, 15, 30, 45, 60, 90]
     angle_index = len(camera_angles) - 1
 
     rate = rospy.Rate(20)  # Hz
@@ -100,11 +100,13 @@ def main():
                 rospy.set_param("/physical/camera_angle", camera_angles[angle_index])
                 rospy.loginfo("{}: Camera @ {}deg".format(rospy.get_caller_id(), camera_angles[angle_index]))
 
+            # starting detection
             if A == 1 and not detection_started and time.time() - detection_end >= 1:
                 rospy.set_param("/run/detection_started", True)
                 detection_start = time.time()
                 rospy.loginfo("{}: Detection started!".format(rospy.get_caller_id()))
 
+            # stopping detection
             elif B == 1 and detection_started and time.time() - detection_start >= 1:
                 rospy.set_param("/run/detection_started", False)
                 detection_end = time.time()
@@ -121,16 +123,16 @@ def main():
 
             # publish the controls axes if craft is armed
             if armed:
-                pub.publish(ControlAxesMsg(joy_sticks))
+                control_pub.publish(ControlAxesMsg(joy_sticks))
 
         else:  # UDP inactive
             timeout_th = rospy.get_param("/udp/timeout_threshold")
 
             if time.time() - last_print > 1:
-                rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
+                # rospy.loginfo("{}: UDP timeout!".format(rospy.get_caller_id()))
                 last_print = time.time()
 
-            # signal lost while armed (flying)
+            # signal lost while armed
             if armed and time.time() - last_active >= timeout_th:
                 rospy.set_param("/run/armed", False)
                 rospy.logerr("{}: UDP timeout: DISARMED for safety".format(
