@@ -1,11 +1,7 @@
 import React from 'react'
 import logo from './common/image/drone-logo.png';
 
-import {
-    Nav,
-    Navbar,
-    NavbarBrand, Row, Col, NavItem, NavLink
-} from 'reactstrap';
+import {Nav, Navbar, NavbarBrand, NavItem, NavLink} from 'reactstrap';
 import {Button} from "@material-ui/core";
 import DashboardSharpIcon from '@material-ui/icons/DashboardSharp';
 import BarChartSharpIcon from '@material-ui/icons/BarChartSharp';
@@ -40,13 +36,13 @@ const NavigationBar = () => (
                 </NavItem>
 
                 <NavItem style={{marginLeft: '10px'}}>
-                    <NavLink href={"/collection"}>
+                    <NavLink href={"/crowd_data"}>
                         <Button
                             style={{color: '#ff6f00'}}
                             variant={"text"}
                             startIcon={<LayersIcon/>}
                             size={"large"}>
-                            {"Collection"}
+                            {"Crowd data"}
                         </Button>
                     </NavLink>
                 </NavItem>

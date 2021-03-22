@@ -10,7 +10,6 @@ import CheckCircleSharpIcon from '@material-ui/icons/CheckCircleSharp';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
 import VideocamIcon from '@material-ui/icons/Videocam';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import GamepadIcon from '@material-ui/icons/Gamepad';
 import OpenWithIcon from '@material-ui/icons/OpenWith';
 import SignalWifi3BarIcon from '@material-ui/icons/SignalWifi3Bar';
@@ -27,6 +26,7 @@ import GoogleMap from "../component/GoogleMap";
 import CallMissedIcon from '@material-ui/icons/CallMissed';
 import {RemoveScroll} from "react-remove-scroll";
 import {Slider} from "@material-ui/core";
+import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 
 // the boundary where the sonar reading is replaced with the barometer reading
 const BARO_THRESH = 300 //cm
@@ -95,7 +95,8 @@ class DashboardContainer extends React.Component {
                 },
                 run: {
                     value: {
-                        runtime: 0.0
+                        runtime: 0.0,
+                        detection_started: false
                     },
                     path: '/Run',
                     type: 'drone/RunInfo'
@@ -137,7 +138,8 @@ class DashboardContainer extends React.Component {
             if (message) {
                 let state = self.state
                 state['topic']['run']['value'] = {
-                    runtime: message.runtime
+                    runtime: message.runtime,
+                    detection_started: message.detection_started
                 }
                 self.setState(state)
             }
@@ -296,9 +298,9 @@ class DashboardContainer extends React.Component {
                         paddingTop: '10px',
                         paddingBottom: '10px'
                     }}>
-                        <Col sm={{size: '4', offset: 0}}
-                             style={{marginLeft: '40px'}}
-                             className={'text-center'}>
+
+                        <Col sm={{size: '2', offset: 0}}
+                             style={{marginLeft: '40px'}}>
                             <Chip
                                 icon={this.state.ros_connected
                                     ? <SignalWifi3BarIcon style={{color: '#ffffff'}}/>
@@ -308,13 +310,30 @@ class DashboardContainer extends React.Component {
                                     color: 'white', fontSize: '16px'
                                 }}
                                 label={this.state.ros_connected
-                                    ? 'ROS up: ' + (this.state.topic.run.value.runtime / 60).toFixed(2) + ' mins'
-                                    : 'ROS disconnected'}
+                                    ? 'ROS UP: ' + (this.state.topic.run.value.runtime / 60).toFixed(0) + ' min'
+                                    : 'ROS DOWN'}
                             />
                         </Col>
 
-                        <Col sm={{size: '3', offset: 0}}
-                             className={'text-center'}>
+                        <Col sm={{size: '2', offset: 0}}
+                             style={{marginLeft: '40px'}}>
+                            <Chip
+                                icon={this.state.topic.run.value.detection_started
+                                    ? <VideocamIcon style={{color: '#ffffff'}}/>
+                                    : <VideocamOffIcon style={{color: '#ffffff'}}/>}
+                                style={{
+                                    backgroundColor: '#2082d9',
+                                    color: 'white', fontSize: '16px'
+                                }}
+                                label={this.state.topic.run.value.detection_started
+                                    ? 'DETECTION ON'
+                                    : 'DETECTION OFF'}
+                            />
+
+                        </Col>
+
+                        <Col sm={{size: '2', offset: 0}}
+                             style={{marginLeft: '60px'}}>
                             <Chip
                                 icon={this.state.topic.armed.value
                                     ? <ErrorSharpIcon style={{color: '#ffffff'}}/>
@@ -323,12 +342,12 @@ class DashboardContainer extends React.Component {
                                     backgroundColor: this.state.topic.armed.value ? 'red' : 'green',
                                     color: 'white', fontSize: '16px'
                                 }}
-                                label={this.state.topic.armed.value ? 'Armed - Watch Out!' : 'Disarmed - Safe!'}
+                                label={this.state.topic.armed.value ? 'ARMED' : 'DISARMED'}
                             />
                         </Col>
 
-                        <Col sm={{size: '4', offset: 0}}
-                             className={'text-center'}>
+                        <Col sm={{size: '2', offset: 0}}
+                             style={{marginLeft: '160px'}}>
                             <Chip
                                 icon={this.state.topic.gps.value.fix > 0
                                     ? <GpsFixedIcon style={{color: '#ffffff'}}/>
@@ -338,10 +357,11 @@ class DashboardContainer extends React.Component {
                                     color: 'white', fontSize: '16px'
                                 }}
                                 label={this.state.topic.gps.value.fix > 0
-                                    ? 'GPS Fix: ' + this.state.topic.gps.value.fix + ' sat'
-                                    : 'GPS not fixed'}
+                                    ? 'GPS ON: ' + this.state.topic.gps.value.fix + ' sat'
+                                    : 'GPS OFF'}
                             />
                         </Col>
+
                     </Row>
 
                     <Row style={{marginTop: '0px'}}>
@@ -364,7 +384,7 @@ class DashboardContainer extends React.Component {
                                                     borderBottomRightRadius: '3px'
                                                 }}
                                                 width={404}
-                                                height={227}
+                                                height={303}
                                                 src={'http://' + ROS_REMOTE.address + ':' + ROS_REMOTE.video_port + '/' + ROS_REMOTE.video_path}
                                                 alt={'Live Video Feed'}/>
                                         </Card>
@@ -376,14 +396,9 @@ class DashboardContainer extends React.Component {
                                 <Col>
                                     <Paper elevation={3}>
 
-                                        <CardHeader className={'text-center'} style={{marginTop: '10px'}}>
-                                            <PowerSettingsNewIcon style={{float: 'left', color: '#3398e3'}}/>
-                                            <strong>{'Power Management'}</strong>
-                                        </CardHeader>
-
                                         <Card style={{padding: '15px', paddingRight: '25px'}}>
 
-                                            <div style={{fontSize: '18px', marginTop: '5px'}}
+                                            <div style={{fontSize: '18px', marginTop: '-2px'}}
                                                  className={'text-center'}>
 
                                                 <FlashOnIcon fontSize={'large'}
@@ -398,7 +413,7 @@ class DashboardContainer extends React.Component {
                                                           value={this.state.topic.attitude.value.power / 2}/>
                                             </div>
 
-                                            <div style={{fontSize: '18px', marginTop: '20px', marginBottom: '5px'}}
+                                            <div style={{fontSize: '18px', marginTop: '10px', marginBottom: '5px'}}
                                                  className={'text-center'}>
                                                 <div style={{textAlign: 'left', marginBottom: '-25px'}}>
                                                     <BatteryChargingFullIcon fontSize={'large'}
@@ -654,7 +669,7 @@ class DashboardContainer extends React.Component {
 
                                                     <strong
                                                         style={{float: "right"}}>
-                                                        {this.state.topic.bmp.value.abs_alt.toFixed(1) + " m"}
+                                                        {this.state.topic.bmp.value.abs_alt.toFixed(0) + " m"}
                                                     </strong>
                                                 </div>
 
@@ -667,13 +682,9 @@ class DashboardContainer extends React.Component {
 
                                                     <strong
                                                         style={{float: "right"}}>
-                                                        {this.state.topic.sonar.value >= BARO_THRESH
+                                                        {this.state.topic.armed.value
                                                             ? (this.state.topic.bmp.value.rel_alt).toFixed(1) + " m"
-                                                            : this.state.topic.sonar.value > 5
-                                                                ? this.state.topic.sonar.value + " cm"
-                                                                : this.state.topic.armed.value && this.state.topic.control.value.throttle > 1300
-                                                                    ? (this.state.topic.bmp.value.rel_alt).toFixed(1) + " m"
-                                                                    : "GROUNDED"
+                                                            : 'GROUNDED'
                                                         }
                                                     </strong>
                                                 </div>

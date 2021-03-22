@@ -3,7 +3,7 @@ import React from "react";
 import DashboardContainer from "./page/dashboard/container/DashboardContainer"
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import 'fontsource-roboto';
-import CollectionContainer from "./page/collection/container/CollectionContainer";
+import CrowdDataContainer from "./page/crowd_data/container/CrowdDataContainer";
 import StatisticsContainer from "./page/statistics/container/StatisticsContainer";
 
 class App extends React.Component {
@@ -19,7 +19,7 @@ class App extends React.Component {
 
                             <Route exact path='/' render={() => <DashboardContainer/>}/>
                             <Route exact path='/dashboard' render={() => <DashboardContainer/>}/>
-                            <Route exact path='/collection' render={() => <CollectionContainer/>}/>
+                            <Route exact path='/crowd_data' render={() => <CrowdDataContainer/>}/>
                             <Route exact path='/statistics' render={() => <StatisticsContainer/>}/>
 
                         </Switch>
