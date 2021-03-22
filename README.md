@@ -21,6 +21,7 @@ The Jetson communicates completely wireless over a Wi-Fi hotspot from a computer
 - **Flask Server**, for live video streaming
 - **ReactJS**, for the front-end application
 - **GoogleMapsAPI** for real-time GPS localization
+- **ROSLibJS** for remote ROS topic access
 
 ## Folder Structure
 ### [catkin_ws](/catkin_ws)
