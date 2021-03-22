@@ -13,6 +13,7 @@ import rospy
 from drone.msg import Altitude as AltitudeMsg
 from drone.msg import Attitude as AttitudeMsg
 from drone.msg import GPSinfo as GPSMsg
+from drone.msg import ComputeMsg
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 
@@ -64,10 +65,10 @@ BATTERY = 0
 AIR_TEMP = 0
 
 # CSV file header
-CSV_HEADER = ['time', 'timestamp',
-              'people_count', 'density[ppl/10m2]',
+CSV_HEADER = ['time', 'stamp',
+              'people', 'warning', 'density',
               'latitude', 'longitude', 'sat',
-              'altitude[m]', 'height[m]', 'air_temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
+              'altitude[m]', 'height[m]', 'temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
 CSV_FILENAME = ''
 CSV_LOCATION = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/'
 CSV_PATH = ''
@@ -91,6 +92,9 @@ BEST_DETECTIONS = []
 
 # social distancing threshold
 DISTANCING_THRESHOLD = 150
+
+# the ROS publisher that sends crowd info
+compute_pub = None
 
 
 def sonar_callback(data):
@@ -206,14 +210,21 @@ def process_data(current_overlay, current_detections):
 
             density = round((people_count / CAM_AREA) * 10, 2)
 
-            rospy.loginfo('{}: {} people, {}/10m2 density'.format(rospy.get_caller_id(), people_count, density))
+            # check social distancing
+            overlay, neck_breathers = check_social_distancing(detections, overlay)
+
+            rospy.loginfo(
+                '{}: {} people, {}/10m2 density, {} too close'.format(
+                    rospy.get_caller_id(), people_count, density, neck_breathers))
+
+            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA))
 
             # save data to the csv file
             if CSV_PATH is not None:
                 with open(CSV_PATH, 'a', newline='') as csv_file:
                     writer = csv.writer(csv_file)
                     row = [time_of_day, timestamp,
-                           people_count, density,
+                           people_count, neck_breathers, density,
                            LAT_LNG[0], LAT_LNG[1], SAT,
                            ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), CAM_AREA, BATTERY]
                     writer.writerow(row)
@@ -227,7 +238,7 @@ def process_data(current_overlay, current_detections):
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
 
 
-def process_video():
+def video_mock_test():
     global PREV_DETECTIONS, PREV_OVERLAY, BEST_DETECTIONS, BEST_OVERLAY, OVERLAY_INDEX, H
 
     video = cv2.VideoCapture('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/videos/fountain.mp4')
@@ -281,7 +292,7 @@ def process_video():
                     with open(CSV_PATH, 'a', newline='') as csv_file:
                         writer = csv.writer(csv_file)
                         row = [time_of_day, timestamp,
-                               people_count, density,
+                               people_count, neck_breathers, density,
                                LAT_LNG[0], LAT_LNG[1], SAT,
                                ABS_ALT, 10, AIR_TEMP, 45, area, BATTERY]
                         writer.writerow(row)
@@ -380,7 +391,7 @@ def detectionThread():
 
 
 def main():
-    global DETECTION_STARTED, CAM_AREA, CSV_FILENAME, CSV_PATH
+    global DETECTION_STARTED, CAM_AREA, CSV_FILENAME, CSV_PATH, compute_pub
 
     rospy.init_node('ComputingNode')
 
@@ -390,6 +401,8 @@ def main():
     rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
     rospy.Subscriber('GPS', GPSMsg, gps_callback)
     rospy.Subscriber('CraftAttitude', AttitudeMsg, attitude_callback)
+
+    compute_pub = rospy.Publisher('Compute', ComputeMsg, queue_size=1)
 
     # load a pre-trained network, using TensorRT
     detector.load_net('ssd-mobilenet-v2', threshold=0.35)

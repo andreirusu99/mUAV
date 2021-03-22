@@ -54,6 +54,7 @@ find_package(catkin REQUIRED COMPONENTS
    GPSinfo.msg
    Altitude.msg
    RunInfo.msg
+   ComputeMsg.msg
  )
 
 ## Generate services in the 'srv' folder
