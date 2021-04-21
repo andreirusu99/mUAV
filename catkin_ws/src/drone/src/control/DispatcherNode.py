@@ -126,6 +126,8 @@ def main(drone):
 
         armed = rospy.get_param("/run/armed")
         cam_angle = rospy.get_param("/physical/camera_angle")
+        detection_started = rospy.get_param("/run/detection_started")
+
         arm_pub.publish(Bool(armed))
 
         # get board info
@@ -155,7 +157,7 @@ def main(drone):
 
             alt_pub.publish(AltitudeMsg(rel_alt, abs_alt, temp))
             attitude_pub.publish(AttitudeMsg(roll, pitch, yaw, percentage, power, cam_angle))
-            run_pub.publish(RunInfoMsg(runtime))
+            run_pub.publish(RunInfoMsg(runtime, detection_started))
             last_send = time.time()
 
         rate.sleep()

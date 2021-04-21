@@ -13,6 +13,7 @@ import rospy
 from drone.msg import Altitude as AltitudeMsg
 from drone.msg import Attitude as AttitudeMsg
 from drone.msg import GPSinfo as GPSMsg
+from drone.msg import ComputeMsg
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 
@@ -48,11 +49,12 @@ SONAR_MAX = 300  # cm
 SONAR_MIN = 2  # cm
 
 # the side length of one pixel, projected onto the ground plane
-PIXEL_SIZE_V = 0.0  # cm
-PIXEL_SIZE_H = 0.0  # cm
+PIXEL_SIZE = 0.0  # cm
 
 # ground area visible by the camera
 CAM_AREA = 0.0  # m2
+MAX_AREA = 10000  # m2
+MIN_AREA = 5  # m2
 
 # GPS location of craft and satellites
 LAT_LNG = (0.0, 0.0)
@@ -65,10 +67,10 @@ BATTERY = 0
 AIR_TEMP = 0
 
 # CSV file header
-CSV_HEADER = ['time', 'timestamp',
-              'people_count', 'density[ppl/10m2]',
+CSV_HEADER = ['time', 'stamp',
+              'people', 'warning', 'density',
               'latitude', 'longitude', 'sat',
-              'altitude[m]', 'height[m]', 'air_temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
+              'altitude[m]', 'height[m]', 'temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
 CSV_FILENAME = ''
 CSV_LOCATION = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/'
 CSV_PATH = ''
@@ -83,12 +85,22 @@ DETECTION_STARTED = False
 FRAME_READY = False
 
 # the number of last frames to consider for processing
-DETECTION_RING = 10
+DETECTION_RING = 3
 PREV_OVERLAY = None
 PREV_DETECTIONS = []
 OVERLAY_INDEX = 0
 BEST_OVERLAY = None
 BEST_DETECTIONS = []
+
+# social distancing threshold
+DISTANCING_THRESHOLD = 150
+
+# the ROS publisher that sends crowd info
+compute_pub = None
+
+height_ring = 3
+heights = [0] * height_ring  # array for averaging previous height values
+height_index = 0
 
 
 def sonar_callback(data):
@@ -117,11 +129,19 @@ def attitude_callback(data):
 
 
 def resolveHeight():
-    global H
-    # if SONAR_MIN <= SONAR <= SONAR_MAX:
-    #     H = SONAR / 100  # convert cm to m
-    # elif REL_ALT > 0:
-    H = REL_ALT
+    global H, heights, height_index
+    if SONAR_MIN <= SONAR <= SONAR_MAX:
+        h = SONAR / 100  # convert cm to m
+    else:
+        h = REL_ALT
+
+    heights[height_index] = h
+    height_index += 1
+
+    # average the last heights
+    if height_index == height_ring:
+        height_index = 0
+        H = round(np.average(heights), 1)
 
 
 def computeVisibleCamArea(cam_angle):
@@ -145,20 +165,25 @@ def computeVisibleCamArea(cam_angle):
 
     AREA_DIST_VERT = coeff * H
 
-    computePixelSize(1632, 1232)
+    computePixelSize(frame_height=1232, frame_width=1632)
 
-    return round(AREA_DIST_VERT * AREA_DIST_HORIZ, 2)
+    area = round(AREA_DIST_VERT * AREA_DIST_HORIZ, 2)
+
+    # increase the area to account for the trapezoidal projection
+    area *= 1.15
+
+    return min(max(area, MIN_AREA), MAX_AREA)
 
 
-def computePixelSize(frame_width, frame_height):
+def computePixelSize(frame_height, frame_width):
     # computes the relative size of a pixel
     # projected onto the ground plane
-    # by knowing the projected area and the capture frames' respective width and height
-    # this enables computing the relative distance between objects in measurable units (m or cm)
-    global PIXEL_SIZE_V, PIXEL_SIZE_H
+    # by knowing the projected area and the captured frames' respective width and height
+    # this enables computing the relative distance between objects in physical units (m or cm)
+    global PIXEL_SIZE
 
-    PIXEL_SIZE_H = (AREA_DIST_HORIZ / frame_width) * 100
-    PIXEL_SIZE_V = (AREA_DIST_VERT / frame_height) * 100
+    # average between the horizontal and vertical computed value
+    PIXEL_SIZE = (AREA_DIST_VERT / frame_height + AREA_DIST_HORIZ / frame_width) / 2 * 100
 
 
 def frame_saved_callback(data):
@@ -205,14 +230,22 @@ def process_data(current_overlay, current_detections):
 
             density = round((people_count / CAM_AREA) * 10, 2)
 
-            rospy.loginfo('{}: {} people, {}/10m2 density'.format(rospy.get_caller_id(), people_count, density))
+            # check social distancing
+            overlay, neck_breathers = check_social_distancing(detections, overlay)
+
+            rospy.loginfo(
+                '{}: {} people, {}/10m2 density, {} too close'.format(
+                    rospy.get_caller_id(), people_count, density, neck_breathers))
+
+            # send data to the dashboard
+            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA))
 
             # save data to the csv file
             if CSV_PATH is not None:
                 with open(CSV_PATH, 'a', newline='') as csv_file:
                     writer = csv.writer(csv_file)
                     row = [time_of_day, timestamp,
-                           people_count, density,
+                           people_count, neck_breathers, density,
                            LAT_LNG[0], LAT_LNG[1], SAT,
                            ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), CAM_AREA, BATTERY]
                     writer.writerow(row)
@@ -222,11 +255,17 @@ def process_data(current_overlay, current_detections):
                 timestamp, people_count),
                 overlay)
 
+            # reset the best detection
+            BEST_OVERLAY = None
+            BEST_DETECTIONS = []
+
     else:
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
+        # send data to the dashboard
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA))
 
 
-def process_video():
+def video_mock_test():
     global PREV_DETECTIONS, PREV_OVERLAY, BEST_DETECTIONS, BEST_OVERLAY, OVERLAY_INDEX, H
 
     video = cv2.VideoCapture('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/videos/fountain.mp4')
@@ -268,20 +307,25 @@ def process_video():
 
                 density = round((people_count / area) * 10, 2)
 
-                rospy.loginfo('{}: {} people, {}/10m2 density'.format(rospy.get_caller_id(), people_count, density))
+                # check social distancing
+                overlay, neck_breathers = check_social_distancing(detections, overlay)
+
+                rospy.loginfo(
+                    '{}: {} people, {}/10m2 density, {} too close'.format(
+                        rospy.get_caller_id(), people_count, density, neck_breathers))
 
                 # save data to the csv file
                 if CSV_PATH is not None:
                     with open(CSV_PATH, 'a', newline='') as csv_file:
                         writer = csv.writer(csv_file)
                         row = [time_of_day, timestamp,
-                               people_count, density,
+                               people_count, neck_breathers, density,
                                LAT_LNG[0], LAT_LNG[1], SAT,
                                ABS_ALT, 10, AIR_TEMP, 45, area, BATTERY]
                         writer.writerow(row)
 
                 # save the overlaid image
-                cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/videos/{}_{}.jpg'.format(
+                cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/{}_{}.jpg'.format(
                     timestamp, people_count),
                     overlay)
 
@@ -290,6 +334,49 @@ def process_video():
 
     video.release()
     rospy.loginfo('{}: Video processing done!'.format(rospy.get_caller_id()))
+
+
+def get_physical_distance(detection_box_1, detection_box_2):
+    b1X = detection_box_1.Center[0]
+    b1Y = detection_box_1.Center[1]
+
+    b2X = detection_box_2.Center[0]
+    b2Y = detection_box_2.Center[1]
+
+    pixel_distance = math.sqrt((b2X - b1X) ** 2 + (b2Y - b1Y) ** 2)
+    physical_distance = pixel_distance * PIXEL_SIZE  # cm
+
+    return physical_distance
+
+
+def check_social_distancing(detections, overlay):
+    highlighted = []
+    # estimates distances between people from the air
+    for idx1 in range(len(detections) - 1):
+        for idx2 in range(idx1 + 1, len(detections)):
+            physical_distance = get_physical_distance(detections[idx1], detections[idx2])
+            if physical_distance < DISTANCING_THRESHOLD:
+                # highlight people who are too close to each other
+                cv2.rectangle(overlay,
+                              (int(detections[idx1].Left), int(detections[idx1].Top)),
+                              (int(detections[idx1].Right), int(detections[idx1].Bottom)),
+                              color=(0, 0, 255),
+                              thickness=2)
+
+                cv2.rectangle(overlay,
+                              (int(detections[idx2].Left), int(detections[idx2].Top)),
+                              (int(detections[idx2].Right), int(detections[idx2].Bottom)),
+                              color=(0, 0, 255),
+                              thickness=2)
+
+                if idx1 not in highlighted:
+                    highlighted.append(idx1)
+                if idx2 not in highlighted:
+                    highlighted.append(idx2)
+
+    neck_breathers = len(highlighted)
+
+    return overlay, neck_breathers
 
 
 def detectionThread():
@@ -310,9 +397,9 @@ def detectionThread():
             # frame = cv2.filter2D(frame, -1, 0.75 * kernel)
 
             # run inference on the camera image continuously
-            # start_inference = time.time()
+            start_inference = time.time()
             FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
-            # end_inference = time.time()
+            end_inference = time.time()
 
             # rospy.loginfo('{}: Detected {} people in {:.0f}ms, index {}'
             #               .format(rospy.get_caller_id(),
@@ -331,7 +418,8 @@ def detectionThread():
 
 
 def main():
-    global DETECTION_STARTED, CAM_AREA, CSV_FILENAME, CSV_PATH
+    global DETECTION_STARTED, CAM_AREA, CSV_FILENAME, CSV_PATH, compute_pub
+
     rospy.init_node('ComputingNode')
 
     rospy.Subscriber('SonarReading', Float32, sonar_callback)
@@ -341,8 +429,10 @@ def main():
     rospy.Subscriber('GPS', GPSMsg, gps_callback)
     rospy.Subscriber('CraftAttitude', AttitudeMsg, attitude_callback)
 
+    compute_pub = rospy.Publisher('Compute', ComputeMsg, queue_size=1)
+
     # load a pre-trained network, using TensorRT
-    detector.load_net('ssd-mobilenet-v2', threshold=0.4)
+    detector.load_net('ssd-mobilenet-v2', threshold=0.35)
 
     # create the name of the CSV file (date of today)
     CSV_FILENAME = str(datetime.now().strftime('%d%h%y')) + '.csv'
@@ -363,7 +453,8 @@ def main():
         # computing the visible area
         CAM_AREA = computeVisibleCamArea(cam_angle)
 
-        # rospy.loginfo('{}: {}H, {}V'.format(rospy.get_caller_id(), round(PIXEL_SIZE_H, 1), round(PIXEL_SIZE_V, 1)))
+        # print(H, round(CAM_AREA, 2))
+        # rospy.loginfo('{}: {}cm/pixel'.format(rospy.get_caller_id(), round(PIXEL_SIZE, 1)))
         rate.sleep()
 
 
