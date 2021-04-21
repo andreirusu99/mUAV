@@ -1,7 +1,6 @@
 import React from 'react'
 import {ROS_REMOTE} from '../../../common/host'
 import {Card, CardHeader, Col, Progress, Row} from 'reactstrap';
-import NavigationBar from '../../../navbar';
 import ROSLIB from 'roslib'
 import {CustomSlider} from '../component/CustomSlider'
 import Chip from '@material-ui/core/Chip';
@@ -27,6 +26,7 @@ import CallMissedIcon from '@material-ui/icons/CallMissed';
 import {RemoveScroll} from "react-remove-scroll";
 import {Slider} from "@material-ui/core";
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
+import WarningIcon from '@material-ui/icons/Warning';
 
 // the boundary where the sonar reading is replaced with the barometer reading
 const BARO_THRESH = 300 //cm
@@ -100,6 +100,16 @@ class DashboardContainer extends React.Component {
                     },
                     path: '/Run',
                     type: 'drone/RunInfo'
+                },
+                detection: {
+                    value: {
+                        people_count: 0,
+                        neck_breathers: 0,
+                        density: 0.0,
+                        area: 0.0
+                    },
+                    path: '/Compute',
+                    type: 'drone/ComputeMsg'
                 }
             }
         }
@@ -237,6 +247,24 @@ class DashboardContainer extends React.Component {
             }
         });
 
+        // subscribe to detection results
+        new ROSLIB.Topic({
+            ros: this.state.ros,
+            name: this.state.topic.detection.path,
+            messageType: this.state.topic.detection.type
+        }).subscribe(function (message) {
+            if (message) {
+                let state = self.state
+                state['topic']['detection']['value'] = {
+                    people_count: message.people_count,
+                    neck_breathers: message.neck_breathers,
+                    density: message.density,
+                    area: message.area
+                }
+                self.setState(state)
+            }
+        });
+
     }
 
     componentDidMount() {
@@ -280,9 +308,14 @@ class DashboardContainer extends React.Component {
                 temp: 0.0
             }
             state['topic']['sonar']['value'] = 0.0
+            state['topic']['detection']['value'] = {
+                people_count: 0,
+                neck_breathers: 0,
+                density: 0.0,
+                area: 0
+            }
             self.setState(state)
         });
-
     }
 
 
@@ -291,7 +324,46 @@ class DashboardContainer extends React.Component {
             <RemoveScroll>
                 <div>
 
-                    <NavigationBar/>
+                    <Row
+                        style={{
+                            backgroundColor: '#343A40',
+                            paddingTop: '10px',
+                            paddingBottom: '10px'
+                        }}>
+                        <Col className={'text-center'}>
+
+                            {this.state.topic.run.value.detection_started
+                                ? <div>
+                                    <strong style={{color: "#FFFFFF", fontSize: '18px'}} className={'text-center'}>
+                                        {'Total people: ' + this.state.topic.detection.value.people_count}
+                                    </strong>
+
+                                    <strong style={{color: "#FFFFFF", marginLeft: '50px', fontSize: '18px'}}
+                                            className={'text-center'}>
+                                        {'Total area: ' + this.state.topic.detection.value.area.toFixed(0) + ' m2'}
+                                    </strong>
+
+                                    <strong style={{color: "#FFFFFF", marginLeft: '50px', fontSize: '18px'}}
+                                            className={'text-center'}>
+                                        {'Density: ' + this.state.topic.detection.value.density + ' people/10m2'}
+                                    </strong>
+                                    {this.state.topic.detection.value.density > 1 &&
+                                    <WarningIcon style={{color: '#E7AE00', marginLeft: '5px'}}/>
+                                    }
+
+                                    <strong style={{color: "#d42f2f", marginLeft: '50px', fontSize: '18px'}}
+                                            className={'text-center'}>
+                                        {'Too close: ' + this.state.topic.detection.value.neck_breathers + ' people'}
+                                    </strong>
+                                </div>
+                                : <i style={{color: "#FFFFFF", fontSize:'18px'}}>
+                                    {'Start the detection to show quick statistics here'}
+                                </i>
+                            }
+
+
+                        </Col>
+                    </Row>
 
                     <Row style={{
                         backgroundColor: '#eaeaea',
@@ -300,7 +372,7 @@ class DashboardContainer extends React.Component {
                     }}>
 
                         <Col sm={{size: '2', offset: 0}}
-                             style={{marginLeft: '40px'}}>
+                             style={{marginLeft: '45px'}}>
                             <Chip
                                 icon={this.state.ros_connected
                                     ? <SignalWifi3BarIcon style={{color: '#ffffff'}}/>
@@ -310,13 +382,13 @@ class DashboardContainer extends React.Component {
                                     color: 'white', fontSize: '16px'
                                 }}
                                 label={this.state.ros_connected
-                                    ? 'ROS UP: ' + (this.state.topic.run.value.runtime / 60).toFixed(0) + ' min'
-                                    : 'ROS DOWN'}
+                                    ? 'CONNECTED'
+                                    : 'NO SIGNAL'}
                             />
                         </Col>
 
                         <Col sm={{size: '2', offset: 0}}
-                             style={{marginLeft: '40px'}}>
+                             style={{marginLeft: '15px'}}>
                             <Chip
                                 icon={this.state.topic.run.value.detection_started
                                     ? <VideocamIcon style={{color: '#ffffff'}}/>
@@ -342,12 +414,14 @@ class DashboardContainer extends React.Component {
                                     backgroundColor: this.state.topic.armed.value ? 'red' : 'green',
                                     color: 'white', fontSize: '16px'
                                 }}
-                                label={this.state.topic.armed.value ? 'ARMED' : 'DISARMED'}
+                                label={this.state.topic.armed.value
+                                    ? 'ARMED'
+                                    : 'DISARMED'}
                             />
                         </Col>
 
                         <Col sm={{size: '2', offset: 0}}
-                             style={{marginLeft: '160px'}}>
+                             style={{marginLeft: '170px'}}>
                             <Chip
                                 icon={this.state.topic.gps.value.fix > 0
                                     ? <GpsFixedIcon style={{color: '#ffffff'}}/>
