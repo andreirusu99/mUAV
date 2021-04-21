@@ -53,6 +53,8 @@ PIXEL_SIZE = 0.0  # cm
 
 # ground area visible by the camera
 CAM_AREA = 0.0  # m2
+MAX_AREA = 10000  # m2
+MIN_AREA = 5  # m2
 
 # GPS location of craft and satellites
 LAT_LNG = (0.0, 0.0)
@@ -83,7 +85,7 @@ DETECTION_STARTED = False
 FRAME_READY = False
 
 # the number of last frames to consider for processing
-DETECTION_RING = 10
+DETECTION_RING = 3
 PREV_OVERLAY = None
 PREV_DETECTIONS = []
 OVERLAY_INDEX = 0
@@ -95,6 +97,10 @@ DISTANCING_THRESHOLD = 150
 
 # the ROS publisher that sends crowd info
 compute_pub = None
+
+height_ring = 3
+heights = [0] * height_ring  # array for averaging previous height values
+height_index = 0
 
 
 def sonar_callback(data):
@@ -123,11 +129,19 @@ def attitude_callback(data):
 
 
 def resolveHeight():
-    global H
-    # if SONAR_MIN <= SONAR <= SONAR_MAX:
-    #     H = SONAR / 100  # convert cm to m
-    # elif REL_ALT > 0:
-    H = REL_ALT
+    global H, heights, height_index
+    if SONAR_MIN <= SONAR <= SONAR_MAX:
+        h = SONAR / 100  # convert cm to m
+    else:
+        h = REL_ALT
+
+    heights[height_index] = h
+    height_index += 1
+
+    # average the last heights
+    if height_index == height_ring:
+        height_index = 0
+        H = round(np.average(heights), 1)
 
 
 def computeVisibleCamArea(cam_angle):
@@ -151,19 +165,25 @@ def computeVisibleCamArea(cam_angle):
 
     AREA_DIST_VERT = coeff * H
 
-    computePixelSize(frame_height=1232)
+    computePixelSize(frame_height=1232, frame_width=1632)
 
-    return round(AREA_DIST_VERT * AREA_DIST_HORIZ, 2)
+    area = round(AREA_DIST_VERT * AREA_DIST_HORIZ, 2)
+
+    # increase the area to account for the trapezoidal projection
+    area *= 1.15
+
+    return min(max(area, MIN_AREA), MAX_AREA)
 
 
-def computePixelSize(frame_height):
+def computePixelSize(frame_height, frame_width):
     # computes the relative size of a pixel
     # projected onto the ground plane
     # by knowing the projected area and the captured frames' respective width and height
     # this enables computing the relative distance between objects in physical units (m or cm)
     global PIXEL_SIZE
 
-    PIXEL_SIZE = (AREA_DIST_VERT / frame_height) * 100
+    # average between the horizontal and vertical computed value
+    PIXEL_SIZE = (AREA_DIST_VERT / frame_height + AREA_DIST_HORIZ / frame_width) / 2 * 100
 
 
 def frame_saved_callback(data):
@@ -217,6 +237,7 @@ def process_data(current_overlay, current_detections):
                 '{}: {} people, {}/10m2 density, {} too close'.format(
                     rospy.get_caller_id(), people_count, density, neck_breathers))
 
+            # send data to the dashboard
             compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA))
 
             # save data to the csv file
@@ -234,8 +255,14 @@ def process_data(current_overlay, current_detections):
                 timestamp, people_count),
                 overlay)
 
+            # reset the best detection
+            BEST_OVERLAY = None
+            BEST_DETECTIONS = []
+
     else:
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
+        # send data to the dashboard
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA))
 
 
 def video_mock_test():
@@ -309,7 +336,7 @@ def video_mock_test():
     rospy.loginfo('{}: Video processing done!'.format(rospy.get_caller_id()))
 
 
-def projected_distance(detection_box_1, detection_box_2):
+def get_physical_distance(detection_box_1, detection_box_2):
     b1X = detection_box_1.Center[0]
     b1Y = detection_box_1.Center[1]
 
@@ -327,7 +354,7 @@ def check_social_distancing(detections, overlay):
     # estimates distances between people from the air
     for idx1 in range(len(detections) - 1):
         for idx2 in range(idx1 + 1, len(detections)):
-            physical_distance = projected_distance(detections[idx1], detections[idx2])
+            physical_distance = get_physical_distance(detections[idx1], detections[idx2])
             if physical_distance < DISTANCING_THRESHOLD:
                 # highlight people who are too close to each other
                 cv2.rectangle(overlay,
@@ -370,9 +397,9 @@ def detectionThread():
             # frame = cv2.filter2D(frame, -1, 0.75 * kernel)
 
             # run inference on the camera image continuously
-            # start_inference = time.time()
+            start_inference = time.time()
             FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
-            # end_inference = time.time()
+            end_inference = time.time()
 
             # rospy.loginfo('{}: Detected {} people in {:.0f}ms, index {}'
             #               .format(rospy.get_caller_id(),
@@ -426,6 +453,7 @@ def main():
         # computing the visible area
         CAM_AREA = computeVisibleCamArea(cam_angle)
 
+        # print(H, round(CAM_AREA, 2))
         # rospy.loginfo('{}: {}cm/pixel'.format(rospy.get_caller_id(), round(PIXEL_SIZE, 1)))
         rate.sleep()
 

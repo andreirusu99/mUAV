@@ -64,7 +64,7 @@ def main():
     it = 0
     ring = 10
     distances = [0.0] * ring
-    rate = rospy.Rate(10)  # Hz
+    rate = rospy.Rate(15)  # Hz
     last_pub = 0
     pub_hz = 5
     pub_rate = 1.0 / pub_hz
@@ -73,8 +73,9 @@ def main():
         it %= ring
         distances[it] = reading()
 
+        # invalid reading
         if distances[it] < 2:
-            distances[it] = 2
+            distances[it] = 0
 
         distances = np.sort(distances)
         distance = round(distances[ring // 2])
