@@ -8,6 +8,10 @@ import threading
 from datetime import datetime
 import csv
 import os
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 import rospy
 from drone.msg import Altitude as AltitudeMsg
@@ -379,6 +383,47 @@ def check_social_distancing(detections, overlay):
     return overlay, neck_breathers
 
 
+def generate_statistics():
+    x = []
+    y = []
+    z = []
+    with open('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/15Mar21.csv', 'r') as csvfile:
+        plots = csv.DictReader(csvfile, delimiter=',')
+        initial_time = 9999999999
+        initial = True
+        for row in plots:
+            timestamp = int(row['stamp     '])
+            people = int(row['people'])
+            # warning = int(row['warning'])
+            density = float(row['density'])
+            altitude = float(row['altitude[m]'])
+            height = float(row['height[m]'])
+            temp = float(row['temp[°C]'])
+            area = float(row['area[m2]'])
+            battery = int(row['battery[%]'])
+
+            if initial:
+                initial_time = timestamp
+                initial = False
+
+            x.append((timestamp - initial_time) / 60)
+            y.append(density)
+            z.append(people)
+
+        fig, axis = plt.subplots(2, sharex='all')
+
+        axis[0].plot(x, y, label='Density')
+        axis[0].set_title('Density')
+        axis[0].set(ylabel='People/10m2')
+
+        axis[1].plot(x, z, label='Total people')
+        axis[1].set_title('People')
+
+        plt.xlabel('Time [min]')
+
+        plt.savefig('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/GRAPH2.png')
+
+
 def detectionThread():
     global FRAME_OVERLAY_NP, FRAME_READY, OVERLAY_INDEX
     frame_pub = rospy.Publisher('FrameRequested', Bool, queue_size=1)
@@ -409,6 +454,7 @@ def detectionThread():
 
             # process the frames and detections to produce useful information
             process_data(FRAME_OVERLAY_NP.copy(), detections)
+            generate_statistics()
 
             # flag the end of frame processing
             FRAME_READY = False
