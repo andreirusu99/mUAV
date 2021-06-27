@@ -58,7 +58,7 @@ PIXEL_SIZE = 0.0  # cm
 # ground area visible by the camera
 CAM_AREA = 0.0  # m2
 MAX_AREA = 10000  # m2
-MIN_AREA = 5  # m2
+MIN_AREA = 10  # m2
 
 # GPS location of craft and satellites
 LAT_LNG = (0.0, 0.0)
@@ -75,21 +75,23 @@ CSV_HEADER = ['time', 'stamp',
               'people', 'warning', 'density',
               'latitude', 'longitude', 'sat',
               'altitude[m]', 'height[m]', 'temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
-CSV_FILENAME = ''
-CSV_LOCATION = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/'
+
+CSV_FILENAME = 'data.csv'
+OUT_PATH = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/'
 CSV_PATH = ''
+TODAY_FOLDER_PATH = OUT_PATH + str(datetime.now().strftime('%d%h%y'))
 
 # number of horizontal and vertical regions
 # in which to tile the input image
 # for better accuracy in detection
-WIDTH_TILES = 4
-HEIGHT_TILES = 3
+WIDTH_TILES = 6
+HEIGHT_TILES = 4
 DETECTION_STARTED = False
 
 FRAME_READY = False
 
 # the number of last frames to consider for processing
-DETECTION_RING = 3
+DETECTION_RING = 1
 PREV_OVERLAY = None
 PREV_DETECTIONS = []
 OVERLAY_INDEX = 0
@@ -97,7 +99,7 @@ BEST_OVERLAY = None
 BEST_DETECTIONS = []
 
 # social distancing threshold
-DISTANCING_THRESHOLD = 150
+DISTANCING_THRESHOLD = 150  # cm
 
 # the ROS publisher that sends crowd info
 compute_pub = None
@@ -165,7 +167,7 @@ def computeVisibleCamArea(cam_angle):
     coeff = 1.0 / math.tan(math.radians(alpha)) - math.sin(math.radians(theta))
 
     if coeff < 0:
-        return 0.001
+        return MIN_AREA
 
     AREA_DIST_VERT = coeff * H
 
@@ -255,9 +257,7 @@ def process_data(current_overlay, current_detections):
                     writer.writerow(row)
 
             # save the overlaid image
-            cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/{}_{}.jpg'.format(
-                timestamp, people_count),
-                overlay)
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}.jpg'.format(timestamp, people_count), overlay)
 
             # reset the best detection
             BEST_OVERLAY = None
@@ -454,7 +454,7 @@ def detectionThread():
 
             # process the frames and detections to produce useful information
             process_data(FRAME_OVERLAY_NP.copy(), detections)
-            generate_statistics()
+            # generate_statistics()
 
             # flag the end of frame processing
             FRAME_READY = False
@@ -480,16 +480,15 @@ def main():
     # load a pre-trained network, using TensorRT
     detector.load_net('ssd-mobilenet-v2', threshold=0.35)
 
-    # create the name of the CSV file (date of today)
-    CSV_FILENAME = str(datetime.now().strftime('%d%h%y')) + '.csv'
-    CSV_PATH = CSV_LOCATION + CSV_FILENAME
+    # create the name of the folder (date of today)
+    CSV_PATH = TODAY_FOLDER_PATH + '/' + CSV_FILENAME
 
-    # if a CSV file does not exist for this date, create it
-    for _, _, files in os.walk(CSV_LOCATION):
-        if CSV_FILENAME not in files:
-            with open(CSV_PATH, 'w', newline='') as csv_file:
-                writer = csv.writer(csv_file)
-                writer.writerow(CSV_HEADER)
+    # if a folder does not exist for this date, create it and the CSV file
+    if not os.path.exists(TODAY_FOLDER_PATH):
+        os.makedirs(TODAY_FOLDER_PATH)
+        with open(CSV_PATH, 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(CSV_HEADER)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
