@@ -58,7 +58,7 @@ PIXEL_SIZE = 0.0  # cm
 # ground area visible by the camera
 CAM_AREA = 0.0  # m2
 MAX_AREA = 10000  # m2
-MIN_AREA = 10  # m2
+MIN_AREA = 1  # m2
 
 # GPS location of craft and satellites
 LAT_LNG = (0.0, 0.0)
@@ -84,8 +84,8 @@ TODAY_FOLDER_PATH = OUT_PATH + str(datetime.now().strftime('%d%h%y'))
 # number of horizontal and vertical regions
 # in which to tile the input image
 # for better accuracy in detection
-WIDTH_TILES = 6
-HEIGHT_TILES = 4
+WIDTH_TILES = 4
+HEIGHT_TILES = 3
 DETECTION_STARTED = False
 
 FRAME_READY = False
@@ -148,6 +148,10 @@ def resolveHeight():
     if height_index == height_ring:
         height_index = 0
         H = round(np.average(heights), 1)
+
+    if not DETECTION_STARTED and compute_pub is not None:
+        # send the cam are and the height regardless
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA, H))
 
 
 def computeVisibleCamArea(cam_angle):
@@ -244,7 +248,7 @@ def process_data(current_overlay, current_detections):
                     rospy.get_caller_id(), people_count, density, neck_breathers))
 
             # send data to the dashboard
-            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA))
+            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA, H))
 
             # save data to the csv file
             if CSV_PATH is not None:
@@ -253,11 +257,11 @@ def process_data(current_overlay, current_detections):
                     row = [time_of_day, timestamp,
                            people_count, neck_breathers, density,
                            LAT_LNG[0], LAT_LNG[1], SAT,
-                           ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), CAM_AREA, BATTERY]
+                           ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), round(CAM_AREA, 1), BATTERY]
                     writer.writerow(row)
 
             # save the overlaid image
-            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}.jpg'.format(timestamp, people_count), overlay)
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}_{}.jpg'.format(timestamp, people_count, neck_breathers), overlay)
 
             # reset the best detection
             BEST_OVERLAY = None
@@ -266,7 +270,7 @@ def process_data(current_overlay, current_detections):
     else:
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
         # send data to the dashboard
-        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA))
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA, H))
 
 
 def video_mock_test():
@@ -441,16 +445,14 @@ def detectionThread():
                                [0, -1, 0]])
             # frame = cv2.filter2D(frame, -1, 0.75 * kernel)
 
-            # run inference on the camera image continuously
-            start_inference = time.time()
-            FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
-            end_inference = time.time()
+            # save the original frame
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}.jpg'.format(round(time.time())), frame)
 
-            # rospy.loginfo('{}: Detected {} people in {:.0f}ms, index {}'
-            #               .format(rospy.get_caller_id(),
-            #                       len(detections),
-            #                       (end_inference - start_inference) * 1000,
-            #                       OVERLAY_INDEX))
+            # run inference on the camera image
+            FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
+
+            # save the overlay
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}.jpg'.format(round(time.time()), len(detections)), FRAME_OVERLAY_NP)
 
             # process the frames and detections to produce useful information
             process_data(FRAME_OVERLAY_NP.copy(), detections)
@@ -470,7 +472,6 @@ def main():
 
     rospy.Subscriber('SonarReading', Float32, sonar_callback)
     rospy.Subscriber('Altitude', AltitudeMsg, alt_callback)
-    rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
     rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
     rospy.Subscriber('GPS', GPSMsg, gps_callback)
     rospy.Subscriber('CraftAttitude', AttitudeMsg, attitude_callback)

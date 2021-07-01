@@ -4,15 +4,15 @@ import time
 import cv2
 from src.compute import Detector as detector
 
-NAME = '3m75deg_4'
-IMAGE_IN = f'/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/images/Hoia/{NAME}.JPG'  # 71 people
+NAME = 'street1_rpi'
+IMAGE_IN = f'/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/images/{NAME}.jpg'  # 71 people
 W_TILES = 6
 H_TILES = 4
 
 detector.load_net('ssd-mobilenet-v2', threshold=0.35)
 
 image = cv2.imread(IMAGE_IN)
-image = cv2.resize(image, (1632, 1232), interpolation=cv2.INTER_LANCZOS4)
+# image = cv2.resize(image, (1632, 1232), interpolation=cv2.INTER_LANCZOS4)
 
 start_time = time.time()
 overlay, detections = detector.run_inference(image, W_TILES, H_TILES)
