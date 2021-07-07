@@ -125,7 +125,7 @@ def alt_callback(data):
 
 def gps_callback(data):
     global LAT_LNG, SAT
-    LAT_LNG = (round(data.lat, 4), round(data.lng, 4))
+    LAT_LNG = (round(data.lat, 5), round(data.lng, 5))
     SAT = data.fix
 
 

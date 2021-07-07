@@ -11,13 +11,13 @@
     <param name="/serial/gps_vk" type="string" value="ttyACM1"/>
 
     <node name="ComputingNode" pkg="drone" type="ComputingNode.py" output="screen"/>
-    <!--    <node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>-->
-    <!--    <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/>-->
-    <!--    <node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/>-->
-    <!--    <node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>-->
-    <!--    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">-->
-    <!--        <arg name="port" value="9090"/>-->
-    <!--    </include>-->
-    <!--    <node name="FlaskServer" pkg="drone" type="FlaskServerNode.py" output="screen"/>-->
+    <node name="Sonar" pkg="drone" type="SonarNode.py" output="screen"/>
+    <node name="GPSProvider" pkg="drone" type="GPSNode.py" output="screen"/>
+    <node name="Interceptor" pkg="drone" type="InterceptorNode.py" output="screen"/>
+    <node name="Dispatcher" pkg="drone" type="DispatcherNode.py" output="screen"/>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9090"/>
+    </include>
+    <node name="FlaskServer" pkg="drone" type="FlaskServerNode.py" output="screen"/>
 
 </launch>
