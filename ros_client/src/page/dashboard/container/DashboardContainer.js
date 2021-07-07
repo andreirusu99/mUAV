@@ -69,11 +69,6 @@ class DashboardContainer extends React.Component {
                     path: '/CraftAttitude',
                     type: 'drone/Attitude'
                 },
-                sonar: {
-                    value: 0,
-                    path: '/SonarReading',
-                    type: 'std_msgs/Float32'
-                },
                 gps: {
                     value: {
                         lat: 46.766715,//N
@@ -101,12 +96,13 @@ class DashboardContainer extends React.Component {
                     path: '/Run',
                     type: 'drone/RunInfo'
                 },
-                detection: {
+                compute: {
                     value: {
                         people_count: 0,
                         neck_breathers: 0,
                         density: 0.0,
-                        area: 0.0
+                        area: 0.0,
+                        h: 0.0
                     },
                     path: '/Compute',
                     type: 'drone/ComputeMsg'
@@ -196,22 +192,6 @@ class DashboardContainer extends React.Component {
             }
         });
 
-        // subscribe to sonar readings
-        new ROSLIB.Topic({
-            ros: this.state.ros,
-            name: this.state.topic.sonar.path,
-            messageType: this.state.topic.sonar.type
-        }).subscribe(function (message) {
-            if (message) {
-                let state = self.state
-                if (message.data > BARO_THRESH)
-                    state['topic']['sonar']['value'] = BARO_THRESH
-                else
-                    state['topic']['sonar']['value'] = message.data
-                self.setState(state)
-            }
-        });
-
         // subscribe to gps readings
         new ROSLIB.Topic({
             ros: this.state.ros,
@@ -247,19 +227,20 @@ class DashboardContainer extends React.Component {
             }
         });
 
-        // subscribe to detection results
+        // subscribe to compute results
         new ROSLIB.Topic({
             ros: this.state.ros,
-            name: this.state.topic.detection.path,
-            messageType: this.state.topic.detection.type
+            name: this.state.topic.compute.path,
+            messageType: this.state.topic.compute.type
         }).subscribe(function (message) {
             if (message) {
                 let state = self.state
-                state['topic']['detection']['value'] = {
+                state['topic']['compute']['value'] = {
                     people_count: message.people_count,
                     neck_breathers: message.neck_breathers,
                     density: message.density,
-                    area: message.area
+                    area: message.area,
+                    h: message.h
                 }
                 self.setState(state)
             }
@@ -307,12 +288,12 @@ class DashboardContainer extends React.Component {
                 abs_alt: 0.0,
                 temp: 0.0
             }
-            state['topic']['sonar']['value'] = 0.0
-            state['topic']['detection']['value'] = {
+            state['topic']['compute']['value'] = {
                 people_count: 0,
                 neck_breathers: 0,
                 density: 0.0,
-                area: 0
+                area: 0.0,
+                h: 0.0
             }
             self.setState(state)
         });
@@ -335,28 +316,28 @@ class DashboardContainer extends React.Component {
                             {this.state.topic.run.value.detection_started
                                 ? <div>
                                     <strong style={{color: "#FFFFFF", fontSize: '18px'}} className={'text-center'}>
-                                        {'Total people: ' + this.state.topic.detection.value.people_count}
+                                        {'Total people: ' + this.state.topic.compute.value.people_count}
                                     </strong>
 
                                     <strong style={{color: "#FFFFFF", marginLeft: '50px', fontSize: '18px'}}
                                             className={'text-center'}>
-                                        {'Total area: ' + this.state.topic.detection.value.area.toFixed(0) + ' m2'}
+                                        {'Total area: ' + this.state.topic.compute.value.area.toFixed(1) + ' m2'}
                                     </strong>
 
                                     <strong style={{color: "#FFFFFF", marginLeft: '50px', fontSize: '18px'}}
                                             className={'text-center'}>
-                                        {'Density: ' + this.state.topic.detection.value.density + ' people/10m2'}
+                                        {'Density: ' + this.state.topic.compute.value.density.toFixed(1) + ' people/10m2'}
                                     </strong>
-                                    {this.state.topic.detection.value.density > 1 &&
+                                    {this.state.topic.compute.value.density > 1 &&
                                     <WarningIcon style={{color: '#E7AE00', marginLeft: '5px'}}/>
                                     }
 
                                     <strong style={{color: "#d42f2f", marginLeft: '50px', fontSize: '18px'}}
                                             className={'text-center'}>
-                                        {'Too close: ' + this.state.topic.detection.value.neck_breathers + ' people'}
+                                        {'Too close: ' + this.state.topic.compute.value.neck_breathers + ' people'}
                                     </strong>
                                 </div>
-                                : <i style={{color: "#FFFFFF", fontSize:'18px'}}>
+                                : <i style={{color: "#FFFFFF", fontSize: '18px'}}>
                                     {'Start the detection to show quick statistics here'}
                                 </i>
                             }
@@ -431,8 +412,8 @@ class DashboardContainer extends React.Component {
                                     color: 'white', fontSize: '16px'
                                 }}
                                 label={this.state.topic.gps.value.fix > 0
-                                    ? 'GPS ON: ' + this.state.topic.gps.value.fix + ' sat'
-                                    : 'GPS OFF'}
+                                    ? 'GPS FIXED'
+                                    : 'GPS NO FIX'}
                             />
                         </Col>
 
@@ -538,7 +519,7 @@ class DashboardContainer extends React.Component {
                                                     {'Roll'}
                                                 </div>
 
-                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 5 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowForwardIcon fontSize={"small"}/>
@@ -546,12 +527,12 @@ class DashboardContainer extends React.Component {
                                                 </strong>}
 
                                                 <strong>
-                                                    {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10
+                                                    {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 5
                                                         ? Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) + '%'
                                                         : "0%"}
                                                 </strong>
 
-                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 10 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100))) >= 5 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.roll - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowForwardIcon fontSize={"small"}/>
@@ -585,7 +566,7 @@ class DashboardContainer extends React.Component {
                                                     {'Pitch'}
                                                 </div>
 
-                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 5 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowUpwardIcon fontSize={"small"}/>
@@ -593,12 +574,12 @@ class DashboardContainer extends React.Component {
                                                 </strong>}
 
                                                 <strong>
-                                                    {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10
+                                                    {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 5
                                                         ? Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) + '%'
                                                         : "0%"}
                                                 </strong>
 
-                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 10 &&
+                                                {Math.abs(Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100))) >= 5 &&
                                                 <strong>
                                                     {Math.round(((this.state.topic.control.value.pitch - 1000) * 200 / 1000 - 100)) > 0
                                                         ? <ArrowUpwardIcon fontSize={"small"}/>
@@ -757,8 +738,8 @@ class DashboardContainer extends React.Component {
                                                     <strong
                                                         style={{float: "right"}}>
                                                         {this.state.topic.armed.value
-                                                            ? (this.state.topic.bmp.value.rel_alt).toFixed(1) + " m"
-                                                            : 'GROUNDED'
+                                                            ? (this.state.topic.compute.value.h).toFixed(1) + " m"
+                                                            : (this.state.topic.compute.value.h).toFixed(1) + " m"
                                                         }
                                                     </strong>
                                                 </div>
