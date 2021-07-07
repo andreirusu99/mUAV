@@ -57,7 +57,7 @@ def main():
     last_active = 0.0
     detection_start = detection_end = 0.0
 
-    camera_angles = [0, 15, 30, 45, 60, 90]
+    camera_angles = [0, 15, 30, 45, 50, 55, 60, 65, 70, 90]
     angle_index = len(camera_angles) - 1
 
     rate = rospy.Rate(20)  # Hz
@@ -87,7 +87,7 @@ def main():
                 rospy.logwarn("{}: Cannot ARM, lower throttle!".format(rospy.get_caller_id()))
 
             # manual disarming (debounced)
-            if triggers[1] > 1800 and joy_sticks[2] <= 1100 and armed and time.time() - arm_time >= 1:
+            if triggers[1] > 1800 and joy_sticks[2] <= 1200 and armed and time.time() - arm_time >= 1:
                 rospy.logwarn("{}: DISARMING...".format(rospy.get_caller_id()))
                 rospy.set_param("/run/armed", False)
                 disarm_time = time.time()

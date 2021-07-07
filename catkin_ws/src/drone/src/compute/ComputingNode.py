@@ -8,6 +8,10 @@ import threading
 from datetime import datetime
 import csv
 import os
+import matplotlib
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 import rospy
 from drone.msg import Altitude as AltitudeMsg
@@ -54,7 +58,7 @@ PIXEL_SIZE = 0.0  # cm
 # ground area visible by the camera
 CAM_AREA = 0.0  # m2
 MAX_AREA = 10000  # m2
-MIN_AREA = 5  # m2
+MIN_AREA = 1  # m2
 
 # GPS location of craft and satellites
 LAT_LNG = (0.0, 0.0)
@@ -71,9 +75,11 @@ CSV_HEADER = ['time', 'stamp',
               'people', 'warning', 'density',
               'latitude', 'longitude', 'sat',
               'altitude[m]', 'height[m]', 'temp[°C]', 'angle[deg]', 'area[m2]', 'battery[%]']
-CSV_FILENAME = ''
-CSV_LOCATION = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/'
+
+CSV_FILENAME = 'data.csv'
+OUT_PATH = '/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/'
 CSV_PATH = ''
+TODAY_FOLDER_PATH = OUT_PATH + str(datetime.now().strftime('%d%h%y'))
 
 # number of horizontal and vertical regions
 # in which to tile the input image
@@ -85,7 +91,7 @@ DETECTION_STARTED = False
 FRAME_READY = False
 
 # the number of last frames to consider for processing
-DETECTION_RING = 3
+DETECTION_RING = 1
 PREV_OVERLAY = None
 PREV_DETECTIONS = []
 OVERLAY_INDEX = 0
@@ -93,7 +99,7 @@ BEST_OVERLAY = None
 BEST_DETECTIONS = []
 
 # social distancing threshold
-DISTANCING_THRESHOLD = 150
+DISTANCING_THRESHOLD = 150  # cm
 
 # the ROS publisher that sends crowd info
 compute_pub = None
@@ -119,7 +125,7 @@ def alt_callback(data):
 
 def gps_callback(data):
     global LAT_LNG, SAT
-    LAT_LNG = (round(data.lat, 4), round(data.lng, 4))
+    LAT_LNG = (round(data.lat, 5), round(data.lng, 5))
     SAT = data.fix
 
 
@@ -143,6 +149,10 @@ def resolveHeight():
         height_index = 0
         H = round(np.average(heights), 1)
 
+    if not DETECTION_STARTED and compute_pub is not None:
+        # send the cam are and the height regardless
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA, H))
+
 
 def computeVisibleCamArea(cam_angle):
     # computes the total area of flat ground visible by the camera
@@ -161,7 +171,7 @@ def computeVisibleCamArea(cam_angle):
     coeff = 1.0 / math.tan(math.radians(alpha)) - math.sin(math.radians(theta))
 
     if coeff < 0:
-        return 0.001
+        return MIN_AREA
 
     AREA_DIST_VERT = coeff * H
 
@@ -238,7 +248,7 @@ def process_data(current_overlay, current_detections):
                     rospy.get_caller_id(), people_count, density, neck_breathers))
 
             # send data to the dashboard
-            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA))
+            compute_pub.publish(ComputeMsg(people_count, neck_breathers, density, CAM_AREA, H))
 
             # save data to the csv file
             if CSV_PATH is not None:
@@ -247,13 +257,11 @@ def process_data(current_overlay, current_detections):
                     row = [time_of_day, timestamp,
                            people_count, neck_breathers, density,
                            LAT_LNG[0], LAT_LNG[1], SAT,
-                           ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), CAM_AREA, BATTERY]
+                           ABS_ALT, H, AIR_TEMP, rospy.get_param('/physical/camera_angle'), round(CAM_AREA, 1), BATTERY]
                     writer.writerow(row)
 
             # save the overlaid image
-            cv2.imwrite('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/random/{}_{}.jpg'.format(
-                timestamp, people_count),
-                overlay)
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}_{}.jpg'.format(timestamp, people_count, neck_breathers), overlay)
 
             # reset the best detection
             BEST_OVERLAY = None
@@ -262,7 +270,7 @@ def process_data(current_overlay, current_detections):
     else:
         rospy.loginfo('{}: No people detected!'.format(rospy.get_caller_id()))
         # send data to the dashboard
-        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA))
+        compute_pub.publish(ComputeMsg(0, 0, 0, CAM_AREA, H))
 
 
 def video_mock_test():
@@ -379,6 +387,47 @@ def check_social_distancing(detections, overlay):
     return overlay, neck_breathers
 
 
+def generate_statistics():
+    x = []
+    y = []
+    z = []
+    with open('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/15Mar21.csv', 'r') as csvfile:
+        plots = csv.DictReader(csvfile, delimiter=',')
+        initial_time = 9999999999
+        initial = True
+        for row in plots:
+            timestamp = int(row['stamp     '])
+            people = int(row['people'])
+            # warning = int(row['warning'])
+            density = float(row['density'])
+            altitude = float(row['altitude[m]'])
+            height = float(row['height[m]'])
+            temp = float(row['temp[°C]'])
+            area = float(row['area[m2]'])
+            battery = int(row['battery[%]'])
+
+            if initial:
+                initial_time = timestamp
+                initial = False
+
+            x.append((timestamp - initial_time) / 60)
+            y.append(density)
+            z.append(people)
+
+        fig, axis = plt.subplots(2, sharex='all')
+
+        axis[0].plot(x, y, label='Density')
+        axis[0].set_title('Density')
+        axis[0].set(ylabel='People/10m2')
+
+        axis[1].plot(x, z, label='Total people')
+        axis[1].set_title('People')
+
+        plt.xlabel('Time [min]')
+
+        plt.savefig('/home/andrei/Desktop/mUAV/catkin_ws/src/drone/data/out/csv/GRAPH2.png')
+
+
 def detectionThread():
     global FRAME_OVERLAY_NP, FRAME_READY, OVERLAY_INDEX
     frame_pub = rospy.Publisher('FrameRequested', Bool, queue_size=1)
@@ -396,19 +445,18 @@ def detectionThread():
                                [0, -1, 0]])
             # frame = cv2.filter2D(frame, -1, 0.75 * kernel)
 
-            # run inference on the camera image continuously
-            start_inference = time.time()
-            FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
-            end_inference = time.time()
+            # save the original frame
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}.jpg'.format(round(time.time())), frame)
 
-            # rospy.loginfo('{}: Detected {} people in {:.0f}ms, index {}'
-            #               .format(rospy.get_caller_id(),
-            #                       len(detections),
-            #                       (end_inference - start_inference) * 1000,
-            #                       OVERLAY_INDEX))
+            # run inference on the camera image
+            FRAME_OVERLAY_NP, detections = detector.run_inference(frame, WIDTH_TILES, HEIGHT_TILES)
+
+            # save the overlay
+            cv2.imwrite(TODAY_FOLDER_PATH + '/{}_{}.jpg'.format(round(time.time()), len(detections)), FRAME_OVERLAY_NP)
 
             # process the frames and detections to produce useful information
             process_data(FRAME_OVERLAY_NP.copy(), detections)
+            # generate_statistics()
 
             # flag the end of frame processing
             FRAME_READY = False
@@ -425,7 +473,6 @@ def main():
     rospy.Subscriber('SonarReading', Float32, sonar_callback)
     rospy.Subscriber('Altitude', AltitudeMsg, alt_callback)
     rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
-    rospy.Subscriber('FrameSaved', Bool, frame_saved_callback)
     rospy.Subscriber('GPS', GPSMsg, gps_callback)
     rospy.Subscriber('CraftAttitude', AttitudeMsg, attitude_callback)
 
@@ -434,16 +481,15 @@ def main():
     # load a pre-trained network, using TensorRT
     detector.load_net('ssd-mobilenet-v2', threshold=0.35)
 
-    # create the name of the CSV file (date of today)
-    CSV_FILENAME = str(datetime.now().strftime('%d%h%y')) + '.csv'
-    CSV_PATH = CSV_LOCATION + CSV_FILENAME
+    # create the name of the folder (date of today)
+    CSV_PATH = TODAY_FOLDER_PATH + '/' + CSV_FILENAME
 
-    # if a CSV file does not exist for this date, create it
-    for _, _, files in os.walk(CSV_LOCATION):
-        if CSV_FILENAME not in files:
-            with open(CSV_PATH, 'w', newline='') as csv_file:
-                writer = csv.writer(csv_file)
-                writer.writerow(CSV_HEADER)
+    # if a folder does not exist for this date, create it and the CSV file
+    if not os.path.exists(TODAY_FOLDER_PATH):
+        os.makedirs(TODAY_FOLDER_PATH)
+        with open(CSV_PATH, 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(CSV_HEADER)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():

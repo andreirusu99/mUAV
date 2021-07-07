@@ -28,15 +28,13 @@ INFO_PERIOD = 1  # seconds
 SEND_PERIOD = 0.1  # seconds
 
 # controls stick limits
-STICK_MIN = 1200
-STICK_MAX = 1800
+STICK_MIN = 1000
+STICK_MAX = 2000
 THROTTLE_MAX = 1700
 
-# controls stick trims and dead zone
-ROLL_TRIM = -13
-PITCH_TRIM = -13
-YAW_TRIM = 1
-DEAD_ZONE = 0.09
+# controls stick dead zone and scaling
+DEAD_ZONE = 0.05
+STICK_SCALE = 0.5
 
 
 def clamp(n, low, high):
@@ -86,15 +84,20 @@ def applyDeadZoneAndTrims():
     roll, pitch, throttle, yaw = CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw']
 
     if abs(roll - 1500) < dead_zone:
-        roll = 1500 + ROLL_TRIM
+        roll = 1500
     if abs(pitch - 1500) < dead_zone:
-        pitch = 1500 + PITCH_TRIM
+        pitch = 1500
     if abs(yaw - 1500) < dead_zone * 1.5:
-        yaw = 1500 + YAW_TRIM
+        yaw = 1500
     if abs(throttle - 1000) < 50:
         throttle = 1000
 
-    CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw'] = roll, pitch, throttle, yaw
+    # scaling the sticks
+    roll = 1500 + (roll - 1500) * STICK_SCALE
+    pitch = 1500 + (pitch - 1500) * STICK_SCALE
+    yaw = 1500 + (yaw - 1500) * STICK_SCALE
+
+    CMDS['roll'], CMDS['pitch'], CMDS['throttle'], CMDS['yaw'] = int(roll), int(pitch), int(throttle), int(yaw)
 
 
 def main(drone):
