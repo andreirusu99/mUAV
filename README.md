@@ -1,6 +1,3 @@
-## ! Work in progress !
-Content can change anytime.
-
 ### ***This project represents the work for my bachelor's thesis and therefore, any usage or distribution of the files without expressly granted written permission and consent is prohibited.***
 
 ## Summary
@@ -8,7 +5,7 @@ Edge computing system for mUAV crowd identification and monitoring, complete wit
 
 The purpouse of the project is to implement a crowd identification and monitoring system that runs on edge, on a drone that I designed and built (see *Hardware* folder for details).
 
-Edge computing is done on a nVIDIA Jetson Nano Dev Kit installed on the quadcopter, that runs a ROS environment of about 10 nodes.
+Edge computing is done on a nVIDIA Jetson Nano Dev Kit installed on the quadcopter, that runs a ROS environment.
 
 Crowd monitoring is performed using neural networks designed for edge devices (SSD MobileNet V2) and computer vision frameworks such as OpenCV.
 
@@ -22,6 +19,7 @@ The Jetson communicates completely wireless over a Wi-Fi hotspot from a computer
 - **ReactJS**, for the front-end application
 - **GoogleMapsAPI** for real-time GPS localization
 - **ROSLibJS** for remote ROS topic access
+- **YAMSPy** for MSP communication with the FC
 
 ## Folder Structure
 ### [catkin_ws](/catkin_ws)
