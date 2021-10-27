@@ -1,4 +1,4 @@
-### ***This project represents the work for my bachelor's thesis and therefore, any usage or distribution of the files without expressly granted written permission and consent is prohibited.***
+### ***This project represents the work for my bachelor's thesis and therefore, any commercial usage or distribution of the files without expressly granted written permission and consent is prohibited.***
 
 ## Summary
 Edge computing system for mUAV crowd identification and monitoring, complete with client application, real-time dashboard and statistics.
