@@ -1,6 +1,6 @@
 ### ***This project represents the work for my bachelor's thesis and therefore, any commercial usage or distribution of the files without expressly granted written permission and consent is prohibited.***
 
-Complete information in the [Thesis](/Thesis.pdf) document and the [presentation](/Crowd identification and_monitoring using UAVs.pdf)
+Complete information in the [Thesis](/Thesis.pdf) document and the presentation (_Crowd identification and monitoring using UAVs.pdf_)
 
 ## Summary
 Edge computing system for mUAV crowd identification and monitoring, complete with client application, real-time dashboard and statistics.
